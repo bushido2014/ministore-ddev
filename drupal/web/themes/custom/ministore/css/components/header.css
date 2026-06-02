@@ -1,0 +1,14 @@
+.main-menu  a {
+    text-transform: uppercase;
+    display: block;
+    padding: .5rem 1rem;
+    transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out;
+}
+
+.main-menu  a:hover {
+    color: var(--color-primary);
+}
+
+.main-menu .is-active {
+    color: var(--color-primary);
+}

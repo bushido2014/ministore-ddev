@@ -1,0 +1,81 @@
+button, input,
+ optgroup,
+  select, 
+  textarea
+ {
+    margin: 0;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+}
+
+[type='text'], [type='password'], [type='date'], [type='datetime'], [type='datetime-local'], [type='month'], [type='week'], [type='email'], [type='number'], [type='search'], [type='tel'], [type='time'], [type='url'], [type='color'], textarea {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    height: 2.4375rem;
+    margin: 0 0 1rem;
+    padding: 0.5rem;
+    border: 1px solid #cacaca;
+    border-radius: 0;
+    background-color: #fefefe;
+    box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.1);
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: normal;
+    color: #0a0a0a;
+    transition: box-shadow 0.5s, border-color 0.25s ease-in-out;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+[type='text']:focus, [type='password']:focus, [type='date']:focus, [type='datetime']:focus, [type='datetime-local']:focus, [type='month']:focus, [type='week']:focus, [type='email']:focus, [type='number']:focus, [type='search']:focus, [type='tel']:focus, [type='time']:focus, [type='url']:focus, [type='color']:focus,
+textarea:focus {
+  outline: none;
+  border: 1px solid #8a8a8a;
+  background-color: #fefefe;
+  box-shadow: 0 0 5px #cacaca;
+  transition: box-shadow 0.5s, border-color 0.25s ease-in-out;
+}
+
+textarea.form-input
+ {
+    min-height: 7em;
+}
+select {
+  height: 2.4375rem;
+  margin: 0 0 1rem;
+  padding: 0.5rem;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  border: 1px solid #cacaca;
+  border-radius: 0;
+  background-color: #fefefe;
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: normal;
+  color: #0a0a0a;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' width='32' height='24' viewBox='0 0 32 24'><polygon points='0,0 32,0 16,24' style='fill: rgb%28138, 138, 138%29'></polygon></svg>");
+  background-origin: content-box;
+  background-position: right -1rem center;
+  background-repeat: no-repeat;
+  background-size: 9px 6px;
+  padding-right: 1.5rem;
+  transition: box-shadow 0.5s, border-color 0.25s ease-in-out;
+}
+select:focus {
+  outline: none;
+  border: 1px solid #8a8a8a;
+  background-color: #fefefe;
+  box-shadow: 0 0 5px #cacaca;
+  transition: box-shadow 0.5s, border-color 0.25s ease-in-out;
+}
+
+[role="alert"] {
+    color: red;
+}
+
+
+.form-control .error { border: 1px solid red; }

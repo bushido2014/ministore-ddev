@@ -1,0 +1,33 @@
+.home-slide {
+  background-color: var(--color-light-blue);
+}
+
+.home-sl .d-grid {
+  place-items: center;
+}
+
+.content .content-title {
+  font-weight: 300;
+  font-size: 4.5rem;
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+}
+.services-item .d-flex {
+  gap:8px;
+  align-items:normal;
+}
+.serices-content h3 {
+  font-size:1.5rem;
+  font-weight: 300;
+  text-transform: uppercase;
+}
+
+.services-icon svg {
+  width: 26px;
+  height: 26px;
+  color: var(--color-primary);
+}
+
+.serices-content p {
+  font-size: 1.2em;
+}

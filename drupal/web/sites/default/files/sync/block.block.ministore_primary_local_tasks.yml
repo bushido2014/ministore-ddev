@@ -1,6 +1,6 @@
 uuid: b2178f71-2b8d-457c-9610-788648e4ecef
 langcode: en
-status: true
+status: false
 dependencies:
   theme:
     - ministore
