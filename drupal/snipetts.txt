@@ -1,0 +1,10 @@
+
+curl -fsSL https://ddev.com/install.sh | bash
+
+
+ddev start
+
+ddev drush cr
+
+Admin username: admin
+Admin password: kADzK6mAoM
