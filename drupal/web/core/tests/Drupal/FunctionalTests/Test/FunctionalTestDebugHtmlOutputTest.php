@@ -6,13 +6,16 @@ namespace Drupal\FunctionalTests\Test;
 
 use Drupal\Core\File\FileExists;
 use Drupal\Tests\BrowserTestBase;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Symfony\Component\Process\Process;
 
 /**
  * Test to ensure that functional tests produce debug HTML output when required.
- *
- * @group browsertestbase
  */
+#[Group('browsertestbase')]
+#[Group('#slow')]
+#[RunTestsInSeparateProcesses]
 class FunctionalTestDebugHtmlOutputTest extends BrowserTestBase {
 
   /**

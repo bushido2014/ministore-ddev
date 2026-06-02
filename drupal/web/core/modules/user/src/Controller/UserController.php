@@ -259,8 +259,11 @@ class UserController extends ControllerBase {
     $this->flood->clear('user.http_login', $identifier);
 
     user_login_finalize($user);
-    $this->logger->info('User %name used one-time login link at time %timestamp.', ['%name' => $user->getDisplayName(), '%timestamp' => $timestamp]);
-    $this->messenger()->addStatus($this->t('You have just used your one-time login link. It is no longer necessary to use this link to log in. It is recommended that you set your password.'));
+    $this->logger->info('User %name used one-time login link at time %timestamp.', [
+      '%name' => $user->getDisplayName(),
+      '%timestamp' => $timestamp,
+    ]);
+    $this->messenger()->addStatus($this->t('You have used a one-time login link. You can set your new password now.'));
     // Let the user's password be changed without the current password
     // check.
     $token = Crypt::randomBytesBase64(55);

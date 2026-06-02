@@ -1,0 +1,22 @@
+uuid: fc87c40e-fcf6-4e3f-a333-f2acbc525ba5
+langcode: en
+status: false
+dependencies:
+  module:
+    - help
+  theme:
+    - ministore
+_core:
+  default_config_hash: VfPFqqxfkomud5CO8DUijw85QIl9GIxh_nIxLOYESxg
+id: ministore_help
+theme: ministore
+region: header_left
+weight: 0
+provider: null
+plugin: help_block
+settings:
+  id: help_block
+  label: Help
+  label_display: '0'
+  provider: help
+visibility: {  }

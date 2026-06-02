@@ -1,0 +1,22 @@
+uuid: 6f78629f-f6cb-4c6d-925a-606cb2b19107
+langcode: en
+status: true
+dependencies:
+  module:
+    - system
+  theme:
+    - ministore
+_core:
+  default_config_hash: BZ5tpW7H8X4PVGRm3MImTIHd2tN0eF7zOtp4SpRYUA0
+id: ministore_messages
+theme: ministore
+region: header_left
+weight: -5
+provider: null
+plugin: system_messages_block
+settings:
+  id: system_messages_block
+  label: 'Status messages'
+  label_display: '0'
+  provider: system
+visibility: {  }

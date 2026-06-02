@@ -5,13 +5,17 @@ declare(strict_types=1);
 namespace Drupal\FunctionalTests\Libraries;
 
 use Drupal\Tests\BrowserTestBase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests the loading of jQuery UI CSS and JS assets.
- *
- * @group libraries
- * @group legacy
  */
+#[Group('libraries')]
+#[IgnoreDeprecations]
+#[RunTestsInSeparateProcesses]
 class JqueryUiLibraryAssetsTest extends BrowserTestBase {
 
   /**
@@ -32,7 +36,7 @@ class JqueryUiLibraryAssetsTest extends BrowserTestBase {
   protected $libraryDiscovery;
 
   /**
-   * jQuery UI CSS and JS assets keyed by their weight.
+   * The jQuery UI CSS and JS assets keyed by their weight.
    *
    * For example, the value of $weightGroupedAssets[-11] would be an array
    * of every jQuery UI CSS and JS file asset configured with a weight of -11.
@@ -113,13 +117,9 @@ class JqueryUiLibraryAssetsTest extends BrowserTestBase {
         'core/assets/vendor/jquery.ui/ui/data-min.js',
         'core/assets/vendor/jquery.ui/ui/disable-selection-min.js',
         'core/assets/vendor/jquery.ui/ui/focusable-min.js',
-        'core/assets/vendor/jquery.ui/ui/form-min.js',
-        'core/assets/vendor/jquery.ui/ui/ie-min.js',
         'core/assets/vendor/jquery.ui/ui/jquery-patch-min.js',
         'core/assets/vendor/jquery.ui/ui/keycode-min.js',
         'core/assets/vendor/jquery.ui/ui/plugin-min.js',
-        'core/assets/vendor/jquery.ui/ui/safe-active-element-min.js',
-        'core/assets/vendor/jquery.ui/ui/safe-blur-min.js',
         'core/assets/vendor/jquery.ui/ui/scroll-parent-min.js',
         'core/assets/vendor/jquery.ui/ui/unique-id-min.js',
         'core/assets/vendor/jquery.ui/ui/widget-min.js',
@@ -215,9 +215,8 @@ class JqueryUiLibraryAssetsTest extends BrowserTestBase {
 
   /**
    * Confirms that jQuery UI assets load on the page in the configured order.
-   *
-   * @dataProvider providerTestAssetLoading
    */
+  #[DataProvider('providerTestAssetLoading')]
   public function testLibraryAssetLoadingOrder($library, array $expected_css, array $expected_js): void {
     $this->drupalGet("jqueryui_library_assets_test/$library");
     $this->assertSession()->statusCodeEquals(200);
@@ -296,9 +295,8 @@ class JqueryUiLibraryAssetsTest extends BrowserTestBase {
    *   The jQuery UI CSS files expected to load.
    * @param string[] $expected_js
    *   The jQuery UI JavaScript files expected to load.
-   *
-   * @dataProvider providerTestAssetLoading
    */
+  #[DataProvider('providerTestAssetLoading')]
   public function testAssetLoadingUnchanged($library, array $expected_css, array $expected_js): void {
     $this->drupalGet("jqueryui_library_assets_test/$library");
     $this->assertSession()->statusCodeEquals(200);
@@ -346,7 +344,7 @@ class JqueryUiLibraryAssetsTest extends BrowserTestBase {
    *     library prior to the change from jQuery UI library dependencies to
    *     direct file inclusion.
    */
-  public static function providerTestAssetLoading() {
+  public static function providerTestAssetLoading(): array {
     return [
       'drupal.autocomplete' => [
         'library' => 'drupal.autocomplete',

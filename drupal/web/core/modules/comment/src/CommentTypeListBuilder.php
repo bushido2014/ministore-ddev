@@ -44,7 +44,7 @@ class CommentTypeListBuilder extends ConfigEntityListBuilder {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultOperations(EntityInterface $entity) {
+  public function getDefaultOperations(EntityInterface $entity/* , ?CacheableMetadata $cacheability = NULL */) {
     $operations = parent::getDefaultOperations($entity);
     // Place the edit operation after the operations added by field_ui.module
     // which have the weights 15, 20, 25.
@@ -58,9 +58,9 @@ class CommentTypeListBuilder extends ConfigEntityListBuilder {
    * {@inheritdoc}
    */
   public function buildHeader() {
-    $header['type'] = t('Comment type');
-    $header['description'] = t('Description');
-    $header['target'] = t('Target entity type');
+    $header['type'] = $this->t('Comment type');
+    $header['description'] = $this->t('Description');
+    $header['target'] = $this->t('Target entity type');
     return $header + parent::buildHeader();
   }
 

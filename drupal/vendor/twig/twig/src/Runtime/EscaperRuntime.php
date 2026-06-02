@@ -17,6 +17,7 @@ use Twig\Markup;
 
 final class EscaperRuntime implements RuntimeExtensionInterface
 {
+    /** @var array<string, callable(string, string): string> */
     private $escapers = [];
 
     /** @internal */
@@ -25,18 +26,18 @@ final class EscaperRuntime implements RuntimeExtensionInterface
     /** @internal */
     public $safeLookup = [];
 
-    private $charset;
-
-    public function __construct($charset = 'UTF-8')
-    {
-        $this->charset = $charset;
+    public function __construct(
+        private $charset = 'UTF-8',
+    ) {
     }
 
     /**
      * Defines a new escaper to be used via the escape filter.
      *
-     * @param string                                    $strategy The strategy name that should be used as a strategy in the escape call
-     * @param callable(string $string, string $charset) $callable A valid PHP callable
+     * @param string                                            $strategy The strategy name that should be used as a strategy in the escape call
+     * @param callable(string $string, string $charset): string $callable A valid PHP callable
+     *
+     * @return void
      */
     public function setEscaper($strategy, callable $callable)
     {
@@ -46,13 +47,18 @@ final class EscaperRuntime implements RuntimeExtensionInterface
     /**
      * Gets all defined escapers.
      *
-     * @return array<callable(string $string, string $charset)> An array of escapers
+     * @return array<string, callable(string $string, string $charset): string> An array of escapers
      */
     public function getEscapers()
     {
         return $this->escapers;
     }
 
+    /**
+     * @param array<class-string<\Stringable>, string[]> $safeClasses
+     *
+     * @return void
+     */
     public function setSafeClasses(array $safeClasses = [])
     {
         $this->safeClasses = [];
@@ -62,6 +68,12 @@ final class EscaperRuntime implements RuntimeExtensionInterface
         }
     }
 
+    /**
+     * @param class-string<\Stringable> $class
+     * @param string[]                  $strategies
+     *
+     * @return void
+     */
     public function addSafeClass(string $class, array $strategies)
     {
         $class = ltrim($class, '\\');
@@ -92,9 +104,9 @@ final class EscaperRuntime implements RuntimeExtensionInterface
         }
 
         if (!\is_string($string)) {
-            if (\is_object($string) && method_exists($string, '__toString')) {
+            if ($string instanceof \Stringable) {
                 if ($autoescape) {
-                    $c = \get_class($string);
+                    $c = $string::class;
                     if (!isset($this->safeClasses[$c])) {
                         $this->safeClasses[$c] = [];
                         foreach (class_parents($string) + class_implements($string) as $class) {
@@ -112,7 +124,7 @@ final class EscaperRuntime implements RuntimeExtensionInterface
                 }
 
                 $string = (string) $string;
-            } elseif (\in_array($strategy, ['html', 'js', 'css', 'html_attr', 'url'])) {
+            } elseif (\in_array($strategy, ['html', 'js', 'css', 'html_attr', 'html_attr_relaxed', 'url'], true)) {
                 // we return the input as is (which can be of any type)
                 return $string;
             }
@@ -127,6 +139,10 @@ final class EscaperRuntime implements RuntimeExtensionInterface
         switch ($strategy) {
             case 'html':
                 // see https://www.php.net/htmlspecialchars
+
+                if ('UTF-8' === $charset) {
+                    return htmlspecialchars($string, \ENT_QUOTES | \ENT_SUBSTITUTE, 'UTF-8');
+                }
 
                 // Using a static variable to avoid initializing the array
                 // each time the function is called. Moving the declaration on the
@@ -175,7 +191,7 @@ final class EscaperRuntime implements RuntimeExtensionInterface
                     throw new RuntimeError('The string to escape is not a valid UTF-8 string.');
                 }
 
-                $string = preg_replace_callback('#[^a-zA-Z0-9,\._]#Su', function ($matches) {
+                $string = preg_replace_callback('#[^a-zA-Z0-9,\._]#Su', static function ($matches) {
                     $char = $matches[0];
 
                     /*
@@ -183,7 +199,7 @@ final class EscaperRuntime implements RuntimeExtensionInterface
                     * Escape sequences supported only by JavaScript, not JSON, are omitted.
                     * \" is also supported but omitted, because the resulting string is not HTML safe.
                     */
-                    static $shortMap = [
+                    $short = match ($char) {
                         '\\' => '\\\\',
                         '/' => '\\/',
                         "\x08" => '\b',
@@ -191,15 +207,16 @@ final class EscaperRuntime implements RuntimeExtensionInterface
                         "\x0A" => '\n',
                         "\x0D" => '\r',
                         "\x09" => '\t',
-                    ];
+                        default => false,
+                    };
 
-                    if (isset($shortMap[$char])) {
-                        return $shortMap[$char];
+                    if ($short) {
+                        return $short;
                     }
 
                     $codepoint = mb_ord($char, 'UTF-8');
                     if (0x10000 > $codepoint) {
-                        return sprintf('\u%04X', $codepoint);
+                        return \sprintf('\u%04X', $codepoint);
                     }
 
                     // Split characters outside the BMP into surrogate pairs
@@ -208,7 +225,7 @@ final class EscaperRuntime implements RuntimeExtensionInterface
                     $high = 0xD800 | ($u >> 10);
                     $low = 0xDC00 | ($u & 0x3FF);
 
-                    return sprintf('\u%04X\u%04X', $high, $low);
+                    return \sprintf('\u%04X\u%04X', $high, $low);
                 }, $string);
 
                 if ('UTF-8' !== $charset) {
@@ -226,10 +243,10 @@ final class EscaperRuntime implements RuntimeExtensionInterface
                     throw new RuntimeError('The string to escape is not a valid UTF-8 string.');
                 }
 
-                $string = preg_replace_callback('#[^a-zA-Z0-9]#Su', function ($matches) {
+                $string = preg_replace_callback('#[^a-zA-Z0-9]#Su', static function ($matches) {
                     $char = $matches[0];
 
-                    return sprintf('\\%X ', 1 === \strlen($char) ? \ord($char) : mb_ord($char, 'UTF-8'));
+                    return \sprintf('\\%X ', 1 === \strlen($char) ? \ord($char) : mb_ord($char, 'UTF-8'));
                 }, $string);
 
                 if ('UTF-8' !== $charset) {
@@ -239,6 +256,7 @@ final class EscaperRuntime implements RuntimeExtensionInterface
                 return $string;
 
             case 'html_attr':
+            case 'html_attr_relaxed':
                 if ('UTF-8' !== $charset) {
                     $string = $this->convertEncoding($string, 'UTF-8', $charset);
                 }
@@ -247,7 +265,12 @@ final class EscaperRuntime implements RuntimeExtensionInterface
                     throw new RuntimeError('The string to escape is not a valid UTF-8 string.');
                 }
 
-                $string = preg_replace_callback('#[^a-zA-Z0-9,\.\-_]#Su', function ($matches) {
+                $regex = match ($strategy) {
+                    'html_attr' => '#[^a-zA-Z0-9,\.\-_]#Su',
+                    'html_attr_relaxed' => '#[^a-zA-Z0-9,\.\-_:@\[\]]#Su',
+                };
+
+                $string = preg_replace_callback($regex, static function ($matches) {
                     /**
                      * This function is adapted from code coming from Zend Framework.
                      *
@@ -255,7 +278,7 @@ final class EscaperRuntime implements RuntimeExtensionInterface
                      * @license   https://framework.zend.com/license/new-bsd New BSD License
                      */
                     $chr = $matches[0];
-                    $ord = \ord($chr);
+                    $ord = \ord($chr[0]);
 
                     /*
                     * The following replaces characters undefined in HTML with the
@@ -276,25 +299,20 @@ final class EscaperRuntime implements RuntimeExtensionInterface
                         * entities that XML supports. Using HTML entities would result in this error:
                         *     XML Parsing Error: undefined entity
                         */
-                        static $entityMap = [
+                        return match ($ord) {
                             34 => '&quot;', /* quotation mark */
                             38 => '&amp;',  /* ampersand */
                             60 => '&lt;',   /* less-than sign */
                             62 => '&gt;',   /* greater-than sign */
-                        ];
-
-                        if (isset($entityMap[$ord])) {
-                            return $entityMap[$ord];
-                        }
-
-                        return sprintf('&#x%02X;', $ord);
+                            default => \sprintf('&#x%02X;', $ord),
+                        };
                     }
 
                     /*
                     * Per OWASP recommendations, we'll use hex entities for any other
                     * characters where a named entity does not exist.
                     */
-                    return sprintf('&#x%04X;', mb_ord($chr, 'UTF-8'));
+                    return \sprintf('&#x%04X;', mb_ord($chr, 'UTF-8'));
                 }, $string);
 
                 if ('UTF-8' !== $charset) {
@@ -311,9 +329,9 @@ final class EscaperRuntime implements RuntimeExtensionInterface
                     return $this->escapers[$strategy]($string, $charset);
                 }
 
-                $validStrategies = implode('", "', array_merge(['html', 'js', 'url', 'css', 'html_attr'], array_keys($this->escapers)));
+                $validStrategies = implode('", "', array_merge(['html', 'js', 'url', 'css', 'html_attr', 'html_attr_relaxed'], array_keys($this->escapers)));
 
-                throw new RuntimeError(sprintf('Invalid escaping strategy "%s" (valid ones: "%s").', $strategy, $validStrategies));
+                throw new RuntimeError(\sprintf('Invalid escaping strategy "%s" (valid ones: "%s").', $strategy, $validStrategies));
         }
     }
 

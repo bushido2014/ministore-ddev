@@ -38,7 +38,7 @@ class Cron implements CronInterface {
    * Constructs a cron object.
    *
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $moduleHandler
-   *   The module handler
+   *   The module handler.
    * @param \Drupal\Core\Lock\LockBackendInterface $lock
    *   The lock service.
    * @param \Drupal\Core\Queue\QueueFactory $queueFactory
@@ -104,7 +104,10 @@ class Cron implements CronInterface {
       // Release cron lock.
       $this->lock->release('cron');
 
-      // Return TRUE so other functions can check if it did run successfully
+      // Add watchdog message.
+      $this->logger->info('Cron run completed.');
+
+      // Return TRUE so other functions can check if it did run successfully.
       $return = TRUE;
     }
 
@@ -121,7 +124,6 @@ class Cron implements CronInterface {
     // Record cron time.
     $request_time = $this->time->getRequestTime();
     $this->state->set('system.cron_last', $request_time);
-    $this->logger->info('Cron run completed.');
   }
 
   /**

@@ -1,0 +1,16 @@
+global-styling:
+  css:
+    theme:
+      css/base/main.css: {}
+      css/components/button.css: {}
+      css/components/header.css: {}
+      css/components/page.css: {}
+      css/components/paragraph.css: {}
+      css/components/form.css: {}
+
+  js:
+    js/main.js: {}
+    js/home-slide.js: {}
+  dependencies:
+    - core/drupal
+    - core/once

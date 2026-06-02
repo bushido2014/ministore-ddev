@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\user\Kernel;
 
-use Drupal\user\Entity\User;
 use Drupal\KernelTests\KernelTestBase;
+use Drupal\user\Entity\User;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests available user fields in twig.
- *
- * @group user
  */
+#[Group('user')]
+#[RunTestsInSeparateProcesses]
 class UserFieldsTest extends KernelTestBase {
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['user', 'system'];
 

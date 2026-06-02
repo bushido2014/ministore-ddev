@@ -4,17 +4,18 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\user\Functional\Views;
 
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+
 /**
  * Checks changing entity and field access.
- *
- * @group user
  */
+#[Group('user')]
+#[RunTestsInSeparateProcesses]
 class UserFieldsAccessChangeTest extends UserTestBase {
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['user_access_test'];
 
@@ -65,11 +66,6 @@ class UserFieldsAccessChangeTest extends UserTestBase {
   public function testUserNameLink(): void {
     $test_user = $this->drupalCreateUser();
     $xpath = "//td/a[.='" . $test_user->getAccountName() . "']/@href[.='" . $test_user->toUrl()->toString() . "']";
-
-    $attributes = [
-      'title' => 'View user profile.',
-    ];
-    $link = $test_user->toLink(NULL, 'canonical', ['attributes' => $attributes])->toString();
 
     // No access, so no link.
     $this->drupalGet('test_user_fields_access');

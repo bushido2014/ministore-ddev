@@ -6,13 +6,16 @@ namespace Drupal\Tests\filter\Kernel;
 
 use Drupal\filter\Entity\FilterFormat;
 use Drupal\KernelTests\Core\Config\ConfigEntityValidationTestBase;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests validation of filter_format entities.
- *
- * @group filter
- * @group #slow
  */
+#[Group('filter')]
+#[Group('config')]
+#[Group('Validation')]
+#[RunTestsInSeparateProcesses]
 class FilterFormatValidationTest extends ConfigEntityValidationTestBase {
 
   /**

@@ -5,7 +5,6 @@ namespace Drupal\views\Plugin\views\display;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\views\Attribute\ViewsDisplay;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * The plugin that handles an EntityReference display.
@@ -62,7 +61,7 @@ class EntityReference extends DisplayPluginBase {
    * @param array $configuration
    *   A configuration array containing information about the plugin instance.
    * @param string $plugin_id
-   *   The plugin_id for the plugin instance.
+   *   The plugin ID for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
    * @param \Drupal\Core\Database\Connection $connection
@@ -71,18 +70,6 @@ class EntityReference extends DisplayPluginBase {
   public function __construct(array $configuration, $plugin_id, $plugin_definition, Connection $connection) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->connection = $connection;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
-      $configuration,
-      $plugin_id,
-      $plugin_definition,
-      $container->get('database')
-    );
   }
 
   /**
@@ -221,14 +208,17 @@ class EntityReference extends DisplayPluginBase {
     // Verify that search fields are set up.
     $style = $this->getOption('style');
     if (!isset($style['options']['search_fields'])) {
-      $errors[] = $this->t('Display "@display" needs a selected search fields to work properly. See the settings for the Entity Reference list format.', ['@display' => $this->display['display_title']]);
+      $errors[] = $this->t('Display "@display" needs a selected "Search fields" value to work properly. See the settings for the "Entity Reference list" format.', ['@display' => $this->display['display_title']]);
     }
     else {
       // Verify that the search fields used actually exist.
       $fields = array_keys($this->handlers['field']);
       foreach ($style['options']['search_fields'] as $field_alias => $enabled) {
         if ($enabled && !in_array($field_alias, $fields)) {
-          $errors[] = $this->t('Display "@display" uses field %field as search field, but the field is no longer present. See the settings for the Entity Reference list format.', ['@display' => $this->display['display_title'], '%field' => $field_alias]);
+          $errors[] = $this->t('Display "@display" uses field %field as search field, but the field is no longer present. See the settings for the Entity Reference list format.', [
+            '@display' => $this->display['display_title'],
+            '%field' => $field_alias,
+          ]);
         }
       }
     }

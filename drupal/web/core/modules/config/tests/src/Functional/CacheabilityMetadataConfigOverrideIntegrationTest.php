@@ -6,12 +6,14 @@ namespace Drupal\Tests\config\Functional;
 
 use Drupal\Tests\BrowserTestBase;
 use Drupal\Tests\system\Functional\Cache\AssertPageCacheContextsAndTagsTrait;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests if configuration overrides correctly affect cacheability metadata.
- *
- * @group config
  */
+#[Group('config')]
+#[RunTestsInSeparateProcesses]
 class CacheabilityMetadataConfigOverrideIntegrationTest extends BrowserTestBase {
 
   use AssertPageCacheContextsAndTagsTrait;
@@ -38,7 +40,7 @@ class CacheabilityMetadataConfigOverrideIntegrationTest extends BrowserTestBase 
     // @todo If our block does not contain any content then the cache context
     //   is not bubbling up and the test fails. Remove this line once the cache
     //   contexts are properly set. See https://www.drupal.org/node/2529980.
-    \Drupal::state()->set('block_test.content', 'Needs to have some content');
+    \Drupal::keyValue('block_test')->set('content', 'Needs to have some content');
 
     $this->drupalLogin($this->drupalCreateUser());
   }

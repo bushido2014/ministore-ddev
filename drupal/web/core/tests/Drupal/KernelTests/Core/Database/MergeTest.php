@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace Drupal\KernelTests\Core\Database;
 
-use Drupal\Core\Database\Query\Merge;
 use Drupal\Core\Database\Query\InvalidMergeQueryException;
+use Drupal\Core\Database\Query\Merge;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests the MERGE query builder.
- *
- * @group Database
  */
+#[Group('Database')]
+#[RunTestsInSeparateProcesses]
 class MergeTest extends DatabaseTestBase {
 
   /**
@@ -222,6 +224,17 @@ class MergeTest extends DatabaseTestBase {
     $person = $this->connection->query('SELECT * FROM {select} WHERE [id] = :id', [':id' => 2])->fetch();
     $this->assertEquals('', $person->update);
     $this->assertEquals('2', $person->id);
+  }
+
+  /**
+   * Tests merge to string.
+   *
+   * @legacy-covers \Drupal\Core\Database\Query\Merge::__toString
+   */
+  public function testMergeToString(): void {
+    $this->expectException(\BadMethodCallException::class);
+    $this->expectExceptionMessage('The merge query can not be converted to a string');
+    (string) $this->connection->merge('test_people');
   }
 
 }

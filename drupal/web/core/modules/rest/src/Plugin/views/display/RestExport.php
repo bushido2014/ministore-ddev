@@ -108,7 +108,7 @@ class RestExport extends PathPluginBase implements ResponseDisplayPluginInterfac
    * @param array $configuration
    *   A configuration array containing information about the plugin instance.
    * @param string $plugin_id
-   *   The plugin_id for the plugin instance.
+   *   The plugin ID for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
    * @param \Drupal\Core\Routing\RouteProviderInterface $route_provider
@@ -264,7 +264,8 @@ class RestExport extends PathPluginBase implements ResponseDisplayPluginInterfac
     $options['defaults']['default']['style'] = FALSE;
     $options['defaults']['default']['row'] = FALSE;
 
-    // Remove css/exposed form settings, as they are not used for the data display.
+    // Remove css/exposed form settings, as they are not used for the data
+    // display.
     unset($options['exposed_form']);
     unset($options['exposed_block']);
     unset($options['css_class']);

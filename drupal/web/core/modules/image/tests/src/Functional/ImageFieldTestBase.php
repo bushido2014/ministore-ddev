@@ -18,7 +18,6 @@ use Drupal\Tests\BrowserTestBase;
  * - image.module:
  *   image_style_options()
  *   \Drupal\image\ImageStyleInterface::flush()
- *   image_filter_keyword()
  */
 
 /**
@@ -29,9 +28,7 @@ abstract class ImageFieldTestBase extends BrowserTestBase {
   use ImageFieldCreationTrait;
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = [
     'node',
@@ -97,13 +94,13 @@ abstract class ImageFieldTestBase extends BrowserTestBase {
   /**
    * Upload an image to a node.
    *
-   * @param $image
+   * @param \stdClass $image
    *   A file object representing the image to upload.
-   * @param $field_name
+   * @param string $field_name
    *   Name of the image field the image should be attached to.
-   * @param $type
+   * @param string $type
    *   The type of node to create.
-   * @param $alt
+   * @param string $alt
    *   The alt text for the image. Use if the field settings require alt text.
    */
   public function uploadNodeImage($image, $field_name, $type, $alt = '') {

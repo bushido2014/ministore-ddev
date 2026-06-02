@@ -1,0 +1,22 @@
+uuid: b2178f71-2b8d-457c-9610-788648e4ecef
+langcode: en
+status: true
+dependencies:
+  theme:
+    - ministore
+_core:
+  default_config_hash: nGE3EoPQQaQCuqTUtZgw0-KIzmrqdKDzdNQf2JyPUt4
+id: ministore_primary_local_tasks
+theme: ministore
+region: header_left
+weight: -4
+provider: null
+plugin: local_tasks_block
+settings:
+  id: local_tasks_block
+  label: 'Primary tabs'
+  label_display: '0'
+  provider: core
+  primary: true
+  secondary: false
+visibility: {  }

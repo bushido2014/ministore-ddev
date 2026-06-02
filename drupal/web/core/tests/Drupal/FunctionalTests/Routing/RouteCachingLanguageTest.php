@@ -8,22 +8,24 @@ use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\language\Entity\ConfigurableLanguage;
 use Drupal\link\LinkItemInterface;
+use Drupal\link\LinkTitleVisibility;
 use Drupal\Tests\BrowserTestBase;
 use Drupal\Tests\content_translation\Traits\ContentTranslationTestTrait;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests that route lookup is cached by the current language.
- *
- * @group routing
  */
+#[Group('routing')]
+#[RunTestsInSeparateProcesses]
 class RouteCachingLanguageTest extends BrowserTestBase {
 
   use ContentTranslationTestTrait;
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = [
     'path',
@@ -89,7 +91,7 @@ class RouteCachingLanguageTest extends BrowserTestBase {
       'field_storage' => $field_storage,
       'bundle' => 'page',
       'settings' => [
-        'title' => DRUPAL_OPTIONAL,
+        'title' => LinkTitleVisibility::Optional->value,
         'link_type' => LinkItemInterface::LINK_GENERIC,
       ],
     ]);
@@ -108,12 +110,12 @@ class RouteCachingLanguageTest extends BrowserTestBase {
 
     // Enable URL language detection and selection and set a prefix for both
     // languages.
-    $edit = ['language_interface[enabled][language-url]' => 1];
-    $this->drupalGet('admin/config/regional/language/detection');
-    $this->submitForm($edit, 'Save settings');
-    $edit = ['prefix[en]' => 'en'];
-    $this->drupalGet('admin/config/regional/language/detection/url');
-    $this->submitForm($edit, 'Save configuration');
+    \Drupal::configFactory()->getEditable('language.types')
+      ->set('negotiation.language_interface.enabled.language_url', 1)
+      ->save();
+    \Drupal::configFactory()->getEditable('language.negotiation')
+      ->set('url.prefixes.en', 'en')
+      ->save();
 
     // Reset the cache after changing the negotiation settings as that changes
     // how links are built.
@@ -126,9 +128,8 @@ class RouteCachingLanguageTest extends BrowserTestBase {
 
   /**
    * Creates content with a link field pointing to an alias of another language.
-   *
-   * @dataProvider providerLanguage
    */
+  #[DataProvider('providerLanguage')]
   public function testLinkTranslationWithAlias($source_langcode): void {
     $source_url_options = [
       'language' => ConfigurableLanguage::load($source_langcode),
@@ -192,7 +193,7 @@ class RouteCachingLanguageTest extends BrowserTestBase {
   /**
    * Data provider for testFromUri().
    */
-  public static function providerLanguage() {
+  public static function providerLanguage(): array {
     return [
       ['en'],
       ['fr'],

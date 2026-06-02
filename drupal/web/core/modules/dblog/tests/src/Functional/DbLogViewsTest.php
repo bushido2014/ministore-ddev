@@ -5,21 +5,20 @@ declare(strict_types=1);
 namespace Drupal\Tests\dblog\Functional;
 
 use Drupal\views\Views;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Verifies user access to log reports based on permissions.
  *
  * @see Drupal\dblog\Tests\DbLogTest
- *
- * @group dblog
- * @group #slow
  */
+#[Group('dblog')]
+#[RunTestsInSeparateProcesses]
 class DbLogViewsTest extends DbLogTest {
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = [
     'dblog',
@@ -44,7 +43,7 @@ class DbLogViewsTest extends DbLogTest {
   /**
    * {@inheritdoc}
    */
-  protected function filterLogsEntries($type = NULL, $severity = NULL) {
+  protected function filterLogsEntries($type = NULL, $severity = NULL): void {
     $query = [];
     if (isset($type)) {
       $query['type[]'] = $type;

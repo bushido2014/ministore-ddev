@@ -6,23 +6,28 @@ namespace Drupal\Tests\jsonapi\Kernel\ResourceType;
 
 use Drupal\Core\Cache\Cache;
 use Drupal\jsonapi\ResourceType\ResourceType;
+use Drupal\jsonapi\ResourceType\ResourceTypeRepository;
 use Drupal\node\Entity\NodeType;
 use Drupal\Tests\jsonapi\Kernel\JsonapiKernelTestBase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
- * @coversDefaultClass \Drupal\jsonapi\ResourceType\ResourceTypeRepository
- * @group jsonapi
- * @group #slow
+ * Tests Drupal\jsonapi\ResourceType\ResourceTypeRepository.
  *
  * @internal
  */
+#[CoversClass(ResourceTypeRepository::class)]
+#[Group('jsonapi')]
+#[RunTestsInSeparateProcesses]
 class ResourceTypeRepositoryTest extends JsonapiKernelTestBase {
 
   /**
    * {@inheritdoc}
    */
   protected static $modules = [
-    'file',
     'field',
     'node',
     'serialization',
@@ -66,7 +71,7 @@ class ResourceTypeRepositoryTest extends JsonapiKernelTestBase {
   }
 
   /**
-   * @covers ::all
+   * Tests all.
    */
   public function testAll(): void {
     // Make sure that there are resources being created.
@@ -80,9 +85,9 @@ class ResourceTypeRepositoryTest extends JsonapiKernelTestBase {
   }
 
   /**
-   * @covers ::get
-   * @dataProvider getProvider
+   * Tests get.
    */
+  #[DataProvider('getProvider')]
   public function testGet($entity_type_id, $bundle, $entity_class): void {
     // Make sure that there are resources being created.
     $resource_type = $this->resourceTypeRepository->get($entity_type_id, $bundle);
@@ -125,9 +130,9 @@ class ResourceTypeRepositoryTest extends JsonapiKernelTestBase {
   /**
    * Ensures that a naming conflict in mapping causes an exception to be thrown.
    *
-   * @covers ::getFields
-   * @dataProvider getFieldsProvider
+   * @legacy-covers ::getFields
    */
+  #[DataProvider('getFieldsProvider')]
   public function testMappingNameConflictCheck($field_name_list): void {
     $entity_type = \Drupal::entityTypeManager()->getDefinition('node');
     $bundle = 'article';
@@ -212,6 +217,40 @@ class ResourceTypeRepositoryTest extends JsonapiKernelTestBase {
     Cache::invalidateTags(['jsonapi_resource_types']);
     $this->assertFalse($this->resourceTypeRepository->getByTypeName('node--article')->isFieldEnabled('uid'));
     $this->assertTrue($this->resourceTypeRepository->getByTypeName('node--page')->isFieldEnabled('uid'));
+  }
+
+  /**
+   * Tests that resource type fields can be re-enabled per resource type.
+   */
+  public function testResourceTypeFieldEnabling(): void {
+    $this->assertTrue($this->resourceTypeRepository->getByTypeName('node--article')->isFieldEnabled('uid'));
+    $this->assertTrue($this->resourceTypeRepository->getByTypeName('node--page')->isFieldEnabled('uid'));
+    $disabled_resource_type_fields = [
+      'node--article' => [
+        'uid' => TRUE,
+      ],
+      'node--page' => [
+        'uid' => TRUE,
+      ],
+    ];
+    \Drupal::state()->set('jsonapi_test_resource_type_builder.disabled_resource_type_fields', $disabled_resource_type_fields);
+    Cache::invalidateTags(['jsonapi_resource_types']);
+    $this->assertFalse($this->resourceTypeRepository->getByTypeName('node--article')->isFieldEnabled('uid'));
+    $this->assertFalse($this->resourceTypeRepository->getByTypeName('node--page')->isFieldEnabled('uid'));
+
+    $enabled_resource_type_fields = [
+      'node--article' => [
+        'uid' => TRUE,
+      ],
+      'node--page' => [
+        'uid' => TRUE,
+      ],
+    ];
+    \Drupal::state()->set('jsonapi_test_resource_type_builder.enabled_resource_type_fields', $enabled_resource_type_fields);
+    Cache::invalidateTags(['jsonapi_resource_types']);
+    $this->assertTrue($this->resourceTypeRepository->getByTypeName('node--article')->isFieldEnabled('uid'));
+    $this->assertTrue($this->resourceTypeRepository->getByTypeName('node--page')->isFieldEnabled('uid'));
+
   }
 
   /**

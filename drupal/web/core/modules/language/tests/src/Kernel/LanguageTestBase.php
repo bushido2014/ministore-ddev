@@ -11,6 +11,9 @@ use Drupal\KernelTests\KernelTestBase;
  */
 abstract class LanguageTestBase extends KernelTestBase {
 
+  /**
+   * {@inheritdoc}
+   */
   protected static $modules = ['system', 'language', 'language_test'];
   /**
    * The language manager.
@@ -32,7 +35,7 @@ abstract class LanguageTestBase extends KernelTestBase {
   protected function setUp(): void {
     parent::setUp();
 
-    $this->installConfig(['language']);
+    $this->installConfig(['system', 'language']);
 
     $this->state = $this->container->get('state');
 

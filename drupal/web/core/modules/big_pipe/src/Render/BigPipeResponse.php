@@ -2,6 +2,7 @@
 
 namespace Drupal\big_pipe\Render;
 
+use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\Core\Render\HtmlResponse;
 use Drupal\Core\Session\ResponseKeepSessionOpenInterface;
 
@@ -21,6 +22,8 @@ use Drupal\Core\Session\ResponseKeepSessionOpenInterface;
  */
 class BigPipeResponse extends HtmlResponse implements ResponseKeepSessionOpenInterface {
 
+  use DependencySerializationTrait;
+
   /**
    * The BigPipe service.
    *
@@ -34,10 +37,10 @@ class BigPipeResponse extends HtmlResponse implements ResponseKeepSessionOpenInt
    * Still contains placeholders. Its cacheability metadata and attachments are
    * for everything except the placeholders (since those are not yet rendered).
    *
+   * @var \Drupal\Core\Render\HtmlResponse
+   *
    * @see \Drupal\Core\Render\StreamedResponseInterface
    * @see ::getStreamedResponse()
-   *
-   * @var \Drupal\Core\Render\HtmlResponse
    */
   protected $originalHtmlResponse;
 
@@ -79,7 +82,7 @@ class BigPipeResponse extends HtmlResponse implements ResponseKeepSessionOpenInt
 
     // A BigPipe response can never be cached, because it is intended for a
     // single user.
-    // @see http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.1
+    // @see https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.9.1
     $this->setPrivate();
 
     // Inform surrogates how they should handle BigPipe responses:
@@ -89,7 +92,7 @@ class BigPipeResponse extends HtmlResponse implements ResponseKeepSessionOpenInt
     //   response before forwarding it. We send, "BigPipe/1.0", which surrogates
     //   should not process at all, and in fact, they should not even buffer it
     //   at all.
-    // @see http://www.w3.org/TR/edge-arch/
+    // @see https://www.w3.org/TR/edge-arch/
     $this->headers->set('Surrogate-Control', 'no-store, content="BigPipe/1.0"');
 
     // Add header to support streaming on NGINX + php-fpm (nginx >= 1.5.6).

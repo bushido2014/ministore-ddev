@@ -6,22 +6,22 @@ namespace Drupal\Tests\toolbar\Functional;
 
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\EventSubscriber\MainContentViewSubscriber;
-use Drupal\Tests\system\Functional\Cache\AssertPageCacheContextsAndTagsTrait;
 use Drupal\Tests\BrowserTestBase;
+use Drupal\Tests\system\Functional\Cache\AssertPageCacheContextsAndTagsTrait;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests the cache contexts for toolbar.
- *
- * @group toolbar
  */
+#[Group('toolbar')]
+#[RunTestsInSeparateProcesses]
 class ToolbarCacheContextsTest extends BrowserTestBase {
 
   use AssertPageCacheContextsAndTagsTrait;
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['toolbar', 'test_page_test'];
 
@@ -86,8 +86,8 @@ class ToolbarCacheContextsTest extends BrowserTestBase {
     // Test with default combination and permission to see toolbar.
     $this->assertToolbarCacheContexts(['user', 'session'], 'Expected cache contexts found for default combination and permission to see toolbar.');
 
-    // Test without user toolbar tab. User module is a required module so we have to
-    // manually remove the user toolbar tab.
+    // Test without user toolbar tab. User module is a required module so we
+    // have to manually remove the user toolbar tab.
     $this->installExtraModules(['toolbar_disable_user_toolbar']);
     $this->assertToolbarCacheContexts(['user.permissions'], 'Expected cache contexts found without user toolbar tab.');
 
@@ -141,7 +141,7 @@ class ToolbarCacheContextsTest extends BrowserTestBase {
    * @param string[] $module_list
    *   An array of module names.
    */
-  protected function installExtraModules(array $module_list) {
+  protected function installExtraModules(array $module_list): void {
     \Drupal::service('module_installer')->install($module_list);
 
     // Installing modules updates the container and needs a router rebuild.

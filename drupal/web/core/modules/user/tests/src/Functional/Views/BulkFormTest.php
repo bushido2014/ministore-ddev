@@ -8,19 +8,20 @@ use Drupal\user\Entity\Role;
 use Drupal\user\Entity\User;
 use Drupal\user\RoleInterface;
 use Drupal\views\Views;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests a user bulk form.
  *
- * @group user
  * @see \Drupal\user\Plugin\views\field\UserBulkForm
  */
+#[Group('user')]
+#[RunTestsInSeparateProcesses]
 class BulkFormTest extends UserTestBase {
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['views_ui'];
 
@@ -71,7 +72,6 @@ class BulkFormTest extends UserTestBase {
     ];
     $this->submitForm($edit, 'Apply to selected items');
     // Re-load the user and check their roles.
-    $user_storage->resetCache([$account->id()]);
     $account = $user_storage->load($account->id());
     $this->assertTrue($account->hasRole($role), 'The user now has the custom role.');
 
@@ -81,7 +81,6 @@ class BulkFormTest extends UserTestBase {
     ];
     $this->submitForm($edit, 'Apply to selected items');
     // Re-load the user and check their roles.
-    $user_storage->resetCache([$account->id()]);
     $account = $user_storage->load($account->id());
     $this->assertFalse($account->hasRole($role), 'The user no longer has the custom role.');
 
@@ -94,7 +93,6 @@ class BulkFormTest extends UserTestBase {
     ];
     $this->submitForm($edit, 'Apply to selected items');
     // Re-load the user and check their status.
-    $user_storage->resetCache([$account->id()]);
     $account = $user_storage->load($account->id());
     $this->assertTrue($account->isBlocked(), 'The user is blocked.');
     $this->assertSession()->pageTextNotContains($account->label());

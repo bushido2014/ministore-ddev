@@ -1,0 +1,17 @@
+name: ministore
+type: theme
+description: "Ministore is a modern and clean Drupal theme designed for recruitment agencies and job portals."
+core_version_requirement: ^11
+base theme: false
+
+regions:
+  header_left: "Header Left"
+  primary_menu: "Primary menu"
+  header_right: "Header Right"
+  content_top: "Content Top"
+  content: "Content"
+  content_bottom: "Content Bottom"
+  footer: "Footer"
+
+libraries:
+  - ministore/global-styling

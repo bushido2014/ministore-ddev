@@ -1,3 +1,7 @@
+parameters:
+  media.resource_fetcher_timeout: 5
+  media.skip_procedural_hook_scan: true
+
 services:
   _defaults:
     autoconfigure: true
@@ -14,7 +18,7 @@ services:
   Drupal\media\OEmbed\ProviderRepositoryInterface: '@media.oembed.provider_repository'
   media.oembed.resource_fetcher:
     class: Drupal\media\OEmbed\ResourceFetcher
-    arguments: ['@http_client', '@media.oembed.provider_repository', '@cache.default']
+    arguments: ['@http_client', '@media.oembed.provider_repository', '@cache.default', '%media.resource_fetcher_timeout%']
   Drupal\media\OEmbed\ResourceFetcherInterface: '@media.oembed.resource_fetcher'
   media.oembed.iframe_url_helper:
     class: Drupal\media\IFrameUrlHelper
@@ -23,3 +27,4 @@ services:
   media.config_subscriber:
     class: Drupal\media\EventSubscriber\MediaConfigSubscriber
     arguments: ['@router.builder', '@cache_tags.invalidator', '@entity_type.manager']
+  Drupal\media\EventSubscriber\DefaultContentSubscriber: ~

@@ -4,22 +4,24 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\datetime\Kernel;
 
-use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FieldItemInterface;
+use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItem;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\entity_test\Entity\EntityTest;
 use Drupal\field\Entity\FieldConfig;
-use Drupal\Tests\field\Kernel\FieldKernelTestBase;
 use Drupal\field\Entity\FieldStorageConfig;
+use Drupal\Tests\field\Kernel\FieldKernelTestBase;
 use PHPUnit\Framework\AssertionFailedError;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests the new entity API for the date field type.
- *
- * @group datetime
- * @group #slow
  */
+#[Group('datetime')]
+#[RunTestsInSeparateProcesses]
 class DateTimeItemTest extends FieldKernelTestBase {
 
   /**
@@ -37,9 +39,7 @@ class DateTimeItemTest extends FieldKernelTestBase {
   protected $field;
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['datetime'];
 
@@ -258,9 +258,8 @@ class DateTimeItemTest extends FieldKernelTestBase {
 
   /**
    * Tests the constraint validations for fields with date and time.
-   *
-   * @dataProvider datetimeValidationProvider
    */
+  #[DataProvider('datetimeValidationProvider')]
   public function testDatetimeValidation($value): void {
     $this->expectException(AssertionFailedError::class);
 
@@ -318,9 +317,8 @@ class DateTimeItemTest extends FieldKernelTestBase {
 
   /**
    * Tests the constraint validations for fields with date only.
-   *
-   * @dataProvider dateOnlyValidationProvider
    */
+  #[DataProvider('dateOnlyValidationProvider')]
   public function testDateOnlyValidation($value): void {
     $this->expectException(AssertionFailedError::class);
 

@@ -16,6 +16,7 @@ use Drupal\Core\Theme\ThemeInitializationInterface;
 use Drupal\Core\Theme\ThemeManagerInterface;
 use Drupal\system\FileDownloadController;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -181,7 +182,6 @@ abstract class AssetControllerBase extends FileDownloadController {
     // Generate a hash based on the asset group, this uses the same method as
     // the collection optimizer does to create the filename, so it should match.
     $generated_hash = $this->generateHash($group);
-    $data = $this->optimizer->optimizeGroup($group);
 
     // However, the hash from the library definitions in code may not match the
     // hash from the URL. This can be for three reasons:
@@ -196,12 +196,22 @@ abstract class AssetControllerBase extends FileDownloadController {
     // from filling the disk, while still serving aggregates that may be
     // referenced in cached HTML.
     if (hash_equals($generated_hash, $received_hash)) {
+      $data = $this->optimizer->optimizeGroup($group);
       $this->dumper->dumpToUri($data, $this->assetType, $uri);
+      $response = new Response($data, 200, [
+        'Cache-control' => static::CACHE_CONTROL,
+        'Content-Type' => $this->contentType,
+      ]);
     }
-    return new Response($data, 200, [
-      'Cache-control' => static::CACHE_CONTROL,
-      'Content-Type' => $this->contentType,
-    ]);
+    else {
+      $expected_filename = $this->fileExtension . '_' . $generated_hash . '.' . $this->fileExtension;
+      $response = new RedirectResponse(
+        str_replace($file_name, $expected_filename, $request->getRequestUri()),
+        301,
+        ['Cache-Control' => 'public, max-age=3600, must-revalidate'],
+      );
+    }
+    return $response;
   }
 
   /**

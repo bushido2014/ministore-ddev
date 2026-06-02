@@ -4,32 +4,31 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\views_ui\Kernel;
 
-use Drupal\Core\Url;
 use Drupal\block\Entity\Block;
+use Drupal\Core\Url;
 use Drupal\Tests\user\Traits\UserCreationTrait;
 use Drupal\Tests\views\Kernel\ViewsKernelTestBase;
 use Drupal\views\Tests\ViewTestData;
+use Drupal\views_ui\Hook\ViewsUiHooks;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests ViewsBlock.
- *
- * @group views_ui
  */
+#[Group('views_ui')]
+#[RunTestsInSeparateProcesses]
 class ViewsBlockTest extends ViewsKernelTestBase {
 
   use UserCreationTrait;
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = [
-    'system',
     'block',
     'block_test_views',
     'views_ui',
-    'user',
   ];
 
   /**
@@ -62,7 +61,8 @@ class ViewsBlockTest extends ViewsKernelTestBase {
     ]);
 
     // The anonymous user doesn't have the "administer block" permission.
-    $this->assertEmpty(views_ui_entity_operation($block));
+    $viewsUiEntityOperation = new ViewsUiHooks();
+    $this->assertEmpty($viewsUiEntityOperation->entityOperation($block));
 
     $this->setUpCurrentUser(['uid' => 1], ['administer views']);
 
@@ -76,7 +76,7 @@ class ViewsBlockTest extends ViewsKernelTestBase {
         ]),
         'weight' => 50,
       ],
-    ], views_ui_entity_operation($block));
+    ], $viewsUiEntityOperation->entityOperation($block));
   }
 
 }

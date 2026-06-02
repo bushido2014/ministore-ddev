@@ -176,7 +176,7 @@ class FileUploadResource extends ResourceBase {
     catch (FileExistsException $e) {
       throw new HttpException(statusCode: 500, message: $e->getMessage(), previous: $e);
     }
-    catch (FileException $e) {
+    catch (FileException) {
       throw new HttpException(500, 'Temporary file could not be moved to file location');
     }
 
@@ -271,7 +271,7 @@ class FileUploadResource extends ResourceBase {
   /**
    * Generates a lock ID based on the file URI.
    *
-   * @param $file_uri
+   * @param string $file_uri
    *   The file URI.
    *
    * @return string

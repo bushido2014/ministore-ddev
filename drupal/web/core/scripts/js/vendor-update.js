@@ -7,8 +7,8 @@
  * build step.
  */
 
-const path = require('path');
-const { copyFile, writeFile, readFile, chmod, mkdir } = require('fs').promises;
+const path = require('node:path');
+const { copyFile, writeFile, readFile, chmod, mkdir } = require('node:fs').promises;
 const ckeditor5Files = require('./assets/ckeditor5Files');
 const jQueryUIProcess = require('./assets/process/jqueryui');
 const mapProcess = require('./assets/process/map');
@@ -78,6 +78,15 @@ const assetsFolder = `${coreFolder}/assets/vendor`;
       pack: 'backbone',
       library: 'internal.backbone',
       files: ['backbone.js', 'backbone-min.js', 'backbone-min.js.map'],
+    },
+    {
+      pack: 'htmx.org',
+      folder: 'htmx',
+      library: 'htmx',
+      files: [
+        { from: 'dist/htmx.min.js', to: 'htmx.min.js' },
+        { from: 'dist/htmx.js', to: 'htmx.js' },
+      ],
     },
     {
       pack: 'jquery',

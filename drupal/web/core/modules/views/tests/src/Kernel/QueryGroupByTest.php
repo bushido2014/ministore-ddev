@@ -9,13 +9,14 @@ use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\language\Entity\ConfigurableLanguage;
 use Drupal\views\Views;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests aggregate functionality of views, for example count.
- *
- * @group views
- * @group #slow
  */
+#[Group('views')]
+#[RunTestsInSeparateProcesses]
 class QueryGroupByTest extends ViewsKernelTestBase {
 
   /**
@@ -33,15 +34,11 @@ class QueryGroupByTest extends ViewsKernelTestBase {
   ];
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = [
     'entity_test',
-    'system',
     'field',
-    'user',
     'language',
   ];
 
@@ -110,7 +107,7 @@ class QueryGroupByTest extends ViewsKernelTestBase {
    * @param array $values
    *   The expected views result.
    */
-  public function groupByTestHelper($aggregation_function, $values) {
+  public function groupByTestHelper($aggregation_function, $values): void {
     $this->setupTestEntities();
 
     $view = Views::getView('test_group_by_count');
@@ -134,14 +131,14 @@ class QueryGroupByTest extends ViewsKernelTestBase {
       $results[$item->entity_test_name] = $item->id;
     }
     $aggregation_function ??= 'NULL';
-    $this->assertEquals($values[0], $results['name1'], "Aggregation with $aggregation_function and groupby name: name1 returned the expected amount of results");
-    $this->assertEquals($values[1], $results['name2'], "Aggregation with $aggregation_function and groupby name: name2 returned the expected amount of results");
+    $this->assertEquals($values[0], $results['name1'], "Aggregation with $aggregation_function and group by name: name1 returned the expected amount of results");
+    $this->assertEquals($values[1], $results['name2'], "Aggregation with $aggregation_function and group by name: name2 returned the expected amount of results");
   }
 
   /**
    * Helper method that creates some test entities.
    */
-  protected function setupTestEntities() {
+  protected function setupTestEntities(): void {
     // Create 4 entities with name1 and 3 entities with name2.
     $entity_1 = [
       'name' => 'name1',
@@ -203,7 +200,7 @@ class QueryGroupByTest extends ViewsKernelTestBase {
   }
 
   /**
-   * Tests groupby with filters.
+   * Tests group by with filters.
    */
   public function testGroupByCountOnlyFilters(): void {
     // Check if GROUP BY and HAVING are included when a view
@@ -317,7 +314,7 @@ class QueryGroupByTest extends ViewsKernelTestBase {
   }
 
   /**
-   * Tests groupby with a non-existent field on some bundle.
+   * Tests group by with a non-existent field on some bundle.
    */
   public function testGroupByWithFieldsNotExistingOnBundle(): void {
     $field_storage = FieldStorageConfig::create([

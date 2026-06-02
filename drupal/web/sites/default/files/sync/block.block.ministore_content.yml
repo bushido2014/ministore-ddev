@@ -1,0 +1,22 @@
+uuid: 9a62c71b-36d1-4e13-887c-1d97db574404
+langcode: en
+status: true
+dependencies:
+  module:
+    - system
+  theme:
+    - ministore
+_core:
+  default_config_hash: erQSEZF2XUjNmgTl0uNRBzmg18ZGXwUcw2FhApoeuHk
+id: ministore_content
+theme: ministore
+region: content
+weight: 0
+provider: null
+plugin: system_main_block
+settings:
+  id: system_main_block
+  label: 'Main page content'
+  label_display: '0'
+  provider: system
+visibility: {  }

@@ -6,18 +6,18 @@ namespace Drupal\Tests\config\Functional;
 
 use Drupal\Core\Serialization\Yaml;
 use Drupal\Tests\BrowserTestBase;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests the user interface for importing/exporting a single configuration.
- *
- * @group config
  */
+#[Group('config')]
+#[RunTestsInSeparateProcesses]
 class ConfigSingleImportExportTest extends BrowserTestBase {
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = [
     'block',
@@ -59,7 +59,8 @@ class ConfigSingleImportExportTest extends BrowserTestBase {
 
     $this->drupalGet('admin/config/development/configuration/single/import');
     $this->submitForm($edit, 'Import');
-    // Assert the static portion of the error since different parsers could give different text in their error.
+    // Assert the static portion of the error since different parsers could give
+    // different text in their error.
     $this->assertSession()->pageTextContains('The import failed with the following message: ');
 
     $import = <<<EOD

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\sdc_other_node_visitor\Twig\NodeVisitor;
 
 use Drupal\sdc_other_node_visitor\Twig\Profiler\EnterProfileNode;
@@ -7,6 +9,7 @@ use Drupal\sdc_other_node_visitor\Twig\Profiler\LeaveProfileNode;
 use Twig\Environment;
 use Twig\Node\ModuleNode;
 use Twig\Node\Node;
+use Twig\Node\Nodes;
 use Twig\NodeVisitor\NodeVisitorInterface;
 
 /**
@@ -17,8 +20,14 @@ use Twig\NodeVisitor\NodeVisitorInterface;
  */
 final class TestNodeVisitor implements NodeVisitorInterface {
 
+  /**
+   * The name of the extension.
+   */
   private string $extensionName;
 
+  /**
+   * The variable name.
+   */
   private string $varName;
 
   /**
@@ -44,11 +53,11 @@ final class TestNodeVisitor implements NodeVisitorInterface {
    */
   public function leaveNode(Node $node, Environment $env): ?Node {
     if ($node instanceof ModuleNode) {
-      $node->setNode('display_start', new Node([
+      $node->setNode('display_start', new Nodes([
         new EnterProfileNode($this->extensionName, $this->varName),
         $node->getNode('display_start'),
       ]));
-      $node->setNode('display_end', new Node([
+      $node->setNode('display_end', new Nodes([
         new LeaveProfileNode($this->varName),
         $node->getNode('display_end'),
       ]));

@@ -19,7 +19,6 @@ html {
 
 body {
   word-wrap: break-word;
-  -webkit-hyphens: auto;
   hyphens: auto;
   color: var(--color-fg);
   background: var(--color-bg);
@@ -195,7 +194,6 @@ ul {
   margin-block: 0.25em;
   margin-inline: 1.5em 0;
   padding-inline-start: 0;
-  list-style-type: disc;
   list-style-image: none;
 }
 
@@ -203,16 +201,6 @@ ol {
   margin-block: 0.25em;
   margin-inline: 2em 0;
   padding: 0;
-}
-
-/**
- * Fix duplicate border caused by normalize.css adding border-bottom without
- * removing the text-decoration.
- */
-
-abbr[title] {
-  -webkit-text-decoration: none;
-  text-decoration: none;
 }
 
 code {
@@ -226,14 +214,14 @@ pre {
 
 details {
   line-height: var(--details-line-height);
-}
 
-details summary {
-  padding: 0.95em 1.45em;
-}
+  & summary {
+    padding: 0.95em 1.45em;
 
-details summary:focus {
-  outline: none;
+    &:focus {
+      outline: none;
+    }
+  }
 }
 
 img {
@@ -252,4 +240,15 @@ img {
 .ui-dialog *:focus {
   outline: var(--focus-outline);
   box-shadow: var(--focus-box-shadow);
+}
+
+/**
+ * These elements should not be displayed until they are processed
+ * by JavaScript, and views-ui-noscript.css exists so browsers
+ * without JavaScript will still display them
+ */
+
+.views-tabs,
+.views-display-top > input.button {
+  display: none;
 }

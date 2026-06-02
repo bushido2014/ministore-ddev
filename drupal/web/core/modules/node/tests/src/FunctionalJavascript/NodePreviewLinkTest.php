@@ -6,12 +6,14 @@ namespace Drupal\Tests\node\FunctionalJavascript;
 
 use Drupal\filter\Entity\FilterFormat;
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests the JavaScript prevention of navigation away from node previews.
- *
- * @group node
  */
+#[Group('node')]
+#[RunTestsInSeparateProcesses]
 class NodePreviewLinkTest extends WebDriverTestBase {
 
   /**
@@ -54,12 +56,26 @@ class NodePreviewLinkTest extends WebDriverTestBase {
     $assertSession = $this->assertSession();
     $this->drupalGet('node/add/test');
     $this->submitForm([
-      'title[0][value]' => 'Test node',
-      'body[0][value]' => '<a href="#foo">Anchor link</a><a href="/foo">Normal link</a>',
+      'title[0][value]' => 'Test anchor link',
+      'body[0][value]' => '<a href="#foo">Anchor link</a>',
     ], 'Preview');
     $this->clickLink('Anchor link');
     $assertSession->pageTextNotContains('Leave preview?');
+    $this->drupalGet('node/add/test');
+    $this->submitForm([
+      'title[0][value]' => 'Test normal link',
+      'body[0][value]' => '<a href="/foo">Normal link</a>',
+    ], 'Preview');
     $this->clickLink('Normal link');
+    $assertSession->pageTextContains('Leave preview?');
+    $this->click('button:contains("Leave preview")');
+    $this->assertStringEndsWith('/foo', $this->getUrl());
+    $this->drupalGet('node/add/test');
+    $this->submitForm([
+      'title[0][value]' => 'Test child element link',
+      'body[0][value]' => '<a href="/foo" class="preview-child-element"><span>Child element link</span></a>',
+    ], 'Preview');
+    $this->getSession()->getPage()->find('css', '.preview-child-element span')->click();
     $assertSession->pageTextContains('Leave preview?');
     $this->click('button:contains("Leave preview")');
     $this->assertStringEndsWith('/foo', $this->getUrl());

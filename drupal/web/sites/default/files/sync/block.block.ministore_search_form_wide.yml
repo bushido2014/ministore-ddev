@@ -1,0 +1,23 @@
+uuid: 34f665d5-1c33-43a2-9f74-b2146ad7e1e8
+langcode: en
+status: false
+dependencies:
+  module:
+    - search
+  theme:
+    - ministore
+_core:
+  default_config_hash: imMyHD6LYci0gtXq56qr9ZKGHzbEG9uFydrN5EhKtSU
+id: ministore_search_form_wide
+theme: ministore
+region: header_left
+weight: -5
+provider: null
+plugin: search_form_block
+settings:
+  id: search_form_block
+  label: 'Search form (wide)'
+  label_display: '0'
+  provider: search
+  page_id: null
+visibility: {  }

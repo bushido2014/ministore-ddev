@@ -8,17 +8,17 @@ use Drupal\Component\Utility\Html;
 use Drupal\Core\Url;
 use Drupal\filter\Entity\FilterFormat;
 use Drupal\node\Entity\Node;
-use Drupal\node\Entity\NodeType;
 use Drupal\Tests\BrowserTestBase;
 use Drupal\user\Entity\Role;
 use Drupal\user\RoleInterface;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Thoroughly test the administrative interface of the filter module.
- *
- * @group filter
- * @group #slow
  */
+#[Group('filter')]
+#[RunTestsInSeparateProcesses]
 class FilterAdminTest extends BrowserTestBase {
 
   /**
@@ -269,7 +269,6 @@ class FilterAdminTest extends BrowserTestBase {
     $this->assertSession()->checkboxChecked('filters[' . $second_filter . '][status]');
     $this->assertSession()->checkboxChecked('filters[' . $first_filter . '][status]');
     /** @var \Drupal\user\Entity\Role $role */
-    \Drupal::entityTypeManager()->getStorage('user_role')->resetCache([RoleInterface::AUTHENTICATED_ID]);
     $role = Role::load(RoleInterface::AUTHENTICATED_ID);
     $this->assertTrue($role->hasPermission($format->getPermissionName()), 'The authenticated role has permission to use the filter.');
 
@@ -278,7 +277,6 @@ class FilterAdminTest extends BrowserTestBase {
     $this->submitForm([], 'Disable');
     $this->assertSession()->addressEquals('admin/config/content/formats');
     $this->assertSession()->statusMessageContains("Disabled text format {$edit['name']}.", 'status');
-    \Drupal::entityTypeManager()->getStorage('user_role')->resetCache([RoleInterface::AUTHENTICATED_ID]);
     $role = Role::load(RoleInterface::AUTHENTICATED_ID);
     $this->assertFalse($role->hasPermission($format->getPermissionName()), 'The filter permission has been removed from the authenticated role');
 
@@ -415,12 +413,10 @@ class FilterAdminTest extends BrowserTestBase {
    */
   public function testDisabledFormat(): void {
     // Create a node type and add a standard body field.
-    $node_type = NodeType::create([
+    $node_type = $this->drupalCreateContentType([
       'type' => $this->randomMachineName(),
       'name' => $this->randomString(),
     ]);
-    $node_type->save();
-    node_add_body_field($node_type, $this->randomString());
 
     // Create a text format with a filter that returns a static string.
     $format = FilterFormat::create([
@@ -476,6 +472,88 @@ class FilterAdminTest extends BrowserTestBase {
     $this->drupalGet('admin/reports/dblog');
     // The missing text format message has been logged.
     $this->assertSession()->pageTextContains(sprintf('Missing text format: %s.', $format_id));
+  }
+
+  /**
+   * Tests enabling and disabling of filters.
+   */
+  public function testFilterEnableAndDisable(): void {
+    $filter_test = FilterFormat::create([
+      'format' => 'filter_test',
+      'name' => 'Filter test',
+      'filters' => [
+        'filter_html' => [
+          'status' => TRUE,
+          'weight' => -10,
+          'settings' => [
+            'allowed_html' => '<p> <br> <strong> <a> <em> <h4>',
+          ],
+        ],
+      ],
+    ]);
+    $filter_test->save();
+
+    // Create a node type and add a standard body field.
+    $node_type = $this->drupalCreateContentType([
+      'type' => $this->randomMachineName(),
+      'name' => $this->randomString(),
+    ]);
+
+    // Create a new node of the new node type.
+    $title = $this->randomString();
+    $node = Node::create([
+      'type' => $node_type->id(),
+      'title' => $title,
+    ]);
+    $body_value = 'I belong to a filter that might be shut off!';
+    $node->body->value = $body_value;
+    $node->body->format = 'filter_test';
+    $node->save();
+
+    // Confirm the body field using the filter test is visible.
+    $this->drupalGet($node->toUrl());
+    $this->assertSession()->pageTextContains($title);
+    $this->assertSession()->pageTextContains($body_value);
+
+    $this->drupalGet('admin/config/content/formats');
+
+    // Verify filter_test links.
+    $this->assertSession()->linkByHrefExists('/admin/config/content/formats/manage/filter_test/disable');
+    $this->assertSession()->linkByHrefNotExists('/admin/config/content/formats/manage/filter_test/enable');
+
+    // Test the configure link appears for Filter test.
+    $this->assertSession()->elementExists('xpath', '//a[contains(@href, "/admin/config/content/formats/manage/filter_test") and text()="Configure"]');
+
+    // Disable 'Filter test'.
+    $this->getSession()->getPage()->find('css', '[href*="/admin/config/content/formats/manage/filter_test/disable"]')->click();
+    $this->assertSession()->pageTextContains('Are you sure you want to disable the text format Filter test?');
+    $this->getSession()->getPage()->find('css', '#edit-submit')->click();
+
+    // Verify filter_test links after filter_test is disabled.
+    $this->assertSession()->linkByHrefExists('/admin/config/content/formats/manage/filter_test/enable');
+    $this->assertSession()->linkByHrefNotExists('/admin/config/content/formats/manage/filter_test/disable');
+
+    // Test the configure link doesn't appear for Filter test.
+    $this->assertSession()->elementNotExists('xpath', '//a[contains(@href, "/admin/config/content/formats/manage/filter_test") and text()="Configure"]');
+
+    // Confirm the field using the now-disabled filter is not visible.
+    $this->drupalGet($node->toUrl());
+    $this->assertSession()->statusCodeEquals(200);
+    $this->assertSession()->pageTextContains($title);
+    $this->assertSession()->pageTextNotContains($body_value);
+
+    // Re-enable the filter that we disabled.
+    $this->drupalGet('admin/config/content/formats');
+    $this->getSession()->getPage()->find('css', '[href*="/admin/config/content/formats/manage/filter_test/enable"]')->click();
+    $this->assertSession()->pageTextContains('Are you sure you want to enable the text format Filter test?');
+    $this->getSession()->getPage()->find('css', '#edit-submit')->click();
+
+    // Confirm the presence of enable/disable operations has updated properly.
+    $this->assertSession()->linkByHrefExists('/admin/config/content/formats/manage/filter_test/disable');
+    $this->assertSession()->linkByHrefNotExists('/admin/config/content/formats/manage/filter_test/enable');
+
+    $this->drupalGet($node->toUrl());
+    $this->assertSession()->pageTextContains($body_value);
   }
 
 }

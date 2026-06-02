@@ -23,7 +23,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * Available configuration keys:
  * - default_bundle: (optional) The bundle to use for this row if 'bundle' is
- *   not defined on the row.
+ *   not defined on the row. Setting this also allows the fields() method to
+ *   return bundle fields as well as base fields.
  *
  * Examples:
  *
@@ -94,7 +95,7 @@ abstract class Entity extends DestinationBase implements ContainerFactoryPluginI
    * @param array $configuration
    *   A configuration array containing information about the plugin instance.
    * @param string $plugin_id
-   *   The plugin_id for the plugin instance.
+   *   The plugin ID for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
    * @param \Drupal\migrate\Plugin\MigrationInterface $migration
@@ -149,7 +150,7 @@ abstract class Entity extends DestinationBase implements ContainerFactoryPluginI
    * {@inheritdoc}
    */
   public function fields() {
-    // @todo Implement fields() method.
+    return [];
   }
 
   /**
@@ -233,7 +234,7 @@ abstract class Entity extends DestinationBase implements ContainerFactoryPluginI
    * @param string $key
    *   The name of the entity key to return.
    *
-   * @return string|bool
+   * @return string|false
    *   The entity key, or FALSE if it does not exist.
    *
    * @see \Drupal\Core\Entity\EntityTypeInterface::getKeys()

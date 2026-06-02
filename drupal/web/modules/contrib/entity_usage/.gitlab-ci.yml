@@ -1,0 +1,40 @@
+include:
+  - project: $_GITLAB_TEMPLATES_REPO
+    ref: $_GITLAB_TEMPLATES_REF
+    file:
+      - '/includes/include.drupalci.main.yml'
+      - '/includes/include.drupalci.variables.yml'
+      - '/includes/include.drupalci.workflows.yml'
+
+variables:
+  _PHPUNIT_CONCURRENT: '1'
+  OPT_IN_TEST_PREVIOUS_MAJOR: 1
+  RUN_JOB_UPGRADE_STATUS: '1'
+
+phpunit:
+  variables:
+    SYMFONY_DEPRECATIONS_HELPER: "disabled"
+  parallel:
+    matrix:
+      - _TARGET_DB_TYPE: 'mysql'
+        _TARGET_DB_VERSION: $CORE_MYSQL_TEST_DEFAULT
+      - _TARGET_DB_TYPE: 'pgsql'
+        _TARGET_DB_VERSION: $CORE_PGSQL_MIN
+      - _TARGET_DB_TYPE: 'sqlite'
+        _TARGET_DB_VERSION: $CORE_SQLITE_MIN
+
+#
+# Linting jobs are passing so any issue that breaks them should fix them.
+#
+phpcs:
+  allow_failure: false
+phpstan:
+  allow_failure: false
+phpstan (previous major):
+  rules:
+    # We are only interested in PHPStan on the current version.
+    - when: never
+cspell:
+  allow_failure: false
+eslint:
+  allow_failure: false

@@ -2,11 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Drupal\Tests\Recipe\Core\standard\Functional;
+namespace Drupal\FunctionalTests\Recipe\Core\standard;
 
 use Drupal\Tests\system\Functional\Recipe\GenericRecipeTestBase;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
- * @group core_standard_recipe
+ * Tests Generic.
  */
+#[Group('core_standard_recipe')]
+#[Group('#slow')]
+#[RunTestsInSeparateProcesses]
 class GenericTest extends GenericRecipeTestBase {}

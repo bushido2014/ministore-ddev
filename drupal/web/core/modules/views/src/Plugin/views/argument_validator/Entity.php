@@ -48,7 +48,7 @@ class Entity extends ArgumentValidatorPluginBase {
    * @param array $configuration
    *   A configuration array containing information about the plugin instance.
    * @param string $plugin_id
-   *   The plugin_id for the plugin instance.
+   *   The plugin ID for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
@@ -238,7 +238,7 @@ class Entity extends ArgumentValidatorPluginBase {
 
     // The bundle entity type might not exist. For example, users do not have
     // bundles.
-    if ($this->entityTypeManager->hasHandler($bundle_entity_type, 'storage')) {
+    if ($bundle_entity_type && $this->entityTypeManager->hasHandler($bundle_entity_type, 'storage')) {
       $bundle_entity_storage = $this->entityTypeManager->getStorage($bundle_entity_type);
 
       foreach ($bundle_entity_storage->loadMultiple(array_keys($this->options['bundles'])) as $bundle_entity) {

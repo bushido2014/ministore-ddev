@@ -7,17 +7,21 @@ namespace Drupal\Tests\node\Kernel;
 use Drupal\Core\Database\Database;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\field\Entity\FieldConfig;
+use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\language\Entity\ConfigurableLanguage;
 use Drupal\node\Entity\NodeType;
-use Drupal\user\Entity\User;
-use Drupal\field\Entity\FieldStorageConfig;
+use Drupal\Tests\node\Traits\NodeAccessTrait;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests node access with multiple languages and two node access modules.
- *
- * @group node
  */
+#[Group('node')]
+#[RunTestsInSeparateProcesses]
 class NodeAccessLanguageAwareCombinationTest extends NodeAccessTestBase {
+
+  use NodeAccessTrait;
 
   /**
    * Enable language and two node access modules.
@@ -29,14 +33,6 @@ class NodeAccessLanguageAwareCombinationTest extends NodeAccessTestBase {
     'node_access_test_language',
     'node_access_test',
   ];
-
-  /**
-   * {@inheritdoc}
-   *
-   * @todo Remove and fix test to not rely on super user.
-   * @see https://www.drupal.org/project/drupal/issues/3437620
-   */
-  protected bool $usesSuperUserAccessPolicy = TRUE;
 
   /**
    * A set of nodes to use in testing.
@@ -65,7 +61,7 @@ class NodeAccessLanguageAwareCombinationTest extends NodeAccessTestBase {
   protected function setUp(): void {
     parent::setUp();
 
-    node_access_test_add_field(NodeType::load('page'));
+    $this->addPrivateField(NodeType::load('page'));
 
     // Create the 'private' field, which allows the node to be marked as private
     // (restricted access) in a given translation.
@@ -99,9 +95,11 @@ class NodeAccessLanguageAwareCombinationTest extends NodeAccessTestBase {
     // Create a normal authenticated user.
     $this->webUser = $this->drupalCreateUser(['access content']);
 
-    // Load the user 1 user for later use as an admin user with permission to
-    // see everything.
-    $this->adminUser = User::load(1);
+    // Create a user as an admin user with permission bypass node access
+    // to see everything.
+    $this->adminUser = $this->drupalCreateUser([
+      'bypass node access',
+    ]);
 
     // The node_access_test_language module allows individual translations of a
     // node to be marked private (not viewable by normal users), and the

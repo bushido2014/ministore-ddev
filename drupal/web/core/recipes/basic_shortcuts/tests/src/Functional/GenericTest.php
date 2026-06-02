@@ -2,11 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Drupal\Tests\Recipe\Core\basic_shortcuts\Functional;
+namespace Drupal\FunctionalTests\Recipe\Core\basic_shortcuts;
 
 use Drupal\Tests\system\Functional\Recipe\GenericRecipeTestBase;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
- * @group core_basic_shortcuts_recipe
+ * Tests Generic.
  */
+#[Group('core_basic_shortcuts_recipe')]
+#[RunTestsInSeparateProcesses]
 class GenericTest extends GenericRecipeTestBase {}

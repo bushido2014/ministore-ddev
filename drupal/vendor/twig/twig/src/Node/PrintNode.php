@@ -22,21 +22,28 @@ use Twig\Node\Expression\AbstractExpression;
  * @author Fabien Potencier <fabien@symfony.com>
  */
 #[YieldReady]
-class PrintNode extends Node implements NodeOutputInterface
+class PrintNode extends Node implements NodeOutputInterface, CoercesChildrenToStringInterface
 {
-    public function __construct(AbstractExpression $expr, int $lineno, ?string $tag = null)
+    public function __construct(AbstractExpression $expr, int $lineno)
     {
-        parent::__construct(['expr' => $expr], [], $lineno, $tag);
+        parent::__construct(['expr' => $expr], [], $lineno);
     }
 
     public function compile(Compiler $compiler): void
     {
-        $compiler->addDebugInfo($this);
+        /** @var AbstractExpression */
+        $expr = $this->getNode('expr');
 
         $compiler
-            ->write('yield ')
-            ->subcompile($this->getNode('expr'))
+            ->addDebugInfo($this)
+            ->write($expr->isGenerator() ? 'yield from ' : 'yield ')
+            ->subcompile($expr)
             ->raw(";\n")
         ;
+    }
+
+    public function getStringCoercedChildNames(): array
+    {
+        return ['expr'];
     }
 }

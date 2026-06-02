@@ -14,7 +14,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * state by which should varied (the current URL, language, and so on).
  *
  * Note that this maps exactly to HTTP's Vary header semantics:
- * @link http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.44
+ * @link https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.44
  *
  * @see \Drupal\Core\Cache\Context\CacheContextInterface
  * @see \Drupal\Core\Cache\Context\CalculatedCacheContextInterface
@@ -159,7 +159,7 @@ class CacheContextsManager {
    *   A set of cache context tokens.
    *
    * @return string[]
-   *   A representative subset of the given set of cache context tokens..
+   *   A representative subset of the given set of cache context tokens.
    */
   public function optimizeTokens(array $context_tokens) {
     $optimized_content_tokens = [];
@@ -320,7 +320,7 @@ class CacheContextsManager {
     try {
       $this->validateTokens($context_tokens);
     }
-    catch (\LogicException $e) {
+    catch (\LogicException) {
       return FALSE;
     }
 

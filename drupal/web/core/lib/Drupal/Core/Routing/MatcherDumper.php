@@ -142,6 +142,23 @@ class MatcherDumper implements MatcherDumperInterface {
         $insert->execute();
       }
 
+      // Split the aliases into chunks to avoid big INSERT queries.
+      $alias_chunks = array_chunk($this->routes->getAliases(), 50, TRUE);
+      foreach ($alias_chunks as $aliases) {
+        $insert = $this->connection->insert($this->tableName)->fields([
+          'name',
+          'route',
+          'alias',
+        ]);
+        foreach ($aliases as $name => $alias) {
+          $insert->values([
+            'name' => $name,
+            'route' => serialize($alias),
+            'alias' => $alias->getId(),
+          ]);
+        }
+        $insert->execute();
+      }
     }
     catch (\Exception $e) {
       if (isset($transaction)) {
@@ -181,12 +198,12 @@ class MatcherDumper implements MatcherDumperInterface {
     try {
       $this->connection->schema()->createTable($this->tableName, $this->schemaDefinition());
     }
-    catch (DatabaseException $e) {
+    catch (DatabaseException) {
       // If another process has already created the config table, attempting to
       // recreate it will throw an exception. In this case just catch the
       // exception and do nothing.
     }
-    catch (\Exception $e) {
+    catch (\Exception) {
       return FALSE;
     }
     return TRUE;
@@ -243,9 +260,15 @@ class MatcherDumper implements MatcherDumperInterface {
           'default' => 0,
           'size' => 'small',
         ],
+        'alias' => [
+          'description' => 'The alias of the route, if applicable.',
+          'type' => 'varchar_ascii',
+          'length' => 255,
+        ],
       ],
       'indexes' => [
         'pattern_outline_parts' => ['pattern_outline', 'number_parts'],
+        'alias' => ['alias'],
       ],
       'primary key' => ['name'],
     ];

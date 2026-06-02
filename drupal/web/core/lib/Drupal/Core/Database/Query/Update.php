@@ -37,6 +37,8 @@ class Update extends Query implements ConditionInterface {
   /**
    * Array of fields to update to an expression in case of a duplicate record.
    *
+   * @var array
+   *
    * This variable is a nested array in the following format:
    * @code
    * <some field> => [
@@ -44,8 +46,6 @@ class Update extends Query implements ConditionInterface {
    *  'arguments' => <array of arguments for condition, or NULL for none>,
    * ];
    * @endcode
-   *
-   * @var array
    */
   protected $expressionFields = [];
 
@@ -69,7 +69,7 @@ class Update extends Query implements ConditionInterface {
   /**
    * Adds a set of field->value pairs to be updated.
    *
-   * @param $fields
+   * @param array $fields
    *   An associative array of fields to write into the database. The array keys
    *   are the field names and the values are the values to which to set them.
    *
@@ -87,12 +87,12 @@ class Update extends Query implements ConditionInterface {
    * Expression fields are cases such as counter=counter+1. This method takes
    * precedence over fields().
    *
-   * @param $field
+   * @param string $field
    *   The field to set.
-   * @param $expression
+   * @param string $expression
    *   The field will be set to the value of this expression. This parameter
    *   may include named placeholders.
-   * @param $arguments
+   * @param array|null $arguments
    *   If specified, this is an array of key/value pairs for named placeholders
    *   corresponding to the expression.
    *
@@ -116,27 +116,9 @@ class Update extends Query implements ConditionInterface {
    *   actually didn't have to be updated because the values didn't change.
    */
   public function execute() {
-    // Expressions take priority over literal fields, so we process those first
-    // and remove any literal fields that conflict.
-    $fields = $this->fields;
-    $update_values = [];
-    foreach ($this->expressionFields as $field => $data) {
-      if (!empty($data['arguments'])) {
-        $update_values += $data['arguments'];
-      }
-      if ($data['expression'] instanceof SelectInterface) {
-        $data['expression']->compile($this->connection, $this);
-        $update_values += $data['expression']->arguments();
-      }
-      unset($fields[$field]);
-    }
 
-    // Because we filter $fields the same way here and in __toString(), the
-    // placeholders will all match up properly.
-    $max_placeholder = 0;
-    foreach ($fields as $value) {
-      $update_values[':db_update_placeholder_' . ($max_placeholder++)] = $value;
-    }
+    [$args, $update_values] = $this->getQueryArguments();
+    $update_values += $args;
 
     if (count($this->condition)) {
       $this->condition->compile($this->connection, $this);
@@ -178,8 +160,10 @@ class Update extends Query implements ConditionInterface {
     }
 
     $max_placeholder = 0;
+    [$args] = $this->getQueryArguments();
+    $placeholders = array_keys($args);
     foreach ($fields as $field => $value) {
-      $update_fields[] = $this->connection->escapeField($field) . '=:db_update_placeholder_' . ($max_placeholder++);
+      $update_fields[] = $this->connection->escapeField($field) . '=' . $placeholders[$max_placeholder++];
     }
 
     $query = $comments . 'UPDATE {' . $this->connection->escapeTable($this->table) . '} SET ' . implode(', ', $update_fields);
@@ -191,6 +175,48 @@ class Update extends Query implements ConditionInterface {
     }
 
     return $query;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function arguments() {
+    [$args] = $this->getQueryArguments();
+    return $this->condition->arguments() + $args;
+  }
+
+  /**
+   * Returns the query arguments with placeholders mapped to their values.
+   *
+   * @return array
+   *   An array containing arguments and update values.
+   *   Both arguments and update values are associative array where the keys
+   *   are the placeholder names and the values are the placeholder values.
+   */
+  protected function getQueryArguments(): array {
+    // Expressions take priority over literal fields, so we process those first
+    // and remove any literal fields that conflict.
+    $fields = $this->fields;
+    $update_values = [];
+    foreach ($this->expressionFields as $field => $data) {
+      if (!empty($data['arguments'])) {
+        $update_values += $data['arguments'];
+      }
+      if ($data['expression'] instanceof SelectInterface) {
+        $data['expression']->compile($this->connection, $this);
+        $update_values += $data['expression']->arguments();
+      }
+      unset($fields[$field]);
+    }
+
+    // Because we filter $fields the same way here and in __toString(), the
+    // placeholders will all match up properly.
+    $max_placeholder = 0;
+    $args = [];
+    foreach ($fields as $value) {
+      $args[':db_update_placeholder_' . ($max_placeholder++)] = $value;
+    }
+    return [$args, $update_values];
   }
 
 }

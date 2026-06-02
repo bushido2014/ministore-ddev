@@ -4,27 +4,27 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\views\Kernel\Plugin;
 
-use Drupal\views\Views;
 use Drupal\Tests\views\Kernel\ViewsKernelTestBase;
-use Drupal\views\Plugin\views\style\StylePluginBase;
 use Drupal\views\Plugin\views\access\AccessPluginBase;
+use Drupal\views\Plugin\views\cache\CachePluginBase;
 use Drupal\views\Plugin\views\exposed_form\ExposedFormPluginInterface;
 use Drupal\views\Plugin\views\pager\PagerPluginBase;
 use Drupal\views\Plugin\views\query\QueryPluginBase;
-use Drupal\views\Plugin\views\cache\CachePluginBase;
 use Drupal\views\Plugin\views\row\RowPluginBase;
+use Drupal\views\Plugin\views\style\StylePluginBase;
+use Drupal\views\Views;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Drupal unit tests for the DisplayPluginBase class.
- *
- * @group views
  */
+#[Group('views')]
+#[RunTestsInSeparateProcesses]
 class DisplayKernelTest extends ViewsKernelTestBase {
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['block', 'node', 'field', 'user'];
 
@@ -89,7 +89,7 @@ class DisplayKernelTest extends ViewsKernelTestBase {
   }
 
   /**
-   * Tests the \Drupal\views\Plugin\views\display\DisplayPluginBase::getPlugin() method.
+   * Tests \Drupal\views\Plugin\views\display\DisplayPluginBase::getPlugin().
    */
   public function testGetPlugin(): void {
     $view = Views::getView('test_display_defaults');

@@ -4,21 +4,22 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\user\Functional\Views;
 
-use Drupal\views\Views;
 use Drupal\Tests\views\Functional\ViewTestBase;
+use Drupal\views\Views;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests the handler of the user: name filter.
  *
- * @group user
  * @see Views\user\Plugin\views\filter\Name
  */
+#[Group('user')]
+#[RunTestsInSeparateProcesses]
 class HandlerFilterUserNameTest extends ViewTestBase {
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['views_ui', 'user_test_views'];
 

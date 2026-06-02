@@ -158,21 +158,12 @@ ul {
   margin-block: 0.25em;
   margin-inline: 1.5em 0;
   padding-inline-start: 0;
-  list-style-type: disc;
   list-style-image: none;
 }
 ol {
   margin-block: 0.25em;
   margin-inline: 2em 0;
   padding: 0;
-}
-
-/**
- * Fix duplicate border caused by normalize.css adding border-bottom without
- * removing the text-decoration.
- */
-abbr[title] {
-  text-decoration: none;
 }
 
 code {
@@ -208,4 +199,14 @@ img {
 .ui-dialog *:focus {
   outline: var(--focus-outline);
   box-shadow: var(--focus-box-shadow);
+}
+
+/**
+ * These elements should not be displayed until they are processed
+ * by JavaScript, and views-ui-noscript.css exists so browsers
+ * without JavaScript will still display them
+ */
+.views-tabs,
+.views-display-top > input.button {
+  display: none;
 }

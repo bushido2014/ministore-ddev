@@ -7,21 +7,22 @@ namespace Drupal\Tests\system\Functional\Entity;
 use Drupal\Core\Entity\Entity\EntityFormDisplay;
 use Drupal\Core\Entity\Entity\EntityFormMode;
 use Drupal\entity_test\Entity\EntityTest;
+use Drupal\entity_test\EntityTestHelper;
+use Drupal\entity_test\EntityTestTypesFilter;
 use Drupal\language\Entity\ConfigurableLanguage;
 use Drupal\Tests\BrowserTestBase;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests the entity form.
- *
- * @group Entity
- * @group #slow
  */
+#[Group('Entity')]
+#[RunTestsInSeparateProcesses]
 class EntityFormTest extends BrowserTestBase {
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['entity_test', 'language'];
 
@@ -57,7 +58,7 @@ class EntityFormTest extends BrowserTestBase {
    */
   public function testFormCRUD(): void {
     // All entity variations have to have the same results.
-    foreach (entity_test_entity_types() as $entity_type) {
+    foreach (EntityTestHelper::getEntityTypes() as $entity_type) {
       $this->doTestFormCRUD($entity_type);
     }
   }
@@ -67,7 +68,7 @@ class EntityFormTest extends BrowserTestBase {
    */
   public function testMultilingualFormCRUD(): void {
     // All entity variations have to have the same results.
-    foreach (entity_test_entity_types(ENTITY_TEST_TYPES_MULTILINGUAL) as $entity_type) {
+    foreach (EntityTestHelper::getEntityTypes(EntityTestTypesFilter::Multilingual) as $entity_type) {
       $this->doTestMultilingualFormCRUD($entity_type);
     }
   }
@@ -136,7 +137,7 @@ class EntityFormTest extends BrowserTestBase {
    * @param string $entity_type
    *   The entity type to run the tests with.
    */
-  protected function doTestFormCRUD($entity_type) {
+  protected function doTestFormCRUD($entity_type): void {
     $name1 = $this->randomMachineName(8);
     $name2 = $this->randomMachineName(10);
 
@@ -172,7 +173,7 @@ class EntityFormTest extends BrowserTestBase {
    * @param string $entity_type_id
    *   The ID of entity type to run the tests with.
    */
-  protected function doTestMultilingualFormCRUD($entity_type_id) {
+  protected function doTestMultilingualFormCRUD($entity_type_id): void {
     $name1 = $this->randomMachineName(8);
     $name1_ro = $this->randomMachineName(9);
     $name2_ro = $this->randomMachineName(11);

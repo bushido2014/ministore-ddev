@@ -8,14 +8,19 @@ use Drupal\Component\Render\MarkupInterface;
 use Drupal\Core\Render\RenderContext;
 use Drupal\Core\Url;
 use Drupal\KernelTests\KernelTestBase;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests link generation with hooks.
- *
- * @group Utility
  */
+#[Group('Utility')]
+#[RunTestsInSeparateProcesses]
 class LinkGenerationTest extends KernelTestBase {
 
+  /**
+   * {@inheritdoc}
+   */
   protected static $modules = ['link_generation_test'];
 
   /**

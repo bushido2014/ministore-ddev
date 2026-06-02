@@ -6,12 +6,14 @@ namespace Drupal\Tests\migrate\Kernel\Plugin\source;
 
 use Drupal\migrate\Plugin\migrate\source\SourcePluginBase;
 use Drupal\Tests\migrate\Kernel\MigrateTestBase;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Test source counts are correctly cached.
- *
- * @group migrate
  */
+#[Group('migrate')]
+#[RunTestsInSeparateProcesses]
 class MigrationSourceCacheTest extends MigrateTestBase {
 
   /**
@@ -35,7 +37,7 @@ class MigrationSourceCacheTest extends MigrateTestBase {
   }
 
   /**
-   * Tests that counts for the same plugin_id are not crossed.
+   * Tests that counts for the same plugin ID are not crossed.
    */
   public function testCacheCountsNotContaminated(): void {
     $migration_1_definition = [

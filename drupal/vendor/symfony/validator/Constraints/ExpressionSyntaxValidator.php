@@ -12,6 +12,7 @@
 namespace Symfony\Component\Validator\Constraints;
 
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
+use Symfony\Component\ExpressionLanguage\Parser;
 use Symfony\Component\ExpressionLanguage\SyntaxError;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
@@ -23,11 +24,9 @@ use Symfony\Component\Validator\Exception\UnexpectedValueException;
  */
 class ExpressionSyntaxValidator extends ConstraintValidator
 {
-    private ?ExpressionLanguage $expressionLanguage;
-
-    public function __construct(?ExpressionLanguage $expressionLanguage = null)
-    {
-        $this->expressionLanguage = $expressionLanguage;
+    public function __construct(
+        private ?ExpressionLanguage $expressionLanguage = null,
+    ) {
     }
 
     public function validate(mixed $expression, Constraint $constraint): void
@@ -47,7 +46,11 @@ class ExpressionSyntaxValidator extends ConstraintValidator
         $this->expressionLanguage ??= new ExpressionLanguage();
 
         try {
-            $this->expressionLanguage->lint($expression, $constraint->allowedVariables);
+            if (null === $constraint->allowedVariables && \defined(Parser::class.'::IGNORE_UNKNOWN_VARIABLES')) {
+                $this->expressionLanguage->lint($expression, [], Parser::IGNORE_UNKNOWN_VARIABLES);
+            } else {
+                $this->expressionLanguage->lint($expression, $constraint->allowedVariables);
+            }
         } catch (SyntaxError $exception) {
             $this->context->buildViolation($constraint->message)
                 ->setParameter('{{ syntax_error }}', $this->formatValue($exception->getMessage()))

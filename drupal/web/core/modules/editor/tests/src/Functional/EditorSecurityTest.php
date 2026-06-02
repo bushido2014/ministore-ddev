@@ -8,12 +8,14 @@ use Drupal\Component\Serialization\Json;
 use Drupal\editor\Entity\Editor;
 use Drupal\filter\Entity\FilterFormat;
 use Drupal\Tests\BrowserTestBase;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests XSS protection for content creators when using text editors.
- *
- * @group editor
  */
+#[Group('editor')]
+#[RunTestsInSeparateProcesses]
 class EditorSecurityTest extends BrowserTestBase {
 
   /**
@@ -43,9 +45,7 @@ class EditorSecurityTest extends BrowserTestBase {
   protected static $sampleContentSecuredEmbedAllowed = '<p>Hello, Dumbo Octopus!</p>alert(0)<embed type="image/svg+xml" src="image.svg" />';
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['filter', 'editor', 'editor_test', 'node'];
 
@@ -447,9 +447,9 @@ class EditorSecurityTest extends BrowserTestBase {
     $this->drupalGet('node/2/edit');
     $this->assertSession()->fieldValueEquals('edit-body-0-value', self::$sampleContentSecured);
 
-    // Enable editor_test.module's hook_editor_xss_filter_alter() implementation
+    // Enable editor_test's hook_editor_xss_filter_alter() implementation
     // to alter the text editor XSS filter class being used.
-    \Drupal::state()->set('editor_test_editor_xss_filter_alter_enabled', TRUE);
+    \Drupal::keyValue('editor_test')->set('editor_xss_filter_alter_enabled', TRUE);
 
     // First: the Insecure text editor XSS filter.
     $this->drupalGet('node/2/edit');

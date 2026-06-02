@@ -16,7 +16,7 @@ use Drupal\Core\Url;
 trait UpdateSemverTestBaselineTrait {
 
   /**
-   * Tests the Update Manager module when no updates are available.
+   * Tests the Update Status module when no updates are available.
    *
    * The XML fixture file 'drupal.8.1.0.xml' which is one of the XML files this
    * test uses also contains 2 extra releases that are newer than '8.0.1'. These
@@ -46,7 +46,7 @@ trait UpdateSemverTestBaselineTrait {
   }
 
   /**
-   * Tests the Update Manager module when one normal update is available.
+   * Tests the Update Status module when one normal update is available.
    */
   public function testNormalUpdateAvailable(): void {
     $this->setProjectInstalledVersion('8.0.0');
@@ -109,8 +109,6 @@ trait UpdateSemverTestBaselineTrait {
    *
    * @param string $full_version
    *   The recommended version.
-   *
-   * @return void
    */
   protected function assertNoExtraVersion(string $full_version): void {
     $this->assertUpdateTableTextNotContains('Up to date');
@@ -121,7 +119,7 @@ trait UpdateSemverTestBaselineTrait {
   }
 
   /**
-   * Tests the Update Manager module when major updates are available.
+   * Tests the Update Status module when major updates are available.
    *
    * This includes testing when the next major is available as well as when both
    * the current major version and the next major version are supported. There
@@ -168,6 +166,50 @@ trait UpdateSemverTestBaselineTrait {
               $this->assertVersionUpdateLinks('Also available:', '9.0.0');
               $this->assertUpdateTableElementNotContains('error.svg');
             }
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Tests when the major+1 is supported but not stable.
+   *
+   * This tests when the next major has stable supported releases and the
+   * the major after that has just an alpha and beta release.
+   *
+   * This tests when the latest major has an alpha and beta release.
+   * - drupal-10.0.0-11.0.0 and semver_test.9.0.0-10.0.0: This declares two
+   *   major releases supported and the latest major only has unstable releases.
+   */
+  public function testMajorExtraUpdateAvailable(): void {
+    foreach (['9.0.0-10.0.0'] as $release_history) {
+      foreach ([0, 1] as $minor_version) {
+        foreach ([0, 1] as $patch_version) {
+          foreach (['-alpha1', '-beta1', ''] as $extra_version) {
+            $installed_version = "8.$minor_version.$patch_version$extra_version";
+            $this->setProjectInstalledVersion($installed_version);
+            $this->refreshUpdateStatus([$this->updateProject => $release_history]);
+            $this->standardTests();
+            $this->drupalGet('admin/reports/updates');
+            $this->clickLink('Check manually');
+            $this->checkForMetaRefresh();
+            $this->assertUpdateTableTextNotContains('Security update required!');
+
+            $this->assertUpdateTableElementContains((string) Link::fromTextAndUrl('9.2.2', Url::fromUri("http://example.com/{$this->updateProject}-9-2-2-release"))
+              ->toString());
+            $this->assertUpdateTableElementContains((string) Link::fromTextAndUrl('Release notes', Url::fromUri("http://example.com/{$this->updateProject}-9-2-2-release"))
+              ->toString());
+            $this->assertUpdateTableElementContains((string) Link::fromTextAndUrl('10.0.0-beta1', Url::fromUri("http://example.com/{$this->updateProject}-10-0-0-beta1-release"))
+              ->toString());
+            $this->assertUpdateTableElementContains((string) Link::fromTextAndUrl('Release notes', Url::fromUri("http://example.com/{$this->updateProject}-10-0-0-beta1-release"))
+              ->toString());
+            $this->assertUpdateTableTextNotContains('Latest version:');
+
+            $this->assertUpdateTableTextNotContains('Up to date');
+            $this->assertUpdateTableTextContains('Not supported!');
+            $this->assertVersionUpdateLinks('Recommended version:', '9.2.2');
+            $this->assertUpdateTableElementContains('error.svg');
           }
         }
       }

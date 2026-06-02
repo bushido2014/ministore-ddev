@@ -1,0 +1,24 @@
+{#
+/**
+ * @file
+ * ministore theme implementation to display a single page.
+ */
+#}
+{{ include('@ministore/layout/header.html.twig') }}
+
+
+  {% if page.content_top %}
+    <div class="content-top-region">
+      {{ page.content_top}}
+    </div>
+ {% endif %} 
+
+ {% if page.content %}
+      {{ page.content }}
+  {% endif %} 
+
+ {% if page.content_bottom %}
+  <div class="content-bottom-region">
+    {{ page.content_bottom  }}
+  </div>
+{% endif %} 

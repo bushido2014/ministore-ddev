@@ -8,18 +8,18 @@ use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\Site\Settings;
 use Drupal\Tests\BrowserTestBase;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests HTML output escaping of page title, site name, and slogan.
- *
- * @group system
  */
+#[Group('system')]
+#[RunTestsInSeparateProcesses]
 class PageTitleTest extends BrowserTestBase {
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['node', 'test_page_test', 'form_test', 'block'];
 
@@ -28,8 +28,12 @@ class PageTitleTest extends BrowserTestBase {
    */
   protected $defaultTheme = 'starterkit_theme';
 
+  /**
+   * The test user.
+   *
+   * @var \Drupal\Core\Session\AccountInterface
+   */
   protected $contentUser;
-  protected $savedTitle;
 
   /**
    * Implement setUp().
@@ -124,7 +128,7 @@ class PageTitleTest extends BrowserTestBase {
     $this->assertSession()->titleEquals('Foo | Drupal');
     $this->assertSession()->elementTextEquals('xpath', '//h1[@class="page-title"]', 'Foo');
 
-    // Test forms
+    // Test forms.
     $this->drupalGet('form-test/object-builder');
 
     $this->assertSession()->titleEquals('Test dynamic title | Drupal');

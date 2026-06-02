@@ -6,13 +6,16 @@ namespace Drupal\Tests\views\Functional\Plugin;
 
 use Drupal\Tests\views\Functional\ViewTestBase;
 use Drupal\views\Views;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests the attachment display plugin.
  *
- * @group views
  * @see \Drupal\views\Plugin\views\display\Attachment
  */
+#[Group('views')]
+#[RunTestsInSeparateProcesses]
 class DisplayAttachmentTest extends ViewTestBase {
 
   /**
@@ -23,9 +26,7 @@ class DisplayAttachmentTest extends ViewTestBase {
   public static $testViews = ['test_display_attachment', 'test_attached_disabled'];
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['node', 'views'];
 

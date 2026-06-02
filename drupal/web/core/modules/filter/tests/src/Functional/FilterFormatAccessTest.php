@@ -9,19 +9,19 @@ use Drupal\filter\Entity\FilterFormat;
 use Drupal\Tests\BrowserTestBase;
 use Drupal\user\Entity\Role;
 use Drupal\user\RoleInterface;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests access to text formats.
- *
- * @group Access
- * @group filter
  */
+#[Group('Access')]
+#[Group('filter')]
+#[RunTestsInSeparateProcesses]
 class FilterFormatAccessTest extends BrowserTestBase {
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['block', 'filter', 'node'];
 
@@ -77,9 +77,6 @@ class FilterFormatAccessTest extends BrowserTestBase {
    */
   protected function setUp(): void {
     parent::setUp();
-
-    $this->drupalPlaceBlock('page_title_block');
-
     $this->drupalCreateContentType(['type' => 'page', 'name' => 'Basic page']);
 
     // Create a user who can administer text formats, but does not have
@@ -92,20 +89,16 @@ class FilterFormatAccessTest extends BrowserTestBase {
 
     // Create three text formats. Two text formats are created for all users so
     // that the drop-down list appears for all tests.
-    $this->drupalLogin($this->filterAdminUser);
     $formats = [];
     for ($i = 0; $i < 3; $i++) {
-      $edit = [
+      $format = FilterFormat::create([
         'format' => $this->randomMachineName(),
         'name' => $this->randomMachineName(),
-      ];
-      $this->drupalGet('admin/config/content/formats/add');
-      $this->submitForm($edit, 'Save configuration');
-      $this->resetFilterCaches();
-      $formats[] = FilterFormat::load($edit['format']);
+      ]);
+      $format->save();
+      $formats[] = $format;
     }
     [$this->allowedFormat, $this->secondAllowedFormat, $this->disallowedFormat] = $formats;
-    $this->drupalLogout();
 
     // Create a regular user with access to two of the formats.
     $this->webUser = $this->drupalCreateUser([
@@ -344,7 +337,7 @@ class FilterFormatAccessTest extends BrowserTestBase {
   /**
    * Rebuilds text format and permission caches in the thread running the tests.
    */
-  protected function resetFilterCaches() {
+  protected function resetFilterCaches(): void {
     filter_formats_reset();
   }
 

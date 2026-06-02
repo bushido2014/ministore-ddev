@@ -31,22 +31,18 @@ class ContainerConfigurator extends AbstractConfigurator
 {
     public const FACTORY = 'container';
 
-    private ContainerBuilder $container;
-    private PhpFileLoader $loader;
     private array $instanceof;
-    private string $path;
-    private string $file;
     private int $anonymousCount = 0;
-    private ?string $env;
 
-    public function __construct(ContainerBuilder $container, PhpFileLoader $loader, array &$instanceof, string $path, string $file, ?string $env = null)
-    {
-        $this->container = $container;
-        $this->loader = $loader;
+    public function __construct(
+        private ContainerBuilder $container,
+        private PhpFileLoader $loader,
+        array &$instanceof,
+        private string $path,
+        private string $file,
+        private ?string $env = null,
+    ) {
         $this->instanceof = &$instanceof;
-        $this->path = $path;
-        $this->file = $file;
-        $this->env = $env;
     }
 
     final public function extension(string $namespace, array $config, bool $prepend = false): void
@@ -58,7 +54,7 @@ class ContainerConfigurator extends AbstractConfigurator
         }
 
         if (!$this->container->hasExtension($namespace)) {
-            $extensions = array_filter(array_map(fn (ExtensionInterface $ext) => $ext->getAlias(), $this->container->getExtensions()));
+            $extensions = array_filter(array_map(static fn (ExtensionInterface $ext) => $ext->getAlias(), $this->container->getExtensions()));
             throw new InvalidArgumentException(UndefinedExtensionHandler::getErrorMessage($namespace, $this->file, $namespace, $extensions));
         }
 
@@ -164,9 +160,9 @@ function tagged_locator(string $tag, ?string $indexAttribute = null, ?string $de
 /**
  * Creates an expression.
  */
-function expr(string $expression): Expression
+function expr(string $expression): ExpressionConfigurator
 {
-    return new Expression($expression);
+    return new ExpressionConfigurator($expression);
 }
 
 /**
@@ -196,7 +192,7 @@ function service_closure(string $serviceId): ClosureReferenceConfigurator
 /**
  * Creates a closure.
  */
-function closure(string|array|ReferenceConfigurator|Expression $callable): InlineServiceConfigurator
+function closure(string|array|\Closure|ReferenceConfigurator|Expression $callable): InlineServiceConfigurator
 {
     return (new InlineServiceConfigurator(new Definition('Closure')))
         ->factory(['Closure', 'fromCallable'])

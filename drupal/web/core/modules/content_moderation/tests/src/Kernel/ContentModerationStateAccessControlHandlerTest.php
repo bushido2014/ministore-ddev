@@ -4,19 +4,23 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\content_moderation\Kernel;
 
+use Drupal\content_moderation\ContentModerationStateAccessControlHandler;
 use Drupal\content_moderation\Entity\ContentModerationState;
 use Drupal\KernelTests\KernelTestBase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
- * @coversDefaultClass \Drupal\content_moderation\ContentModerationStateAccessControlHandler
- * @group content_moderation
+ * Tests Drupal\content_moderation\ContentModerationStateAccessControlHandler.
  */
+#[CoversClass(ContentModerationStateAccessControlHandler::class)]
+#[Group('content_moderation')]
+#[RunTestsInSeparateProcesses]
 class ContentModerationStateAccessControlHandlerTest extends KernelTestBase {
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = [
     'content_moderation',
@@ -42,8 +46,10 @@ class ContentModerationStateAccessControlHandlerTest extends KernelTestBase {
   }
 
   /**
-   * @covers ::checkAccess
-   * @covers ::checkCreateAccess
+   * Tests handler.
+   *
+   * @legacy-covers ::checkAccess
+   * @legacy-covers ::checkCreateAccess
    */
   public function testHandler(): void {
     $entity = ContentModerationState::create([]);

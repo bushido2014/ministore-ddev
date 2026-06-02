@@ -9,6 +9,9 @@ use Drupal\Core\Render\Component\Exception\ComponentNotFoundException;
 use Drupal\Core\Render\Component\Exception\InvalidComponentException;
 use Drupal\Core\Theme\ComponentPluginManager;
 use Twig\Environment;
+use Twig\Node\Expression\Variable\ContextVariable;
+use Twig\Node\Nodes;
+use Twig\TwigFunction;
 use Twig\Node\Expression\ConstantExpression;
 use Twig\Node\Expression\FunctionExpression;
 use Twig\Node\ModuleNode;
@@ -53,27 +56,35 @@ class ComponentNodeVisitor implements NodeVisitorInterface {
     $emoji = static::emojiForString($component_id);
     if ($env->isDebug()) {
       $print_nodes[] = new PrintNode(new ConstantExpression(sprintf('<!-- %s Component start: %s -->', $emoji, $component_id), $line), $line);
+      if (!empty($component->metadata->variants)) {
+        $print_nodes[] = new PrintNode(new ConstantExpression(sprintf('<!--     with variant: "'), $line), $line);
+        $print_nodes[] = new PrintNode(new ContextVariable('variant', $line), $line);
+        $print_nodes[] = new PrintNode(new ConstantExpression('" -->', $line), $line);
+      }
     }
     $print_nodes[] = new PrintNode(new FunctionExpression(
-      'attach_library',
-      new Node([new ConstantExpression($component->getLibraryName(), $line)]),
+      new TwigFunction('attach_library', [$env->getExtension(TwigExtension::class), 'attachLibrary']),
+      new Nodes([new ConstantExpression($component->getLibraryName(), $line)]),
       $line
     ), $line);
     $print_nodes[] = new PrintNode(new FunctionExpression(
-      'add_component_context',
-      new Node([new ConstantExpression($component_id, $line)]),
+      new TwigFunction('add_component_context', [
+        $env->getExtension(ComponentsTwigExtension::class),
+        'addAdditionalContext',
+      ], ['needs_context' => TRUE]),
+      new Nodes([new ConstantExpression($component_id, $line)]),
       $line
     ), $line);
     $print_nodes[] = new PrintNode(new FunctionExpression(
-      'validate_component_props',
-      new Node([new ConstantExpression($component_id, $line)]),
+      new TwigFunction('validate_component_props', [$env->getExtension(ComponentsTwigExtension::class), 'validateProps'], ['needs_context' => TRUE]),
+      new Nodes([new ConstantExpression($component_id, $line)]),
       $line
     ), $line);
 
     // Append the print nodes to the display_start node.
     $node->setNode(
       'display_start',
-      new Node([
+      new Nodes([
         $node->getNode('display_start'),
         ...$print_nodes,
       ]),
@@ -83,7 +94,7 @@ class ComponentNodeVisitor implements NodeVisitorInterface {
       // Append the closing comment to the display_end node.
       $node->setNode(
         'display_end',
-        new Node([
+        new Nodes([
           new PrintNode(new ConstantExpression(sprintf('<!-- %s Component end: %s -->', $emoji, $component_id), $line), $line),
           $node->getNode('display_end'),
         ])
@@ -112,7 +123,7 @@ class ComponentNodeVisitor implements NodeVisitorInterface {
     try {
       return $this->pluginManager->find($component_id);
     }
-    catch (ComponentNotFoundException $e) {
+    catch (ComponentNotFoundException) {
       return NULL;
     }
   }
@@ -147,7 +158,7 @@ class ComponentNodeVisitor implements NodeVisitorInterface {
     try {
       $it = $node->getIterator();
     }
-    catch (\Exception $e) {
+    catch (\Exception) {
       return;
     }
     if ($it instanceof \SeekableIterator) {

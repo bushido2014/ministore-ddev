@@ -23,6 +23,14 @@ use Symfony\Component\Process\Process;
 /**
  * Provides a workspace to test build processes.
  *
+ * Module tests extending BuildTestBase must exist in the
+ * Drupal\Tests\your_module\Build namespace and live in the
+ * modules/your_module/tests/src/Build directory.
+ *
+ * Tests for core/lib/Drupal classes extending BuildTestBase must exist in the
+ * \Drupal\BuildTests namespace and live in the core/tests/Drupal/BuildTests
+ * directory.
+ *
  * If you need to build a file system and then run a command from the command
  * line then this is the test framework for you.
  *
@@ -215,6 +223,7 @@ abstract class BuildTestBase extends TestCase {
    * Set up the Mink session manager.
    *
    * @return \Behat\Mink\Session
+   *   The Mink session.
    */
   protected function initMink() {
     $client = new DrupalTestBrowser();
@@ -259,7 +268,7 @@ abstract class BuildTestBase extends TestCase {
    * @param string $expected
    *   Text we expect to find in the error output of the command.
    */
-  public function assertErrorOutputContains($expected) {
+  public function assertErrorOutputContains($expected): void {
     $this->assertStringContainsString($expected, $this->commandProcess->getErrorOutput());
   }
 
@@ -269,7 +278,7 @@ abstract class BuildTestBase extends TestCase {
    * @param string $expected
    *   Text we expect not to find in the error output of the command.
    */
-  public function assertErrorOutputNotContains($expected) {
+  public function assertErrorOutputNotContains($expected): void {
     $this->assertStringNotContainsString($expected, $this->commandProcess->getErrorOutput());
   }
 
@@ -279,7 +288,7 @@ abstract class BuildTestBase extends TestCase {
    * @param string $expected
    *   Text we expect to find in the output of the command.
    */
-  public function assertCommandOutputContains($expected) {
+  public function assertCommandOutputContains($expected): void {
     $this->assertStringContainsString($expected, $this->commandProcess->getOutput());
   }
 
@@ -291,8 +300,8 @@ abstract class BuildTestBase extends TestCase {
    * If you need to assert a different exit code, then you can use
    * executeCommand() and perform a different assertion on the process object.
    */
-  public function assertCommandSuccessful() {
-    return $this->assertCommandExitCode(0);
+  public function assertCommandSuccessful(): void {
+    $this->assertCommandExitCode(0);
   }
 
   /**
@@ -301,7 +310,7 @@ abstract class BuildTestBase extends TestCase {
    * @param int $expected_code
    *   The expected process exit code.
    */
-  public function assertCommandExitCode($expected_code) {
+  public function assertCommandExitCode($expected_code): void {
     $this->assertEquals($expected_code, $this->commandProcess->getExitCode(),
       'COMMAND: ' . $this->commandProcess->getCommandLine() . "\n" .
       'OUTPUT: ' . $this->commandProcess->getOutput() . "\n" .
@@ -319,12 +328,13 @@ abstract class BuildTestBase extends TestCase {
    *   execute the command. Defaults to the workspace directory.
    *
    * @return \Symfony\Component\Process\Process
+   *   The process object.
    */
   public function executeCommand($command_line, $working_dir = NULL) {
     $this->commandProcess = Process::fromShellCommandline($command_line);
     $this->commandProcess->setWorkingDirectory($this->getWorkingPath($working_dir))
-      ->setTimeout(300)
-      ->setIdleTimeout(300);
+      ->setTimeout(360)
+      ->setIdleTimeout(360);
     $this->commandProcess->run();
     return $this->commandProcess;
   }
@@ -335,7 +345,7 @@ abstract class BuildTestBase extends TestCase {
    * This method asserts that the X-Generator header shows that the site is a
    * Drupal site.
    */
-  public function assertDrupalVisit() {
+  public function assertDrupalVisit(): void {
     $this->getMink()->assertSession()->responseHeaderMatches('X-Generator', '/Drupal \d+ \(https:\/\/www.drupal.org\)/');
   }
 
@@ -466,7 +476,7 @@ abstract class BuildTestBase extends TestCase {
    * @throws \RuntimeException
    *   Thrown when there are no available ports within the range.
    */
-  protected function findAvailablePort() {
+  protected function findAvailablePort(): int {
     $store = new FlockStore(DrupalFilesystem::getOsTemporaryDirectory());
     $lock_factory = new LockFactory($store);
 
@@ -498,12 +508,13 @@ abstract class BuildTestBase extends TestCase {
   /**
    * Checks whether a port is available.
    *
-   * @param $port
+   * @param int $port
    *   A number between 1024 and 65536.
    *
    * @return bool
+   *   TRUE if the port is available, FALSE otherwise.
    */
-  protected function checkPortIsAvailable($port) {
+  protected function checkPortIsAvailable($port): bool {
     $fp = @fsockopen(self::$hostName, $port, $errno, $errstr, 1);
     // If fsockopen() fails to connect, probably nothing is listening.
     // It could be a firewall but that's impossible to detect, so as a
@@ -523,8 +534,9 @@ abstract class BuildTestBase extends TestCase {
    * Test should never call this. Used by standUpServer().
    *
    * @return int
+   *   The port number.
    */
-  protected function getPortNumber() {
+  protected function getPortNumber(): int {
     if (empty($this->hostPort)) {
       $this->hostPort = $this->findAvailablePort();
     }
@@ -547,7 +559,7 @@ abstract class BuildTestBase extends TestCase {
    *   (optional) Relative path within the test workspace file system that will
    *   contain the copy of the codebase. Defaults to the workspace directory.
    */
-  public function copyCodebase(?\Iterator $iterator = NULL, $working_dir = NULL) {
+  public function copyCodebase(?\Iterator $iterator = NULL, $working_dir = NULL): void {
     $working_path = $this->getWorkingPath($working_dir);
 
     if ($iterator === NULL) {

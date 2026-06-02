@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\content_translation\Functional;
 
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+
 /**
  * Tests the test content translation UI with the test entity.
- *
- * @group content_translation
  */
+#[Group('content_translation')]
+#[Group('#slow')]
+#[RunTestsInSeparateProcesses]
 class ContentTestTranslationUITest extends ContentTranslationUITestBase {
 
   /**
@@ -28,9 +32,7 @@ class ContentTestTranslationUITest extends ContentTranslationUITestBase {
   ];
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = [
     'language',
@@ -56,7 +58,7 @@ class ContentTestTranslationUITest extends ContentTranslationUITestBase {
   /**
    * {@inheritdoc}
    */
-  protected function getTranslatorPermissions() {
+  protected function getTranslatorPermissions(): array {
     return array_merge(parent::getTranslatorPermissions(), ['administer entity_test content', 'view test entity']);
   }
 

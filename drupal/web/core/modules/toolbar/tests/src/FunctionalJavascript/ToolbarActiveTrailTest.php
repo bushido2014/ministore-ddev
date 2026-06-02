@@ -5,26 +5,21 @@ declare(strict_types=1);
 namespace Drupal\Tests\toolbar\FunctionalJavascript;
 
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+use PHPUnit\Framework\Attributes\TestWith;
 
 /**
  * Tests that the active trail is maintained in the toolbar.
- *
- * @group toolbar
  */
+#[Group('toolbar')]
+#[RunTestsInSeparateProcesses]
 class ToolbarActiveTrailTest extends WebDriverTestBase {
 
   /**
    * {@inheritdoc}
    */
   protected static $modules = ['toolbar', 'node', 'field_ui'];
-
-  /**
-   * {@inheritdoc}
-   *
-   * @todo Remove and fix test to not rely on super user.
-   * @see https://www.drupal.org/project/drupal/issues/3437620
-   */
-  protected bool $usesSuperUserAccessPolicy = TRUE;
 
   /**
    * {@inheritdoc}
@@ -36,8 +31,13 @@ class ToolbarActiveTrailTest extends WebDriverTestBase {
    */
   protected function setUp(): void {
     parent::setUp();
-    $this->drupalLogin($this->rootUser);
     $this->drupalCreateContentType(['type' => 'article', 'name' => 'Article']);
+    $this->drupalLogin($this->drupalCreateUser([
+      'access administration pages',
+      'administer content types',
+      'administer node fields',
+      'access toolbar',
+    ]));
   }
 
   /**
@@ -46,11 +46,10 @@ class ToolbarActiveTrailTest extends WebDriverTestBase {
    * @param string $orientation
    *   The toolbar orientation.
    *
-   * @testWith ["vertical"]
-   *           ["horizontal"]
-   *
    * @throws \Behat\Mink\Exception\ElementNotFoundException
    */
+  #[TestWith(["vertical"])]
+  #[TestWith(["horizontal"])]
   public function testToolbarActiveTrail(string $orientation): void {
     $page = $this->getSession()->getPage();
     $assert_session = $this->assertSession();
@@ -73,30 +72,22 @@ class ToolbarActiveTrailTest extends WebDriverTestBase {
     $this->clickLink('Edit');
 
     if ($orientation === 'vertical') {
-      $this->assertNotEmpty($assert_session->waitForElementVisible('named',
-        ['link', 'Structure']));
       // Assert that menu-item--active-trail was maintained.
-      $this->assertTrue($assert_session->waitForElementVisible('named',
-        ['link', 'Structure'])->getParent()->getParent()->hasClass('menu-item--active-trail'));
-      $this->assertTrue($assert_session->waitForElementVisible('named',
-        ['link', 'Content types'])->getParent()->getParent()->hasClass('menu-item--active-trail'));
+      $this->assertNotNull($assert_session->waitForElementVisible('css', '.menu-item--active-trail a:contains("Structure")'));
+      $this->assertNotNull($assert_session->waitForElementVisible('css', '.menu-item--active-trail a:contains("Content types")'));
       // Change orientation and check focus is maintained.
       $page->pressButton('Horizontal orientation');
-      $this->assertTrue($assert_session->waitForElementVisible('css',
-        '#toolbar-link-system-admin_structure')->hasClass('is-active'));
+      $this->assertNotNull($assert_session->waitForElementVisible('css', '#toolbar-link-system-admin_structure.is-active'));
     }
     else {
-      $this->assertNotEmpty($assert_session->waitForElementVisible('css', '#toolbar-link-system-admin_structure'));
       // Assert that is-active was maintained.
-      $this->assertTrue($assert_session->waitForElementVisible('css', '#toolbar-link-system-admin_structure')->hasClass('is-active'));
+      $this->assertNotNull($assert_session->waitForElementVisible('css', '#toolbar-link-system-admin_structure.is-active'));
       // Change orientation and check focus is maintained.
       $page->pressButton('Vertical orientation');
       // Introduce a delay to let the focus load.
       $this->getSession()->wait(150);
-      $this->assertTrue($assert_session->waitForElementVisible('named',
-        ['link', 'Structure'])->getParent()->getParent()->hasClass('menu-item--active-trail'));
-      $this->assertTrue($assert_session->waitForElementVisible('named',
-        ['link', 'Content types'])->getParent()->getParent()->hasClass('menu-item--active-trail'));
+      $this->assertNotNull($assert_session->waitForElementVisible('css', '.menu-item--active-trail a:contains("Structure")'));
+      $this->assertNotNull($assert_session->waitForElementVisible('css', '.menu-item--active-trail a:contains("Content types")'));
     }
   }
 

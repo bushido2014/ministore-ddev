@@ -138,7 +138,7 @@ class ReviewForm extends MigrateUpgradeFormBase {
       '#open' => TRUE,
       '#title' => $this->t('Modules that will not be upgraded'),
       '#summary_attributes' => ['id' => ['error']],
-      '#description' => $this->t("The new site is missing modules corresponding to the old site's modules. Unless they are installed prior to the upgrade, configuration and/or content needed by them will not be available on your new site. <a href=':review'>Read the checklist</a> to help decide what to do.", [':review' => 'https://www.drupal.org/docs/8/upgrade/upgrade-using-web-browser#pre-upgrade-analysis']),
+      '#description' => $this->t('The new site is missing modules corresponding to the old site\'s modules. Unless they are installed prior to the upgrade, configuration and/or content needed by them will not be available on your new site. <a href=":review">Read the checklist</a> to help decide what to do.', [':review' => 'https://www.drupal.org/docs/upgrading-drupal/upgrading-from-drupal-6-or-drupal-7/upgrade-using-web-browser#pre-upgrade-analysis']),
       '#weight' => 2,
     ];
     $missing_module_list['module_list'] = [
@@ -286,7 +286,7 @@ class ReviewForm extends MigrateUpgradeFormBase {
     foreach ($migration_state as $source_machine_name => $destination_modules) {
       $data = NULL;
       if (isset($this->systemData['module'][$source_machine_name]['info'])) {
-        $data = unserialize($this->systemData['module'][$source_machine_name]['info']);
+        $data = unserialize($this->systemData['module'][$source_machine_name]['info'], ['allowed_classes' => FALSE]);
       }
       $source_module_name = $data['name'] ?? $source_machine_name;
       // Get the names of all the destination modules.
@@ -301,7 +301,7 @@ class ReviewForm extends MigrateUpgradeFormBase {
             try {
               $destination_module_names[] = $this->moduleExtensionList->getName($destination_module);
             }
-            catch (UnknownExtensionException $e) {
+            catch (UnknownExtensionException) {
               $destination_module_names[] = $destination_module;
             }
           }

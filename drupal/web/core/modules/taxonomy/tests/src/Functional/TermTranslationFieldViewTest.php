@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Drupal\Tests\taxonomy\Functional;
 
 use Drupal\node\Entity\Node;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests the translation of taxonomy terms field on nodes.
- *
- * @group taxonomy
  */
+#[Group('taxonomy')]
+#[RunTestsInSeparateProcesses]
 class TermTranslationFieldViewTest extends TaxonomyTestBase {
 
   use TaxonomyTranslationTestTrait;
@@ -37,9 +39,7 @@ class TermTranslationFieldViewTest extends TaxonomyTestBase {
   protected $translatedTagName = 'TranslatedTagName';
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['language', 'content_translation', 'taxonomy'];
 
@@ -79,7 +79,7 @@ class TermTranslationFieldViewTest extends TaxonomyTestBase {
   /**
    * Creates a test subject node, with translation.
    */
-  protected function setUpNode() {
+  protected function setUpNode(): void {
     /** @var \Drupal\node\Entity\Node $node */
     $node = Node::create([
       'title' => $this->randomMachineName(),
@@ -102,7 +102,7 @@ class TermTranslationFieldViewTest extends TaxonomyTestBase {
   /**
    * Creates a test subject term, with translation.
    */
-  protected function setUpTerm() {
+  protected function setUpTerm(): void {
     $this->term = $this->createTerm($this->vocabulary, [
       'name' => $this->baseTagName,
       'langcode' => $this->baseLangcode,

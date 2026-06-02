@@ -1,0 +1,25 @@
+uuid: 772c8991-64d4-464d-ae61-3fc20ee72777
+langcode: en
+status: true
+dependencies:
+  module:
+    - system
+  theme:
+    - ministore
+_core:
+  default_config_hash: n_nlgjggHVfQt2H__zvLOKB2YtjPDbQ5tHijF9LE1aM
+id: ministore_site_branding
+theme: ministore
+region: header_left
+weight: 0
+provider: null
+plugin: system_branding_block
+settings:
+  id: system_branding_block
+  label: 'Site branding'
+  label_display: '0'
+  provider: system
+  use_site_logo: true
+  use_site_name: true
+  use_site_slogan: false
+visibility: {  }

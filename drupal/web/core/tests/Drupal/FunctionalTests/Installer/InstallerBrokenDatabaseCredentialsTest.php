@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Drupal\FunctionalTests\Installer;
 
 use Drupal\Core\Database\Database;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests the installer with incorrect connection info in settings.php.
- *
- * @group Installer
  */
+#[Group('Installer')]
+#[RunTestsInSeparateProcesses]
 class InstallerBrokenDatabaseCredentialsTest extends InstallerTestBase {
 
   /**
@@ -21,7 +23,7 @@ class InstallerBrokenDatabaseCredentialsTest extends InstallerTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function prepareEnvironment() {
+  protected function prepareEnvironment(): void {
     parent::prepareEnvironment();
     // Pre-configure database credentials in settings.php.
     $connection_info = Database::getConnectionInfo();
@@ -42,15 +44,23 @@ class InstallerBrokenDatabaseCredentialsTest extends InstallerTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUpSettings() {
+  protected function setUpSettings(): void {
     // This form will never be reached.
   }
 
   /**
    * {@inheritdoc}
    */
-  protected function setUpSite() {
+  protected function setUpSite(): void {
     // This form will never be reached.
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function setUpRequirementsProblem(): void {
+    // We are testing an update requirements problem, so we need to override the
+    // parent method.
   }
 
   /**
@@ -60,7 +70,7 @@ class InstallerBrokenDatabaseCredentialsTest extends InstallerTestBase {
     $this->assertSession()->titleEquals('Requirements problem | Drupal');
     $this->assertSession()->pageTextContains('Database settings');
     $this->assertSession()->pageTextContains('Resolve all issues below to continue the installation. For help configuring your database server,');
-    $this->assertSession()->pageTextContains('[Tip: Drupal was attempting to connect to the database server via a socket, but the socket file could not be found. A Unix socket file is used if you do not specify a host name or if you specify the special host name localhost. To connect via TPC/IP use an IP address (127.0.0.1 for IPv4) instead of "localhost". This message normally means that there is no MySQL server running on the system or that you are using an incorrect Unix socket file name when trying to connect to the server.]');
+    $this->assertSession()->pageTextContains('[Tip: Drupal was attempting to connect to the database server via a socket, but the socket file could not be found. A Unix socket file is used if you do not specify a host name or if you specify the special host name localhost. To connect via TCP/IP use an IP address (127.0.0.1 for IPv4) instead of "localhost". This message normally means that there is no MySQL server running on the system or that you are using an incorrect Unix socket file name when trying to connect to the server.]');
   }
 
 }

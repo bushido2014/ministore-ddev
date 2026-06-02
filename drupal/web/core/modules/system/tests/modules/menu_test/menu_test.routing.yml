@@ -151,6 +151,13 @@ menu_test.child_test_param_explicit:
   requirements:
     _permission: 'access child1 test page'
 
+menu_test.parent_url_test:
+  path: '/parent_url_test'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+  requirements:
+    _permission: 'access child1 test page'
+
 menu_test.menu_no_title_callback:
   path: '/menu_no_title_callback'
   defaults:
@@ -572,6 +579,14 @@ menu_test.breadcrumb2:
 
 menu_test.breadcrumb3:
   path: '/menu-test/breadcrumb1/breadcrumb2/breadcrumb3'
+  defaults:
+    _controller: '\Drupal\menu_test\Controller\MenuTestController::menuTestCallback'
+    _title: 'Normal title'
+  requirements:
+    _access: 'TRUE'
+
+menu_test.skippable-breadcrumb:
+  path: '/menu-test/skippable-breadcrumb'
   defaults:
     _controller: '\Drupal\menu_test\Controller\MenuTestController::menuTestCallback'
     _title: 'Normal title'

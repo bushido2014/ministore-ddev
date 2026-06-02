@@ -4,25 +4,27 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\block\Functional;
 
-use Drupal\Tests\BrowserTestBase;
 use Drupal\block\Entity\Block;
+use Drupal\Tests\BrowserTestBase;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests per-language block configuration.
- *
- * @group block
  */
+#[Group('block')]
+#[RunTestsInSeparateProcesses]
 class BlockLanguageTest extends BrowserTestBase {
 
   /**
    * An administrative user to configure the test environment.
+   *
+   * @var \Drupal\user\Entity\User|false
    */
   protected $adminUser;
 
   /**
-   * Modules to install.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['language', 'block', 'content_translation', 'node'];
 
@@ -72,7 +74,7 @@ class BlockLanguageTest extends BrowserTestBase {
   public function testLanguageBlockVisibility(): void {
     // Check if the visibility setting is available.
     $default_theme = $this->config('system.theme')->get('default');
-    $this->drupalGet('admin/structure/block/add/system_powered_by_block' . '/' . $default_theme);
+    $this->drupalGet('admin/structure/block/add/system_powered_by_block/' . $default_theme);
     // Ensure that the language visibility field is visible without a type
     // setting.
     $this->assertSession()->fieldExists('visibility[language][langcodes][en]');
@@ -84,7 +86,7 @@ class BlockLanguageTest extends BrowserTestBase {
       'id' => $this->randomMachineName(8),
       'region' => 'sidebar_first',
     ];
-    $this->drupalGet('admin/structure/block/add/system_powered_by_block' . '/' . $default_theme);
+    $this->drupalGet('admin/structure/block/add/system_powered_by_block/' . $default_theme);
     $this->submitForm($edit, 'Save block');
 
     // Change the default language.
@@ -162,7 +164,7 @@ class BlockLanguageTest extends BrowserTestBase {
 
     // Check if the visibility setting is available with a type setting.
     $default_theme = $this->config('system.theme')->get('default');
-    $this->drupalGet('admin/structure/block/add/system_powered_by_block' . '/' . $default_theme);
+    $this->drupalGet('admin/structure/block/add/system_powered_by_block/' . $default_theme);
     $this->assertSession()->fieldExists('visibility[language][langcodes][en]');
     $this->assertSession()->fieldExists('visibility[language][context_mapping][language]');
 
@@ -174,7 +176,7 @@ class BlockLanguageTest extends BrowserTestBase {
       'id' => $block_id,
       'region' => 'sidebar_first',
     ];
-    $this->drupalGet('admin/structure/block/add/system_powered_by_block' . '/' . $default_theme);
+    $this->drupalGet('admin/structure/block/add/system_powered_by_block/' . $default_theme);
     $this->submitForm($edit, 'Save block');
 
     // Interface negotiation depends on request arguments.

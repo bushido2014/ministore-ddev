@@ -5,15 +5,17 @@ declare(strict_types=1);
 namespace Drupal\Tests\file\Functional;
 
 use Drupal\file\Entity\File;
+use Drupal\node\Entity\Node;
 use Drupal\Tests\content_translation\Traits\ContentTranslationTestTrait;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 // cspell:ignore Scarlett Johansson
-
 /**
  * Uploads files to translated nodes.
- *
- * @group file
  */
+#[Group('file')]
+#[RunTestsInSeparateProcesses]
 class FileOnTranslatedEntityTest extends FileFieldTestBase {
 
   use ContentTranslationTestTrait;
@@ -217,13 +219,6 @@ class FileOnTranslatedEntityTest extends FileFieldTestBase {
     /** @var \Drupal\file\FileUsage\FileUsageInterface $file_usage */
     $file_usage = \Drupal::service('file.usage');
 
-    // Enable language selector on the page edit form.
-    $edit = [
-      'language_configuration[language_alterable]' => 1,
-    ];
-    $this->drupalGet('admin/structure/types/manage/page');
-    $this->submitForm($edit, 'Save');
-
     // Create a node and upload a file.
     $node = $this->drupalCreateNode(['type' => 'page']);
     $edit = [
@@ -238,11 +233,9 @@ class FileOnTranslatedEntityTest extends FileFieldTestBase {
 
     // Check if the file usage is tracked correctly when changing the original
     // language of an entity.
-    $edit = [
-      'langcode[0][value]' => 'fr',
-    ];
-    $this->drupalGet('node/' . $node->id() . '/edit');
-    $this->submitForm($edit, 'Save');
+    $node = Node::load($node->id());
+    $node->set('langcode', 'fr');
+    $node->save();
     $this->assertEquals($file_usage->listUsage($file), ['file' => ['node' => [$node->id() => '1']]]);
   }
 

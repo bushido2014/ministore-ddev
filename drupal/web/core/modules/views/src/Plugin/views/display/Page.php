@@ -65,7 +65,7 @@ class Page extends PathPluginBase {
    * @param array $configuration
    *   A configuration array containing information about the plugin instance.
    * @param string $plugin_id
-   *   The plugin_id for the plugin instance.
+   *   The plugin ID for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
    * @param \Drupal\Core\Routing\RouteProviderInterface $route_provider
@@ -421,7 +421,11 @@ class Page extends PathPluginBase {
           '#suffix' => '</div>',
           '#title' => $this->t('Parent menu link'),
           '#type' => 'radios',
-          '#options' => ['none' => $this->t('Already exists'), 'normal' => $this->t('Normal menu link'), 'tab' => $this->t('Menu tab')],
+          '#options' => [
+            'none' => $this->t('Already exists'),
+            'normal' => $this->t('Normal menu link'),
+            'tab' => $this->t('Menu tab'),
+          ],
           '#default_value' => $tab_options['type'],
         ];
         $form['tab_options']['title'] = [

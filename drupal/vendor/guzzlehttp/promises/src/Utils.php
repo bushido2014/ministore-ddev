@@ -76,9 +76,15 @@ final class Utils
                 'state' => PromiseInterface::FULFILLED,
                 'value' => $promise->wait(),
             ];
-        } catch (RejectionException $e) {
-            return ['state' => PromiseInterface::REJECTED, 'reason' => $e->getReason()];
         } catch (\Throwable $e) {
+            if ($e instanceof AggregateException) {
+                return ['state' => PromiseInterface::REJECTED, 'reason' => $e];
+            }
+
+            if ($e instanceof RejectionException) {
+                return ['state' => PromiseInterface::REJECTED, 'reason' => $e->getReason()];
+            }
+
             return ['state' => PromiseInterface::REJECTED, 'reason' => $e];
         }
     }
@@ -144,7 +150,9 @@ final class Utils
                 $results[$idx] = $value;
             },
             function ($reason, $idx, Promise $aggregate): void {
-                $aggregate->reject($reason);
+                if (Is::pending($aggregate)) {
+                    $aggregate->reject($reason);
+                }
             }
         )->then(function () use (&$results) {
             ksort($results);

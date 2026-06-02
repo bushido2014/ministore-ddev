@@ -13,9 +13,7 @@ use Drupal\views\Tests\ViewTestData;
 abstract class UserKernelTestBase extends ViewsKernelTestBase {
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['user_test_views', 'user', 'system', 'field'];
 
@@ -71,7 +69,13 @@ abstract class UserKernelTestBase extends ViewsKernelTestBase {
     // Setup a role with multiple permissions.
     $this->roleStorage->create(['id' => 'multiple_permissions', 'label' => 'Multiple permissions'])
       ->save();
-    user_role_grant_permissions('multiple_permissions', ['administer permissions', 'administer users', 'access user profiles']);
+    user_role_grant_permissions(
+      'multiple_permissions',
+      [
+        'administer permissions',
+        'administer users',
+        'access user profiles',
+      ]);
 
     // Setup a user without an extra role.
     $this->users[] = $account = $this->userStorage->create(['name' => $this->randomString()]);

@@ -7,6 +7,8 @@ namespace Drupal\KernelTests\Core\Plugin\Condition;
 use Drupal\Core\Path\CurrentPathStack;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\system\Tests\Routing\MockAliasManager;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -14,9 +16,9 @@ use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 
 /**
  * Tests system.module's request path condition.
- *
- * @group Plugin
  */
+#[Group('Plugin')]
+#[RunTestsInSeparateProcesses]
 class RequestPathTest extends KernelTestBase {
 
   /**
@@ -41,9 +43,7 @@ class RequestPathTest extends KernelTestBase {
   protected $requestStack;
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['system', 'user', 'field', 'path'];
 

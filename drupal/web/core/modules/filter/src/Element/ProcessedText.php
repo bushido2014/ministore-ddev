@@ -21,14 +21,13 @@ class ProcessedText extends RenderElementBase {
    * {@inheritdoc}
    */
   public function getInfo() {
-    $class = static::class;
     return [
       '#text' => '',
       '#format' => NULL,
       '#filter_types_to_skip' => [],
       '#langcode' => '',
       '#pre_render' => [
-        [$class, 'preRenderText'],
+        [static::class, 'preRenderText'],
       ],
     ];
   }
@@ -85,6 +84,11 @@ class ProcessedText extends RenderElementBase {
       $message = !$format ? 'Missing text format: %format.' : 'Disabled text format: %format.';
       static::logger('filter')->alert($message, ['%format' => $format_id]);
       $element['#markup'] = '';
+      // Associate the disabled text format's cache tag, to ensure re-enabling
+      // the text format invalidates the appropriate render cache items.
+      if ($format !== NULL) {
+        $element['#cache']['tags'] = Cache::mergeTags($element['#cache']['tags'] ?? [], $format->getCacheTags());
+      }
       return $element;
     }
 
@@ -153,6 +157,7 @@ class ProcessedText extends RenderElementBase {
    * Wraps the config factory.
    *
    * @return \Drupal\Core\Config\ConfigFactoryInterface
+   *   The config factory service.
    */
   protected static function configFactory() {
     return \Drupal::configFactory();

@@ -22,11 +22,12 @@ use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
  */
 class PassConfig
 {
-    public const TYPE_AFTER_REMOVING = 'afterRemoving';
+    // In the order of execution
     public const TYPE_BEFORE_OPTIMIZATION = 'beforeOptimization';
-    public const TYPE_BEFORE_REMOVING = 'beforeRemoving';
     public const TYPE_OPTIMIZE = 'optimization';
+    public const TYPE_BEFORE_REMOVING = 'beforeRemoving';
     public const TYPE_REMOVE = 'removing';
+    public const TYPE_AFTER_REMOVING = 'afterRemoving';
 
     private MergeExtensionConfigurationPass $mergePass;
     private array $afterRemovingPasses;
@@ -88,6 +89,7 @@ class PassConfig
             new CheckExceptionOnInvalidReferenceBehaviorPass(),
             new InlineServiceDefinitionsPass(new AnalyzeServiceReferencesPass()),
             new AnalyzeServiceReferencesPass(),
+            new CheckFactoryBuilderCircularReferencePass(),
             new DefinitionErrorExceptionPass(),
         ]];
 
@@ -98,7 +100,8 @@ class PassConfig
                 new AliasDeprecatedPublicServicesPass(),
             ],
             // Let build parameters be available as late as possible
-            -2048 => [new RemoveBuildParametersPass()],
+            // Don't remove array parameters since ResolveParameterPlaceHoldersPass doesn't resolve them
+            -2048 => [new RemoveBuildParametersPass(true)],
         ];
     }
 
@@ -128,7 +131,7 @@ class PassConfig
     {
         $property = $type.'Passes';
         if (!isset($this->$property)) {
-            throw new InvalidArgumentException(sprintf('Invalid type "%s".', $type));
+            throw new InvalidArgumentException(\sprintf('Invalid type "%s".', $type));
         }
 
         $passes = &$this->$property;

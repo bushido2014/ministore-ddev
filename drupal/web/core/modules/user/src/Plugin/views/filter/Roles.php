@@ -23,7 +23,7 @@ class Roles extends ManyToOne {
    * @param array $configuration
    *   A configuration array containing information about the plugin instance.
    * @param string $plugin_id
-   *   The plugin_id for the plugin instance.
+   *   The plugin ID for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
    * @param \Drupal\user\RoleStorageInterface $roleStorage
@@ -72,6 +72,7 @@ class Roles extends ManyToOne {
    * Override empty and not empty operator labels to be clearer for user roles.
    *
    * @return array[]
+   *   An array of operator labels for user roles.
    */
   public function operators() {
     $operators = parent::operators();

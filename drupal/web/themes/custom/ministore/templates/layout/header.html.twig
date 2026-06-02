@@ -1,0 +1,13 @@
+<header class="header" id="header">
+ 
+    <nav class="main-nav">
+      <div class="container d-flex j-between">
+         {{ page.header_left }}
+        {% if page.primary_menu %}
+        {{ page.primary_menu }}
+        {% endif %}
+         {{ page.header_right }}
+       
+      </div>
+    </nav>
+  </header>

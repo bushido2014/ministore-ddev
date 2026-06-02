@@ -4,6 +4,7 @@ namespace Drupal\media\Plugin\media\Source;
 
 use Drupal\Component\Render\PlainTextOutput;
 use Drupal\Component\Utility\Crypt;
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\Display\EntityFormDisplayInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
@@ -14,6 +15,7 @@ use Drupal\Core\File\Exception\FileException;
 use Drupal\Core\File\FileExists;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\GeneratedUrl;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Url;
@@ -141,7 +143,7 @@ class OEmbed extends MediaSourceBase implements OEmbedInterface {
    * @param array $configuration
    *   A configuration array containing information about the plugin instance.
    * @param string $plugin_id
-   *   The plugin_id for the plugin instance.
+   *   The plugin ID for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
@@ -302,6 +304,14 @@ class OEmbed extends MediaSourceBase implements OEmbedInterface {
       case 'html':
         return $resource->getHtml();
 
+      case self::METADATA_ATTRIBUTE_LINK_TARGET:
+        // @see \Drupal\media\Entity\MediaLinkTarget
+        return (new GeneratedUrl())
+          ->setGeneratedUrl($media_url)
+          // No processing means permanent cacheability: this only changes when
+          // the parent Media entity changes.
+          ->setCacheMaxAge(Cache::PERMANENT);
+
       default:
         break;
     }
@@ -455,7 +465,7 @@ class OEmbed extends MediaSourceBase implements OEmbedInterface {
         '%error' => $e->getMessage(),
       ]);
     }
-    catch (FileException $e) {
+    catch (FileException) {
       $this->logger->warning('Could not download remote thumbnail from {url}.', [
         'url' => $remote_thumbnail_url,
       ]);

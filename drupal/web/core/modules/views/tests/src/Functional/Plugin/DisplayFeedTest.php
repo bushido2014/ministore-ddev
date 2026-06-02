@@ -8,13 +8,16 @@ use Drupal\Core\Url;
 use Drupal\Tests\Traits\Core\PathAliasTestTrait;
 use Drupal\Tests\views\Functional\ViewTestBase;
 use Drupal\views\Views;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests the feed display plugin.
  *
- * @group views
  * @see \Drupal\views\Plugin\views\display\Feed
  */
+#[Group('views')]
+#[RunTestsInSeparateProcesses]
 class DisplayFeedTest extends ViewTestBase {
 
   use PathAliasTestTrait;
@@ -27,9 +30,7 @@ class DisplayFeedTest extends ViewTestBase {
   public static $testViews = ['test_display_feed', 'test_attached_disabled', 'test_feed_icon'];
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['block', 'node', 'views', 'views_test_rss'];
 

@@ -6,19 +6,20 @@ namespace Drupal\Tests\language\Kernel;
 
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\language\Entity\ConfigurableLanguage;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests the ConfigurableLanguage entity.
  *
- * @group language
  * @see \Drupal\language\Entity\ConfigurableLanguage.
  */
+#[Group('language')]
+#[RunTestsInSeparateProcesses]
 class ConfigurableLanguageTest extends KernelTestBase {
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['language'];
 

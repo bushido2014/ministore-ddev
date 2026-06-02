@@ -41,7 +41,7 @@ class TimestampFormatter extends FormatterBase {
    * Constructs a new TimestampFormatter.
    *
    * @param string $plugin_id
-   *   The plugin_id for the formatter.
+   *   The plugin ID for the formatter.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
    * @param \Drupal\Core\Field\FieldDefinitionInterface $field_definition
@@ -125,7 +125,10 @@ class TimestampFormatter extends FormatterBase {
     $date_formats = [];
     $requestTime = $this->time->getRequestTime();
     foreach ($this->dateFormatStorage->loadMultiple() as $machine_name => $value) {
-      $date_formats[$machine_name] = $this->t('@name format: @date', ['@name' => $value->label(), '@date' => $this->dateFormatter->format($requestTime, $machine_name)]);
+      $date_formats[$machine_name] = $this->t('@name format: @date', [
+        '@name' => $value->label(),
+        '@date' => $this->dateFormatter->format($requestTime, $machine_name),
+      ]);
     }
     $date_formats[static::CUSTOM_DATE_FORMAT] = $this->t('Custom');
 

@@ -9,18 +9,18 @@ use Drupal\language\Entity\ConfigurableLanguage;
 use Drupal\node\Entity\Node;
 use Drupal\node\Entity\NodeType;
 use Drupal\user\Entity\User;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests node owner functionality.
- *
- * @group Entity
  */
+#[Group('Entity')]
+#[RunTestsInSeparateProcesses]
 class NodeOwnerTest extends EntityKernelTestBase {
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['node', 'language'];
 
@@ -73,7 +73,7 @@ class NodeOwnerTest extends EntityKernelTestBase {
     $german->set('uid', ['target_id' => NULL]);
     $italian->set('uid', ['target_id' => NULL]);
 
-    // Entity::save() saves all translations!
+    // This saves all translations!
     $italian->save();
 
     $this->assertEquals(0, $english->getOwnerId());

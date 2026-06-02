@@ -26,8 +26,6 @@ use GuzzleHttp\RequestOptions;
  *
  * For a full list, refer to the methods of this class.
  *
- * @group decoupled_menus
- *
  * @see https://tools.ietf.org/html/draft-ietf-httpapi-linkset-00
  */
 abstract class LinksetControllerTestBase extends BrowserTestBase {
@@ -95,7 +93,7 @@ abstract class LinksetControllerTestBase extends BrowserTestBase {
    */
   protected function assertDrupalResponseCacheability($expect_cache, CacheableDependencyInterface $expected_metadata, Response $response) {
     $this->assertTrue(in_array($expect_cache, ['HIT', 'MISS', FALSE], TRUE), 'Cache is HIT, MISS, FALSE.');
-    $this->assertSame($expected_metadata->getCacheContexts(), explode(' ', $response->getHeaderLine('X-Drupal-Cache-Contexts')));
+    $this->assertSame(\Drupal::service('cache_contexts_manager')->optimizeTokens($expected_metadata->getCacheContexts()), explode(' ', $response->getHeaderLine('X-Drupal-Cache-Contexts')));
     $this->assertSame($expected_metadata->getCacheTags(), explode(' ', $response->getHeaderLine('X-Drupal-Cache-Tags')));
     $max_age_message = $expected_metadata->getCacheMaxAge();
     if ($max_age_message === 0) {

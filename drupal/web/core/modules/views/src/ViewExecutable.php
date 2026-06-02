@@ -8,6 +8,7 @@ use Drupal\Core\Logger\LoggerChannelTrait;
 use Drupal\Core\Routing\RouteProviderInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\views\Plugin\views\display\DisplayRouterInterface;
+use Drupal\views\Plugin\views\query\QueryPluginBase;
 use Drupal\views\Plugin\ViewsPluginManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -40,18 +41,18 @@ class ViewExecutable {
   /**
    * Whether or not the view has been built.
    *
-   * @todo Group with other static properties.
-   *
    * @var bool
+   *
+   * @todo Group with other static properties.
    */
   public $built = FALSE;
 
   /**
    * Whether the view has been executed/query has been run.
    *
-   * @todo Group with other static properties.
-   *
    * @var bool
+   *
+   * @todo Group with other static properties.
    */
   public $executed = FALSE;
 
@@ -156,7 +157,7 @@ class ViewExecutable {
   // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   public $feedIcons = [];
 
-  // Exposed widget input
+  // Exposed widget input.
 
   /**
    * All the form data from $form_state->getValues().
@@ -219,7 +220,7 @@ class ViewExecutable {
    *
    * @var \Drupal\views\Plugin\views\query\QueryPluginBase
    */
-  public $query = NULL;
+  public ?QueryPluginBase $query = NULL;
 
   /**
    * The used pager plugin used by the current executed view.
@@ -290,7 +291,7 @@ class ViewExecutable {
   /**
    * Allow to override the used database which is used for this query.
    *
-   * @var bool
+   * @var string|null
    */
   // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   public $base_database = NULL;
@@ -347,7 +348,7 @@ class ViewExecutable {
   public $footer;
 
   /**
-   * Stores the area handlers for the empty text which are initialized on this view.
+   * The area handlers for the empty text which are initialized on this view.
    *
    * An array containing Drupal\views\Plugin\views\area\AreaPluginBase objects.
    *
@@ -372,9 +373,9 @@ class ViewExecutable {
   /**
    * Does this view already have loaded its handlers.
    *
-   * @todo Group with other static properties.
-   *
    * @var bool
+   *
+   * @todo Group with other static properties.
    */
   public $inited;
 
@@ -399,9 +400,9 @@ class ViewExecutable {
   /**
    * Force the query to calculate the total number of results.
    *
-   * @todo Move to the query.
-   *
    * @var bool
+   *
+   * @todo Move to the query.
    */
   // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   public $get_total_rows;
@@ -409,9 +410,9 @@ class ViewExecutable {
   /**
    * Indicates if the sorts have been built.
    *
-   * @todo Group with other static properties.
-   *
    * @var bool
+   *
+   * @todo Group with other static properties.
    */
   // phpcs:ignore Drupal.NamingConventions.ValidVariableName.LowerCamelName
   public $build_sort;
@@ -1176,7 +1177,7 @@ class ViewExecutable {
         // use whatever value the argument handler now has, not the raw value.
         $substitutions["{{ raw_arguments.$id }}"] = strip_tags(Html::decodeEntities($argument->getValue()));
 
-        // Test to see if we should use this argument's title
+        // Test to see if we should use this argument's title.
         if (!empty($argument->options['title_enable']) && !empty($argument->options['title'])) {
           $title = $argument->options['title'];
         }
@@ -1297,7 +1298,8 @@ class ViewExecutable {
       $this->exposed_widgets = $exposed_form->renderExposedForm();
       if (!empty($this->build_info['abort'])) {
         $this->built = TRUE;
-        // Don't execute the query, $form_state, but rendering will still be executed to display the empty text.
+        // Don't execute the query, $form_state, but rendering will still be
+        // executed to display the empty text.
         $this->executed = TRUE;
         return empty($this->build_info['fail']);
       }
@@ -1383,7 +1385,7 @@ class ViewExecutable {
     $this->built = TRUE;
     $this->build_time = microtime(TRUE) - $start;
 
-    // Attach displays
+    // Attach displays.
     $this->attachDisplays();
 
     // Let modules modify the view just after building it.
@@ -1456,7 +1458,8 @@ class ViewExecutable {
       return TRUE;
     }
 
-    // Don't allow to use deactivated displays, but display them on the live preview.
+    // Don't allow to use deactivated displays, but display them on the live
+    // preview.
     if (!$this->display_handler->isEnabled() && empty($this->live_preview)) {
       $this->build_info['fail'] = TRUE;
       return FALSE;
@@ -1528,9 +1531,8 @@ class ViewExecutable {
 
     // @todo In the long run, it would be great to execute a view without
     //   the theme system at all. See https://www.drupal.org/node/2322623.
-    $active_theme = \Drupal::theme()->getActiveTheme();
-    $themes = array_reverse(array_keys($active_theme->getBaseThemeExtensions()));
-    $themes[] = $active_theme->getName();
+    /** @var \Drupal\Core\Theme\ThemeManager $theme_manager */
+    $theme_manager = \Drupal::theme();
 
     // Check for already-cached output.
     /** @var \Drupal\views\Plugin\views\cache\CachePluginBase $cache */
@@ -1582,12 +1584,9 @@ class ViewExecutable {
     $module_handler->invokeAll('views_pre_render', [$this]);
 
     // Let the themes play too, because prerender is a very themey thing.
-    foreach ($themes as $theme_name) {
-      $function = $theme_name . '_views_pre_render';
-      if (function_exists($function)) {
-        $function($this);
-      }
-    }
+    $theme_manager->invokeAllWith('views_pre_render', function (callable $hook_listener, string $theme) {
+      $hook_listener($this);
+    });
 
     $this->display_handler->output = $this->display_handler->render();
 
@@ -1599,12 +1598,10 @@ class ViewExecutable {
     $module_handler->invokeAll('views_post_render', [$this, &$this->display_handler->output, $cache]);
 
     // Let the themes play too, because post render is a very themey thing.
-    foreach ($themes as $theme_name) {
-      $function = $theme_name . '_views_post_render';
-      if (function_exists($function)) {
-        $function($this, $this->display_handler->output, $cache);
-      }
-    }
+    $theme_manager->invokeAllWith('views_post_render', function (callable $hook_listener, string $theme) use ($cache) {
+      $display_output = &$this->display_handler->output;
+      $hook_listener($this, $display_output, $cache);
+    });
 
     return $this->display_handler->output;
   }
@@ -1685,7 +1682,7 @@ class ViewExecutable {
 
     $this->preExecute($args);
 
-    // Execute the view
+    // Execute the view.
     $output = $this->display_handler->execute();
 
     $this->postExecute();
@@ -1747,7 +1744,7 @@ class ViewExecutable {
     // Allow hook_views_pre_view() to set the dom_id, then ensure it is set.
     $this->dom_id = !empty($this->dom_id) ? $this->dom_id : hash('sha256', $this->storage->id() . \Drupal::time()->getRequestTime() . mt_rand());
 
-    // Allow the display handler to set up for execution
+    // Allow the display handler to set up for execution.
     $this->display_handler->preExecute();
   }
 
@@ -1964,7 +1961,7 @@ class ViewExecutable {
     try {
       $this->routeProvider->getRouteByName($display_handler->getRouteName());
     }
-    catch (RouteNotFoundException $e) {
+    catch (RouteNotFoundException) {
       return FALSE;
     }
 
@@ -2333,10 +2330,10 @@ class ViewExecutable {
   public function getHandler($display_id, $type, $id) {
     // Get info about the types so we can get the right data.
     $types = static::getHandlerTypes();
-    // Initialize the display
+    // Initialize the display.
     $this->setDisplay($display_id);
 
-    // Get the existing configuration
+    // Get the existing configuration.
     $fields = $this->displayHandlers->get($display_id)->getOption($types[$type]['plural']);
 
     return $fields[$id] ?? NULL;
@@ -2556,6 +2553,33 @@ class ViewExecutable {
    * Magic method implementation to unserialize the view executable.
    */
   public function __wakeup(): void {
+    $reflection = new \ReflectionClass($this);
+    $defaults = $reflection->getDefaultProperties();
+    foreach ($reflection->getProperties() as $property) {
+      $name = $property->getName();
+      if ($name === 'serializationData') {
+        $expected_keys = [
+          'args',
+          'current_display',
+          'current_page',
+          'dom_id',
+          'executed',
+          'exposed_data',
+          'exposed_input',
+          'exposed_raw_input',
+          'storage',
+        ];
+        $actual_keys = array_keys($this->serializationData);
+        sort($actual_keys);
+        if ($actual_keys !== $expected_keys) {
+          throw new \RuntimeException(sprintf('Unexpected keys in %s::$%s.', __CLASS__, $name));
+        }
+      }
+      elseif (array_key_exists($name, $defaults) && $this->$name !== $defaults[$name]) {
+        throw new \RuntimeException(sprintf('Deserialization of %s::$%s is not allowed.', __CLASS__, $name));
+      }
+    }
+
     // There are cases, like in testing where we don't have a container
     // available.
     if (\Drupal::hasContainer() && !empty($this->serializationData)) {

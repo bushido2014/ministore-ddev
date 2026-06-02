@@ -5,23 +5,22 @@ declare(strict_types=1);
 namespace Drupal\Tests\language\Kernel;
 
 use Drupal\Core\Config\ConfigCollectionEvents;
+use Drupal\KernelTests\KernelTestBase;
 use Drupal\language\Config\LanguageConfigOverrideEvents;
 use Drupal\language\Entity\ConfigurableLanguage;
-use Drupal\KernelTests\KernelTestBase;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 // cspell:ignore deutsch
-
 /**
  * Ensures the language config overrides can be installed.
- *
- * @group language
  */
+#[Group('language')]
+#[RunTestsInSeparateProcesses]
 class LanguageConfigOverrideInstallTest extends KernelTestBase {
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['language', 'config_events_test', 'language_events_test'];
 

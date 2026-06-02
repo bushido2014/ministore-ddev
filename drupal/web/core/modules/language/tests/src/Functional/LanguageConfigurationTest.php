@@ -4,22 +4,22 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\language\Functional;
 
-use Drupal\Core\Url;
 use Drupal\Core\Language\LanguageInterface;
+use Drupal\Core\Url;
 use Drupal\language\Entity\ConfigurableLanguage;
 use Drupal\Tests\BrowserTestBase;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Adds and configures languages to check negotiation changes.
- *
- * @group language
  */
+#[Group('language')]
+#[RunTestsInSeparateProcesses]
 class LanguageConfigurationTest extends BrowserTestBase {
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['language'];
 
@@ -201,7 +201,7 @@ class LanguageConfigurationTest extends BrowserTestBase {
    *   description of the state of the check, for example: 'after re-ordering'.
    *   Defaults to 'by default'.
    */
-  protected function checkConfigurableLanguageWeight($state = 'by default') {
+  protected function checkConfigurableLanguageWeight($state = 'by default'): void {
     // Reset language list.
     \Drupal::languageManager()->reset();
     $max_configurable_language_weight = $this->getHighestConfigurableLanguageWeight();
@@ -216,7 +216,7 @@ class LanguageConfigurationTest extends BrowserTestBase {
    * @return int
    *   Maximum weight of configurable languages.
    */
-  protected function getHighestConfigurableLanguageWeight() {
+  protected function getHighestConfigurableLanguageWeight(): int {
     $max_weight = 0;
 
     $storage = $this->container->get('entity_type.manager')

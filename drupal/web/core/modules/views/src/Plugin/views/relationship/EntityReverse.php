@@ -32,7 +32,7 @@ class EntityReverse extends RelationshipPluginBase {
    * @param array $configuration
    *   A configuration array containing information about the plugin instance.
    * @param string $plugin_id
-   *   The plugin_id for the plugin instance.
+   *   The plugin ID for the plugin instance.
    * @param array $plugin_definition
    *   The plugin implementation definition.
    * @param \Drupal\views\Plugin\ViewsHandlerManager $join_manager
@@ -64,6 +64,7 @@ class EntityReverse extends RelationshipPluginBase {
     // field, using the base table's id field to the field's column.
     $views_data = Views::viewsData()->get($this->table);
     $left_field = $views_data['table']['base']['field'];
+    $id = !empty($this->definition['join_id']) ? $this->definition['join_id'] : 'standard';
 
     $first = [
       'left_table' => $this->tableAlias,
@@ -98,7 +99,7 @@ class EntityReverse extends RelationshipPluginBase {
       $second['type'] = 'INNER';
     }
 
-    $second_join = $this->joinManager->createInstance('standard', $second);
+    $second_join = $this->joinManager->createInstance($id, $second);
     $second_join->adjusted = TRUE;
 
     // Use a short alias for this:

@@ -2,11 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Drupal\Tests\Recipe\Core\core_recommended_front_end_theme\Functional;
+namespace Drupal\FunctionalTests\Recipe\Core\core_recommended_front_end_theme;
 
 use Drupal\Tests\system\Functional\Recipe\GenericRecipeTestBase;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
- * @group core_recommended_front_end_theme_recipe
+ * Tests Generic.
  */
+#[Group('core_recommended_front_end_theme_recipe')]
+#[RunTestsInSeparateProcesses]
 class GenericTest extends GenericRecipeTestBase {}

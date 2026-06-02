@@ -23,7 +23,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 #[MediaSource(
   id: "image",
   label: new TranslatableMarkup("Image"),
-  description: new TranslatableMarkup("Use local images for reusable media."),
+  description: new TranslatableMarkup("A locally hosted image file."),
   allowed_field_types: ["image"],
   default_thumbnail_filename: "no-thumbnail.png",
   thumbnail_alt_metadata_attribute: "thumbnail_alt_value"
@@ -64,7 +64,7 @@ class Image extends File {
    * @param array $configuration
    *   A configuration array containing information about the plugin instance.
    * @param string $plugin_id
-   *   The plugin_id for the plugin instance.
+   *   The plugin ID for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
@@ -144,7 +144,7 @@ class Image extends File {
         return $uri;
 
       case 'thumbnail_alt_value':
-        return $media->get($this->configuration['source_field'])->alt ?: parent::getMetadata($media, $name);
+        return $media->get($this->configuration['source_field'])->alt ?? parent::getMetadata($media, $name);
     }
 
     return parent::getMetadata($media, $name);

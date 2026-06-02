@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Drupal\KernelTests\Core\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\TypedData\EntityDataDefinition;
 use Drupal\Core\Entity\TypedData\EntityDataDefinitionInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
@@ -15,14 +15,17 @@ use Drupal\Core\TypedData\ComplexDataDefinitionInterface;
 use Drupal\Core\TypedData\DataReferenceDefinition;
 use Drupal\Core\TypedData\DataReferenceDefinitionInterface;
 use Drupal\Core\TypedData\ListDataDefinitionInterface;
+use Drupal\entity_test\Entity\EntityTestBundle;
 use Drupal\KernelTests\KernelTestBase;
-use Drupal\node\Entity\NodeType;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests deriving metadata of entity and field data types.
- *
- * @group Entity
  */
+#[Group('Entity')]
+#[RunTestsInSeparateProcesses]
 class EntityTypedDataDefinitionTest extends KernelTestBase {
 
   /**
@@ -33,17 +36,16 @@ class EntityTypedDataDefinitionTest extends KernelTestBase {
   protected $typedDataManager;
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
-  protected static $modules = ['system', 'filter', 'text', 'node', 'user'];
+  protected static $modules = ['system', 'filter', 'text', 'entity_test', 'user'];
 
   /**
    * {@inheritdoc}
    */
   protected function setUp(): void {
     parent::setUp();
+    $this->installEntitySchema('entity_test');
 
     $this->typedDataManager = $this->container->get('typed_data_manager');
   }
@@ -91,30 +93,32 @@ class EntityTypedDataDefinitionTest extends KernelTestBase {
    * Tests deriving metadata about entities.
    */
   public function testEntities(): void {
-    NodeType::create([
-      'type' => 'article',
-      'name' => 'Article',
+    $this->installEntitySchema('entity_test_with_bundle');
+    EntityTestBundle::create([
+      'id' => 'article',
+      'label' => 'Article',
     ])->save();
 
-    $entity_definition = EntityDataDefinition::create('node');
-    $bundle_definition = EntityDataDefinition::create('node', 'article');
+    $entity_definition = EntityDataDefinition::create('entity_test_with_bundle');
+    $bundle_definition = EntityDataDefinition::create('entity_test_with_bundle', 'article');
+
     // Entities are complex data.
     $this->assertNotInstanceOf(ListDataDefinitionInterface::class, $entity_definition);
     $this->assertInstanceOf(ComplexDataDefinitionInterface::class, $entity_definition);
 
     // Entity definitions should inherit their labels from the entity type.
-    $this->assertEquals('Content', $entity_definition->getLabel());
+    $this->assertEquals('Test entity with bundle', $entity_definition->getLabel());
     $this->assertEquals('Article', $bundle_definition->getLabel());
 
     $field_definitions = $entity_definition->getPropertyDefinitions();
     // Comparison should ignore the internal static cache, so compare the
     // serialized objects instead.
-    $this->assertEquals(serialize(\Drupal::service('entity_field.manager')->getBaseFieldDefinitions('node')), serialize($field_definitions));
-    $this->assertEquals('field_item:string', $entity_definition->getPropertyDefinition('title')->getItemDefinition()->getDataType());
+    $this->assertEquals(serialize(\Drupal::service('entity_field.manager')->getBaseFieldDefinitions('entity_test_with_bundle')), serialize($field_definitions));
+    $this->assertEquals('field_item:string', $entity_definition->getPropertyDefinition('name')->getItemDefinition()->getDataType());
     $this->assertNull($entity_definition->getMainPropertyName());
     $this->assertNull($entity_definition->getPropertyDefinition('invalid'));
 
-    $entity_definition2 = $this->typedDataManager->createDataDefinition('entity:node');
+    $entity_definition2 = $this->typedDataManager->createDataDefinition('entity:entity_test_with_bundle');
     $this->assertNotInstanceOf(ListDataDefinitionInterface::class, $entity_definition2);
     $this->assertInstanceOf(ComplexDataDefinitionInterface::class, $entity_definition2);
     $this->assertEquals(serialize($entity_definition), serialize($entity_definition2));
@@ -122,10 +126,10 @@ class EntityTypedDataDefinitionTest extends KernelTestBase {
     // Test that the definition factory creates the right definitions for all
     // entity data types variants.
     $this->assertEquals(serialize(EntityDataDefinition::create()), serialize($this->typedDataManager->createDataDefinition('entity')));
-    $this->assertEquals(serialize(EntityDataDefinition::create('node')), serialize($this->typedDataManager->createDataDefinition('entity:node')));
+    $this->assertEquals(serialize(EntityDataDefinition::create('entity_test_with_bundle')), serialize($this->typedDataManager->createDataDefinition('entity:entity_test_with_bundle')));
 
     // Config entities don't support typed data.
-    $entity_definition = EntityDataDefinition::create('node_type');
+    $entity_definition = EntityDataDefinition::create('entity_test_bundle');
     $this->assertEquals([], $entity_definition->getPropertyDefinitions());
   }
 
@@ -148,9 +152,8 @@ class EntityTypedDataDefinitionTest extends KernelTestBase {
 
   /**
    * Tests that an entity annotation can mark the data definition as internal.
-   *
-   * @dataProvider entityDefinitionIsInternalProvider
    */
+  #[DataProvider('entityDefinitionIsInternalProvider')]
   public function testEntityDefinitionIsInternal($internal, $expected): void {
     $entity_type_id = $this->randomMachineName();
 
@@ -173,7 +176,7 @@ class EntityTypedDataDefinitionTest extends KernelTestBase {
   /**
    * Provides test cases for testEntityDefinitionIsInternal.
    */
-  public static function entityDefinitionIsInternalProvider() {
+  public static function entityDefinitionIsInternalProvider(): array {
     return [
       'internal' => [TRUE, TRUE],
       'external' => [FALSE, FALSE],

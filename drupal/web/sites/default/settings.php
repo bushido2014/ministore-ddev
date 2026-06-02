@@ -897,3 +897,7 @@ if (getenv('IS_DDEV_PROJECT') == 'true' && file_exists(__DIR__ . '/settings.ddev
 # if (file_exists($app_root . '/' . $site_path . '/settings.local.php')) {
 #   include $app_root . '/' . $site_path . '/settings.local.php';
 # }
+if (!empty($_SERVER['HTTP_HOST']) && str_ends_with($_SERVER['HTTP_HOST'], '.app.github.dev')) {
+  $base_url = 'https://' . $_SERVER['HTTP_HOST'];
+  $_SERVER['HTTPS'] = 'on';
+}

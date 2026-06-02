@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Drupal\Tests\system\Functional\Form;
 
 use Drupal\Tests\BrowserTestBase;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests form storage from cached pages.
- *
- * @group Form
  */
+#[Group('Form')]
+#[RunTestsInSeparateProcesses]
 class FormStoragePageCacheTest extends BrowserTestBase {
 
   /**
@@ -37,10 +39,17 @@ class FormStoragePageCacheTest extends BrowserTestBase {
   /**
    * Return the build id of the current form.
    */
-  protected function getFormBuildId() {
+  protected function getFormBuildId(): string {
     // Ensure the hidden 'form_build_id' field is unique.
     $this->assertSession()->elementsCount('xpath', '//input[@name="form_build_id"]', 1);
-    return (string) $this->assertSession()->hiddenFieldExists('form_build_id')->getAttribute('value');
+    $form_build_id_element = $this->assertSession()->hiddenFieldExists('form_build_id');
+    // Test that the autocomplete attribute is set to off to prevent Firefox and
+    // similar browsers from retaining the form build ID on browser reload.
+    // @todo Add actual testing that the form build ID is not retained once
+    // Firefox is included in automated testing in
+    // https://www.drupal.org/project/drupal/issues/3462680.
+    $this->assertSame('off', $form_build_id_element->getAttribute('autocomplete'));
+    return (string) $form_build_id_element->getAttribute('value');
   }
 
   /**

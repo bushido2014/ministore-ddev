@@ -5,17 +5,19 @@ declare(strict_types=1);
 namespace Drupal\Tests\Component\Plugin\Attribute;
 
 use Composer\Autoload\ClassLoader;
-use Drupal\Component\Plugin\Discovery\AttributeClassDiscovery;
 use Drupal\Component\FileCache\FileCacheFactory;
+use Drupal\Component\Plugin\Discovery\AttributeClassDiscovery;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
-use com\example\PluginNamespace\CustomPlugin;
-use com\example\PluginNamespace\CustomPlugin2;
 
 /**
- * @coversDefaultClass \Drupal\Component\Plugin\Discovery\AttributeClassDiscovery
- * @group Attribute
- * @runTestsInSeparateProcesses
+ * Tests Drupal\Component\Plugin\Discovery\AttributeClassDiscovery.
  */
+#[CoversClass(AttributeClassDiscovery::class)]
+#[Group('Attribute')]
+#[RunTestsInSeparateProcesses]
 class AttributeClassDiscoveryTest extends TestCase {
 
   /**
@@ -30,34 +32,33 @@ class AttributeClassDiscoveryTest extends TestCase {
     FileCacheFactory::setPrefix('prefix');
 
     // Normally the attribute classes would be autoloaded.
-    include_once __DIR__ . '/Fixtures/CustomPlugin.php';
+    include_once __DIR__ . '/../../../../../fixtures/plugins/CustomPlugin.php';
 
     $additionalClassLoader = new ClassLoader();
-    $additionalClassLoader->addPsr4("com\\example\\PluginNamespace\\", __DIR__ . "/Fixtures/Plugins/PluginNamespace");
+    $additionalClassLoader->addPsr4("com\\example\\PluginNamespace\\", __DIR__ . "/../../../../../fixtures/plugins/Plugin/PluginNamespace");
     $additionalClassLoader->register(TRUE);
   }
 
   /**
-   * @covers ::__construct
-   * @covers ::getPluginNamespaces
+   * @legacy-covers ::__construct
+   * @legacy-covers ::getPluginNamespaces
    */
   public function testGetPluginNamespaces(): void {
     // Path to the classes which we'll discover and parse annotation.
     $discovery = new AttributeClassDiscovery(['com/example' => [__DIR__]]);
 
     $reflection = new \ReflectionMethod($discovery, 'getPluginNamespaces');
-    $reflection->setAccessible(TRUE);
 
     $result = $reflection->invoke($discovery);
     $this->assertEquals(['com/example' => [__DIR__]], $result);
   }
 
   /**
-   * @covers ::getDefinitions
-   * @covers ::prepareAttributeDefinition
+   * @legacy-covers ::getDefinitions
+   * @legacy-covers ::prepareAttributeDefinition
    */
   public function testGetDefinitions(): void {
-    $discovery = new AttributeClassDiscovery(['com\example' => [__DIR__ . '/Fixtures/Plugins']]);
+    $discovery = new AttributeClassDiscovery(['com\example' => [__DIR__ . "/../../../../../fixtures/plugins/Plugin"]]);
     $this->assertEquals([
       'discovery_test_1' => [
         'id' => 'discovery_test_1',
@@ -65,7 +66,7 @@ class AttributeClassDiscoveryTest extends TestCase {
       ],
     ], $discovery->getDefinitions());
 
-    $custom_annotation_discovery = new AttributeClassDiscovery(['com\example' => [__DIR__ . '/Fixtures/Plugins']], CustomPlugin::class);
+    $custom_annotation_discovery = new AttributeClassDiscovery(['com\example' => [__DIR__ . "/../../../../../fixtures/plugins/Plugin"]], 'com\example\PluginNamespace\CustomPlugin');
     $this->assertEquals([
       'discovery_test_1' => [
         'id' => 'discovery_test_1',
@@ -74,7 +75,7 @@ class AttributeClassDiscoveryTest extends TestCase {
       ],
     ], $custom_annotation_discovery->getDefinitions());
 
-    $empty_discovery = new AttributeClassDiscovery(['com\example' => [__DIR__ . '/Fixtures/Plugins']], CustomPlugin2::class);
+    $empty_discovery = new AttributeClassDiscovery(['com\example' => [__DIR__ . "/../../../../../fixtures/plugins/Plugin"]], 'com\example\PluginNamespace\CustomPlugin2');
     $this->assertEquals([], $empty_discovery->getDefinitions());
   }
 

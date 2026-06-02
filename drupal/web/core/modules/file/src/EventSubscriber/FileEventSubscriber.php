@@ -7,6 +7,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\File\Event\FileUploadSanitizeNameEvent;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -28,6 +29,7 @@ class FileEventSubscriber implements EventSubscriberInterface {
    */
   public function __construct(
     protected ConfigFactoryInterface $configFactory,
+    #[Autowire(service: 'transliteration')]
     protected TransliterationInterface $transliteration,
     protected LanguageManagerInterface $languageManager,
   ) {}
@@ -90,7 +92,7 @@ class FileEventSubscriber implements EventSubscriberInterface {
       $filename = preg_replace('/(_)_+|(\.)\.+|(-)-+/u', $replacement, $filename);
       // Replace multiple separators with single one.
       $filename = preg_replace('/(_|\.|\-)[(_|\.|\-)]+/u', $replacement, $filename);
-      $filename = preg_replace('/' . preg_quote($replacement) . '[' . preg_quote($replacement) . ']*/u', $replacement, $filename);
+      $filename = preg_replace('/' . preg_quote($replacement, NULL) . '[' . preg_quote($replacement, NULL) . ']*/u', $replacement, $filename);
       // Remove replacement character from the end of the filename.
       $filename = rtrim($filename, $replacement);
 

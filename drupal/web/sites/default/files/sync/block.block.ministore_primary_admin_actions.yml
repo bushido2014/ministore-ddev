@@ -1,0 +1,20 @@
+uuid: 29bc9d07-1ab5-42ec-ab1c-436a2ff6af14
+langcode: en
+status: false
+dependencies:
+  theme:
+    - ministore
+_core:
+  default_config_hash: Q9_2whdOj1YIomfvsIfopROW4FT_X5pY0DjdOiOaQ5U
+id: ministore_primary_admin_actions
+theme: ministore
+region: header_left
+weight: -5
+provider: null
+plugin: local_actions_block
+settings:
+  id: local_actions_block
+  label: 'Primary admin actions'
+  label_display: '0'
+  provider: core
+visibility: {  }

@@ -2,11 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Drupal\Tests\Recipe\Core\content_editor_role\Functional;
+namespace Drupal\FunctionalTests\Recipe\Core\content_editor_role;
 
 use Drupal\Tests\system\Functional\Recipe\GenericRecipeTestBase;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
- * @group core_content_editor_role_recipe
+ * Tests Generic.
  */
+#[Group('core_content_editor_role_recipe')]
+#[RunTestsInSeparateProcesses]
 class GenericTest extends GenericRecipeTestBase {}

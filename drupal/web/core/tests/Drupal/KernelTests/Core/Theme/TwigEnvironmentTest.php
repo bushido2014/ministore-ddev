@@ -11,22 +11,22 @@ use Drupal\Core\Site\Settings;
 use Drupal\Core\Template\TwigEnvironment;
 use Drupal\Core\Template\TwigPhpStorageCache;
 use Drupal\KernelTests\KernelTestBase;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Symfony\Component\DependencyInjection\Definition;
-use Twig\Environment;
 use Twig\Error\LoaderError;
 
 /**
  * Tests the twig environment.
  *
  * @see \Drupal\Core\Template\TwigEnvironment
- * @group Twig
  */
+#[Group('Twig')]
+#[RunTestsInSeparateProcesses]
 class TwigEnvironmentTest extends KernelTestBase {
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['system'];
 
@@ -186,7 +186,7 @@ class TwigEnvironmentTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public function register(ContainerBuilder $container) {
+  public function register(ContainerBuilder $container): void {
     parent::register($container);
 
     $definition = new Definition('Twig\Loader\FilesystemLoader', [[sys_get_temp_dir()]]);
@@ -218,17 +218,6 @@ TWIG;
     file_put_contents($template_file, $template_after);
     $output = $environment->load(basename($template_file))->render();
     $this->assertEquals($template_before, $output);
-
-    $environment->invalidate();
-    // Manually change $templateClassPrefix to force a different template
-    // classname, as the other class is still loaded. This wouldn't be a problem
-    // on a real site where you reload the page.
-    $reflection = new \ReflectionClass(Environment::class);
-    $property_reflection = $reflection->getProperty('templateClassPrefix');
-    $property_reflection->setValue($environment, 'otherPrefix');
-
-    $output = $environment->load(basename($template_file))->render();
-    $this->assertEquals($template_after, $output);
   }
 
   /**

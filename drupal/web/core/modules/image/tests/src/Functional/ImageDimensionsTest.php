@@ -8,12 +8,14 @@ use Drupal\Core\File\FileExists;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\Tests\BrowserTestBase;
 use Drupal\Tests\TestFileCreationTrait;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests that images have correct dimensions when styled.
- *
- * @group image
  */
+#[Group('image')]
+#[RunTestsInSeparateProcesses]
 class ImageDimensionsTest extends BrowserTestBase {
 
   use TestFileCreationTrait {
@@ -22,9 +24,7 @@ class ImageDimensionsTest extends BrowserTestBase {
   }
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['image', 'image_module_test'];
 
@@ -33,6 +33,9 @@ class ImageDimensionsTest extends BrowserTestBase {
    */
   protected $defaultTheme = 'stark';
 
+  /**
+   * {@inheritdoc}
+   */
   protected $profile = 'testing';
 
   /**
@@ -51,7 +54,7 @@ class ImageDimensionsTest extends BrowserTestBase {
     /** @var \Drupal\image\ImageStyleInterface $style */
     $style = ImageStyle::create(['name' => 'test', 'label' => 'Test']);
     $style->save();
-    $generated_uri = 'public://styles/test/public/' . $file_system->basename($original_uri);
+    $generated_uri = 'public://styles/test/public/' . basename($original_uri);
     /** @var \Drupal\Core\File\FileUrlGeneratorInterface $file_url_generator */
     $file_url_generator = \Drupal::service('file_url_generator');
     $url = $file_url_generator->transformRelative($style->buildUrl($original_uri));
@@ -111,7 +114,8 @@ class ImageDimensionsTest extends BrowserTestBase {
     $this->assertEquals(60, $image_file->getWidth());
     $this->assertEquals(120, $image_file->getHeight());
 
-    // Scale an image that is higher than it is wide (rotated by previous effect).
+    // Scale an image that is higher than it is wide (rotated by previous
+    // effect).
     $effect = [
       'id' => 'image_scale',
       'data' => [
@@ -227,6 +231,7 @@ class ImageDimensionsTest extends BrowserTestBase {
     $style->save();
     // @todo Uncomment this once
     //   https://www.drupal.org/project/drupal/issues/2670966 is resolved.
+    // phpcs:ignore
     // $this->assertEquals('<img src="' . $url . '" width="41" height="41" alt="" class="image-style-test" />', $this->getImageTag($variables));
     $this->assertFileDoesNotExist($generated_uri);
     $this->drupalGet($this->getAbsoluteUrl($url));
@@ -269,7 +274,7 @@ class ImageDimensionsTest extends BrowserTestBase {
       '#height' => 20,
     ];
     // PNG original image. Should be resized to 100x100.
-    $generated_uri = 'public://styles/test_uri/public/' . $file_system->basename($original_uri);
+    $generated_uri = 'public://styles/test_uri/public/' . basename($original_uri);
     $url = \Drupal::service('file_url_generator')->transformRelative($style->buildUrl($original_uri));
     $this->assertEquals('<img src="' . $url . '" width="100" height="100" alt="" loading="lazy" />', $this->getImageTag($variables));
     $this->assertFileDoesNotExist($generated_uri);
@@ -282,7 +287,7 @@ class ImageDimensionsTest extends BrowserTestBase {
     // GIF original image. Should be resized to 50x50.
     $file = $files[1];
     $original_uri = $file_system->copy($file->uri, 'public://', FileExists::Rename);
-    $generated_uri = 'public://styles/test_uri/public/' . $file_system->basename($original_uri);
+    $generated_uri = 'public://styles/test_uri/public/' . basename($original_uri);
     $url = $file_url_generator->transformRelative($style->buildUrl($original_uri));
     $variables['#uri'] = $original_uri;
     $this->assertEquals('<img src="' . $url . '" width="50" height="50" alt="" loading="lazy" />', $this->getImageTag($variables));
@@ -305,7 +310,7 @@ class ImageDimensionsTest extends BrowserTestBase {
    * method and pass each time a fresh array so that $variables won't get
    * altered and the element is re-rendered each time.
    */
-  protected function getImageTag($variables) {
+  protected function getImageTag($variables): string {
     return str_replace("\n", '', (string) \Drupal::service('renderer')->renderRoot($variables));
   }
 

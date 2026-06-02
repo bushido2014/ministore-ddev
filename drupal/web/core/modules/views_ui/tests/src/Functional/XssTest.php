@@ -4,17 +4,18 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\views_ui\Functional;
 
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+
 /**
  * Tests the Xss vulnerability.
- *
- * @group views_ui
  */
+#[Group('views_ui')]
+#[RunTestsInSeparateProcesses]
 class XssTest extends UITestBase {
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['node', 'user', 'views_ui', 'views_ui_test'];
 
@@ -23,6 +24,9 @@ class XssTest extends UITestBase {
    */
   protected $defaultTheme = 'stark';
 
+  /**
+   * Tests escaping with the test view.
+   */
   public function testViewsUi(): void {
     $this->drupalGet('admin/structure/views/view/sa_contrib_2013_035');
     // Verify that the field admin label is properly escaped.
@@ -39,6 +43,8 @@ class XssTest extends UITestBase {
    */
   public function testNoDoubleEscaping(): void {
     $this->drupalGet('admin/structure/views');
+    $this->assertSession()->pageTextContains('sa_contrib_2013_035');
+    $this->assertSession()->pageTextContains('Page (/foobar )');
     $this->assertSession()->assertNoEscaped('&lt;');
 
     $this->drupalGet('admin/structure/views/view/sa_contrib_2013_035');

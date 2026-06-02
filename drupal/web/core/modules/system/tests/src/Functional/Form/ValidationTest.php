@@ -6,19 +6,18 @@ namespace Drupal\Tests\system\Functional\Form;
 
 use Drupal\Core\Render\Element;
 use Drupal\Tests\BrowserTestBase;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests form processing and alteration via form validation handlers.
- *
- * @group Form
- * @group #slow
  */
+#[Group('Form')]
+#[RunTestsInSeparateProcesses]
 class ValidationTest extends BrowserTestBase {
 
   /**
-   * Modules to enable.
-   *
-   * @var array
+   * {@inheritdoc}
    */
   protected static $modules = ['form_test'];
 
