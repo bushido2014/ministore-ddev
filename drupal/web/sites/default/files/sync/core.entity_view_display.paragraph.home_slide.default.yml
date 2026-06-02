@@ -1,0 +1,21 @@
+uuid: 2d82bc39-c43f-49e2-8554-c6659c5c22ab
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.home_slide.field_home_slide
+    - paragraphs.paragraphs_type.home_slide
+id: paragraph.home_slide.default
+targetEntityType: paragraph
+bundle: home_slide
+mode: default
+content:
+  field_home_slide:
+    type: entity_reference_label
+    label: hidden
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 0
+    region: content
+hidden: {  }

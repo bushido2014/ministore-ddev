@@ -1,0 +1,51 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Functions to support theming in the ministore theme.
+ */
+
+/**
+ * Implements hook_preprocess_HOOK() for html.html.twig.
+ */
+function ministore_preprocess_html(array &$variables): void {
+
+$route_name = \Drupal::routeMatch()->getRouteName();
+
+  
+  $variables['attributes']['class'][] = 'page--' . strtr($route_name, '.', '-');
+
+  // Exemplu: adaugă clasa după tipul de nod
+  if ($node = \Drupal::routeMatch()->getParameter('node')) {
+    if ($node instanceof \Drupal\node\NodeInterface) {
+      $variables['attributes']['class'][] = 'node--type-' . $node->bundle();
+    }
+  }
+
+
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for page.html.twig.
+ */
+function ministore_preprocess_page(array &$variables): void {
+
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for node.html.twig.
+ */
+function ministore_preprocess_node(array &$variables): void {
+   if ($variables['node']->bundle() == 'slider') {
+    $variables['#attached']['library'][] = 'ministore/swiper';
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for menu.
+ */
+function ministore_preprocess_menu__main(array &$variables): void {
+   $variables['attributes']['class'][] = 'main-menu';
+}

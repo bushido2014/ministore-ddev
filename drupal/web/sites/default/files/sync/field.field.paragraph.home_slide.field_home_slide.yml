@@ -1,0 +1,29 @@
+uuid: 2fb00489-b1f9-4f53-a7ea-70d9ca7e7722
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_home_slide
+    - node.type.home_slide
+    - paragraphs.paragraphs_type.home_slide
+id: paragraph.home_slide.field_home_slide
+field_name: field_home_slide
+entity_type: paragraph
+bundle: home_slide
+label: 'Home Slide'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      home_slide: home_slide
+    sort:
+      field: _none
+      direction: ASC
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

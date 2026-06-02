@@ -1,0 +1,21 @@
+uuid: 5bc74a17-7a61-4b17-b001-7e3a71c21c28
+langcode: en
+status: true
+dependencies:
+  module:
+    - entity_reference_revisions
+    - node
+    - paragraphs_library
+id: node.field_home_slide
+field_name: field_home_slide
+entity_type: node
+type: entity_reference_revisions
+settings:
+  target_type: paragraphs_library_item
+module: entity_reference_revisions
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

@@ -1,0 +1,25 @@
+uuid: 42e296b8-6a80-4600-866d-28ce6c9ac193
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.home_slide.field_home_slide
+    - paragraphs.paragraphs_type.home_slide
+id: paragraph.home_slide.default
+targetEntityType: paragraph
+bundle: home_slide
+mode: default
+content:
+  field_home_slide:
+    type: entity_reference_autocomplete
+    weight: 0
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+hidden:
+  created: true
+  status: true

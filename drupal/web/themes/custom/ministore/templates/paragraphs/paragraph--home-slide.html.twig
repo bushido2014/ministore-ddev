@@ -1,0 +1,59 @@
+{{ attach_library('ministore/swiper') }}
+<section class="home-slide">
+  <div class="container">
+
+    <div class="swiper home-slider">
+      <div class="swiper-wrapper">
+
+        {% for item in paragraph.field_home_slide %}
+          {% set home_slide = item.entity %}
+          {% if home_slide %}
+            <div class="swiper-slide home-sl">
+              <div class="d-grid cols-2">
+
+                <div class="content">
+                  <h1 class="content-title">{{ home_slide.label }}</h1>
+
+                {#  {% if home_slide.field_link.uri %}
+
+                    <a href="{{ home_slide.field_link.uri }}" class="btn btn--primary">
+                      {{ home_slide.field_link.title ?: 'Shop Now' }}
+                    </a>
+                  
+                  {% endif %} #}
+
+                  {% if home_slide.field_link.uri %}
+  {% set link = home_slide.field_link %}
+  <a href="{{ link.getUrl().toString() }}" class="btn btn--primary">
+    {{ link.title ?: 'Shop Now' }}
+  </a>
+{% endif %}
+
+
+
+                </div>
+
+                <div class="img">
+                  {% if home_slide.field_image_slide.entity %}
+                    {% set media = home_slide.field_image_slide.entity %}
+                    {% set image = media.field_media_image.entity %}
+                    {% if image %}
+                      <img
+                        src="{{ file_url(image.uri.value) }}"
+                        alt="{{ media.field_media_image.alt }}"
+                        loading="lazy"
+                      />
+                    {% endif %}
+                  {% endif %}
+                </div>
+
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+
+      </div>
+    </div>
+
+  </div>
+</section>

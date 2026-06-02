@@ -1,0 +1,10 @@
+uuid: 9e6d8a7c-3b9b-4e50-af67-5d1ba60b92ed
+langcode: en
+status: true
+dependencies: {  }
+id: home_slide
+label: 'Home Slide'
+icon_uuid: null
+icon_default: null
+description: ''
+behavior_plugins: {  }
