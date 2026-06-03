@@ -31,3 +31,41 @@
 .serices-content p {
   font-size: 1.2em;
 }
+
+.login-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+ 
+}
+
+.login-page .login-title {
+  text-align: center;
+}
+
+.login-form-wrapper input.form-text, .form-input
+.login-form-wrapper input.form-submit {
+  padding: 0.75rem 1rem;
+  border: 1px solid #ccc;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  width: 100%;
+  display: block;
+}
+
+.login-form-wrapper input.form-submit {
+  background-color: #212529;
+  border-color: #212529;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s;
+  width: 100%;
+  display: block;
+  padding: 0.70rem 1rem;
+}
+
+.login-form-wrapper input.form-submit:hover {
+  background-color: #1c1f23;
+}

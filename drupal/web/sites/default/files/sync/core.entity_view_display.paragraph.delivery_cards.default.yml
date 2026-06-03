@@ -1,0 +1,24 @@
+uuid: b16a08a9-64b5-4145-87bd-6a3d5dd9f8e9
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.delivery_cards.field_card_item
+    - paragraphs.paragraphs_type.delivery_cards
+  module:
+    - entity_reference_revisions
+id: paragraph.delivery_cards.default
+targetEntityType: paragraph
+bundle: delivery_cards
+mode: default
+content:
+  field_card_item:
+    type: entity_reference_revisions_entity_view
+    label: hidden
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    weight: 0
+    region: content
+hidden: {  }

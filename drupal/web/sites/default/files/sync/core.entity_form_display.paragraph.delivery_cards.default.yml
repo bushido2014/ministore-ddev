@@ -1,0 +1,35 @@
+uuid: c2d1fba7-4481-4eae-b4df-ecd3ee26b20b
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.delivery_cards.field_card_item
+    - paragraphs.paragraphs_type.delivery_cards
+  module:
+    - paragraphs
+id: paragraph.delivery_cards.default
+targetEntityType: paragraph
+bundle: delivery_cards
+mode: default
+content:
+  field_card_item:
+    type: paragraphs
+    weight: 0
+    region: content
+    settings:
+      title: Paragraph
+      title_plural: Paragraphs
+      edit_mode: open
+      closed_mode: summary
+      autocollapse: none
+      closed_mode_threshold: 0
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: ''
+      features:
+        collapse_edit_all: collapse_edit_all
+        duplicate: duplicate
+    third_party_settings: {  }
+hidden:
+  created: true
+  status: true

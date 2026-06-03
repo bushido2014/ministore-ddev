@@ -1,0 +1,21 @@
+uuid: 93b45119-ec54-4ce3-bd85-5d10a400abcc
+langcode: en
+status: true
+dependencies:
+  module:
+    - entity_reference_revisions
+    - node
+    - paragraphs_library
+id: node.field_section_delivery
+field_name: field_section_delivery
+entity_type: node
+type: entity_reference_revisions
+settings:
+  target_type: paragraphs_library_item
+module: entity_reference_revisions
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

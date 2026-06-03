@@ -1,0 +1,17 @@
+{#
+/**
+ * @file
+ * Theme override for user login page.
+ */
+#}
+
+
+
+{% block content %}
+  <div class="login-page">
+    <div class="login-form-wrapper">
+      <h2 class="login-title">{{ 'Login'|t }}</h2>
+      {{ page.content }}
+    </div>
+  </div>
+{% endblock %}

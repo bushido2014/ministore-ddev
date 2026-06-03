@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - field.field.node.home.field_home_slide
+    - field.field.node.home.field_section_delivery
     - node.type.home
   module:
     - entity_reference_revisions
@@ -21,6 +22,15 @@ content:
       link: ''
     third_party_settings: {  }
     weight: 101
+    region: content
+  field_section_delivery:
+    type: entity_reference_revisions_entity_view
+    label: hidden
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    weight: 102
     region: content
   links:
     settings: {  }

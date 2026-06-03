@@ -1,0 +1,21 @@
+uuid: ad7d9c5d-8a97-4231-87fc-71140028e71d
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_card_icon
+    - paragraphs.paragraphs_type.card_item
+  module:
+    - fontawesome
+id: paragraph.card_item.field_card_icon
+field_name: field_card_icon
+entity_type: paragraph
+bundle: card_item
+label: 'Card Icon'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: fontawesome_icon

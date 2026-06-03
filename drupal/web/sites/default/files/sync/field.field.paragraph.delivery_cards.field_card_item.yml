@@ -1,0 +1,40 @@
+uuid: f168c2b5-a0f1-48e1-9e50-68da67af806c
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_card_item
+    - paragraphs.paragraphs_type.card_item
+    - paragraphs.paragraphs_type.delivery_cards
+  module:
+    - entity_reference_revisions
+id: paragraph.delivery_cards.field_card_item
+field_name: field_card_item
+entity_type: paragraph
+bundle: delivery_cards
+label: 'Card Item'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:paragraph'
+  handler_settings:
+    target_bundles:
+      card_item: card_item
+    negate: 0
+    target_bundles_drag_drop:
+      card_item:
+        weight: 5
+        enabled: true
+      delivery_cards:
+        weight: 6
+        enabled: false
+      from_library:
+        weight: 7
+        enabled: false
+      home_slide:
+        weight: 8
+        enabled: false
+field_type: entity_reference_revisions

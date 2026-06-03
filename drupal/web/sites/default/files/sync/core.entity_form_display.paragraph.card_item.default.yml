@@ -1,0 +1,42 @@
+uuid: f6319bda-6113-4aa4-8d4a-e0997dd9d075
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.card_item.field_card_icon
+    - field.field.paragraph.card_item.field_card_text
+    - field.field.paragraph.card_item.field_card_title
+    - paragraphs.paragraphs_type.card_item
+  module:
+    - fontawesome
+    - text
+id: paragraph.card_item.default
+targetEntityType: paragraph
+bundle: card_item
+mode: default
+content:
+  field_card_icon:
+    type: fontawesome_icon_widget
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_card_text:
+    type: text_textarea
+    weight: 2
+    region: content
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+  field_card_title:
+    type: string_textfield
+    weight: 1
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+hidden:
+  created: true
+  status: true
