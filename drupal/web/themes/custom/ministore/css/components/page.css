@@ -12,23 +12,23 @@
   text-transform: uppercase;
   margin-bottom: 2rem;
 }
-.services-item .d-flex {
+.delivery-item .d-flex {
   gap:8px;
   align-items:normal;
 }
-.serices-content h3 {
+.delivery-content h3 {
   font-size:1.5rem;
   font-weight: 300;
   text-transform: uppercase;
 }
 
-.services-icon svg {
+.delivery-icon svg {
   width: 26px;
   height: 26px;
   color: var(--color-primary);
 }
 
-.serices-content p {
+.delivery-content p {
   font-size: 1.2em;
 }
 
@@ -68,4 +68,35 @@
 
 .login-form-wrapper input.form-submit:hover {
   background-color: #1c1f23;
+}
+
+
+.scroll-top.active{
+    visibility: visible;
+    opacity: 1;
+  color: var(--color-light-blue);
+}
+
+
+.scroll-top {
+    padding-top:8px;
+    position: fixed;
+    visibility: hidden;
+    opacity: 0;
+    right: 15px;
+    bottom: 15px;
+    z-index: 99999;
+    background-color: var(--color-secondary);
+    color: var(--color-white); 
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    transition: all 0.4s;
+}
+.scroll-top__icon {
+ justify-content: center;
+}
+
+.fa-arrow-up {
+    font-size: 1.70rem;
 }

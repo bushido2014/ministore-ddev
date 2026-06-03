@@ -59,6 +59,10 @@
   
 {% endif %}
     <js-bottom-placeholder token="{{ placeholder_token }}">
-      <a href="#" id="scroll-top" class="scroll-top d-flex"><i class="fa-solid fa-circle-arrow-up"></i></a>
+      {# Scroll to top button #}
+    <a href="#top" id="scroll-top" class="scroll-top" aria-label="{{ 'Scroll to top'|t }}">
+      <span class="scroll-top__icon d-flex" aria-hidden="true"><i class="fa-solid fa-arrow-up"></i></span>
+      <span class="visually-hidden">{{ 'Back to top'|t }}</span>
+    </a>
   </body>
 </html>

@@ -1,7 +1,28 @@
-<section class="services">
-<div class="container">
-<div class="services-wrapp d-grid cols-4">
-{{content}}
-</div>
-</div>
+<section class="delivery">
+  <div class="container">
+    <div class="delivery-wrapp d-grid cols-4">
+
+      {% for item in paragraph.field_card_item %}
+        {% set card = item.entity %}
+        {% if card %}
+          <div class="delivery-item">
+          <div class="d-flex">
+            <div class="delivery-icon">
+              {% for icon_item in card.field_card_icon %}
+                {% set icon_name = icon_item.value.icon_name %}
+                {% set icon_style = icon_item.value.style|replace({'fa-': ''}) %}
+                <i class="{{ icon_style }} fa-{{ icon_name }}"></i>
+              {% endfor %}
+            </div>
+            <div class="delivery-content">
+            <h3>{{ card.field_card_title.value }}</h3>
+            <p>{{ card.field_card_text.value | raw }}</p>
+            </div>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+
+    </div>
+  </div>
 </section>
