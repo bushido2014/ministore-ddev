@@ -1,0 +1,19 @@
+uuid: 21d7016d-23aa-4b71-9392-dd1dff84d4ca
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_sale_title
+    - paragraphs.paragraphs_type.section_sale
+id: paragraph.section_sale.field_sale_title
+field_name: field_sale_title
+entity_type: paragraph
+bundle: section_sale
+label: 'Sale Title'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

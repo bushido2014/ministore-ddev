@@ -1,0 +1,10 @@
+uuid: 760393e3-d370-4b9d-ba2d-1a8723f2959c
+langcode: en
+status: true
+dependencies: {  }
+id: section_sale
+label: 'Section Sale'
+icon_uuid: null
+icon_default: null
+description: ''
+behavior_plugins: {  }

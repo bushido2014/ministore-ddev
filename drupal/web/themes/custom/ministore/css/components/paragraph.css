@@ -1,0 +1,12 @@
+.sale-content h2 {
+    font-size: 4.5rem;
+    text-transform: uppercase;
+}
+.sale-content h3 {
+    font-size: 1.8rem;
+    margin-block-end: 20px;
+}
+
+.sale-link {
+    margin-block: 30px;
+}

@@ -1,0 +1,55 @@
+uuid: e803440f-513b-4441-8585-b49f796de2c2
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.section_sale.field_sale_before_text
+    - field.field.paragraph.section_sale.field_sale_img
+    - field.field.paragraph.section_sale.field_sale_link
+    - field.field.paragraph.section_sale.field_sale_title
+    - paragraphs.paragraphs_type.section_sale
+  module:
+    - link
+id: paragraph.section_sale.default
+targetEntityType: paragraph
+bundle: section_sale
+mode: default
+content:
+  field_sale_before_text:
+    type: string
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 0
+    region: content
+  field_sale_img:
+    type: entity_reference_entity_view
+    label: hidden
+    settings:
+      view_mode: default
+      link: false
+    third_party_settings: {  }
+    weight: 3
+    region: content
+  field_sale_link:
+    type: link
+    label: hidden
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    weight: 2
+    region: content
+  field_sale_title:
+    type: string
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 1
+    region: content
+hidden: {  }
