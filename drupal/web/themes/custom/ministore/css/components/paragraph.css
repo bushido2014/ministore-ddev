@@ -1,3 +1,12 @@
+.yearle-sale {
+    background-repeat: no-repeat;
+    background-position: right;
+    padding-top: 9.5em;
+    padding-bottom: 9.5em;
+}
+.sale-content {
+max-width: 400px;
+}
 .sale-content h2 {
     font-size: 4.5rem;
     text-transform: uppercase;

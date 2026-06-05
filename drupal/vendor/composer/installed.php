@@ -397,6 +397,15 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
+        'drupal/webform' => array(
+            'pretty_version' => '6.3.0-rc1',
+            'version' => '6.3.0.0-RC1',
+            'reference' => '6.3.0-rc1',
+            'type' => 'drupal-module',
+            'install_path' => __DIR__ . '/../../web/modules/contrib/webform',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
         'drush/drush' => array(
             'pretty_version' => '13.7.3',
             'version' => '13.7.3.0',

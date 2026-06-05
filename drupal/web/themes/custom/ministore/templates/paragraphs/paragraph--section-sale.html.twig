@@ -1,4 +1,13 @@
-<section class="yearle-sale bg-light">
+<section class="yearle-sale bg-light"
+{% if paragraph.field_sale_img.entity %}
+    {% set media = paragraph.field_sale_img.entity %}
+    {% set image = media.field_media_image.entity %}
+    {% if image %}
+      style="background-image: url('{{ file_url(image.uri.value) }}')"
+    {% endif %}
+  {% endif %}
+
+>
   <div class="container">
      <div class="sale-content">
       <h3>{{paragraph.field_sale_before_text.value}}</h3>

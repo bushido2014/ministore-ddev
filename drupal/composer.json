@@ -24,6 +24,7 @@
         "drupal/fontawesome": "^3.0",
         "drupal/paragraphs": "^1.20",
         "drupal/pathauto": "^1.15",
+        "drupal/webform": "^6.3@RC",
         "drush/drush": "^13.7"
     },
     "conflict": {
