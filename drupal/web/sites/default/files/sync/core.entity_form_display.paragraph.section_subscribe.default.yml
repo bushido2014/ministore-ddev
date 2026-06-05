@@ -1,0 +1,44 @@
+uuid: 31d825ae-29ba-4d68-9542-3d094c5dc55a
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.section_subscribe.field_subscribe_form
+    - field.field.paragraph.section_subscribe.field_subscribe_text
+    - field.field.paragraph.section_subscribe.field_subscribe_tilte
+    - paragraphs.paragraphs_type.section_subscribe
+  module:
+    - text
+    - webform
+id: paragraph.section_subscribe.default
+targetEntityType: paragraph
+bundle: section_subscribe
+mode: default
+content:
+  field_subscribe_form:
+    type: webform_entity_reference_select
+    weight: 2
+    region: content
+    settings:
+      default_data: true
+      webforms: {  }
+    third_party_settings: {  }
+  field_subscribe_text:
+    type: text_textarea
+    weight: 1
+    region: content
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+  field_subscribe_tilte:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+hidden:
+  created: true
+  status: true

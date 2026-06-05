@@ -19,3 +19,14 @@ max-width: 400px;
 .sale-link {
     margin-block: 30px;
 }
+
+.subscribe-content {
+    background-color: var(--bg-dark);
+    color:var(--color-white);
+    padding: 30px;
+}
+.subscribe-title {
+    color:var(--color-white);
+    text-transform: uppercase;
+    margin-block-end: 20px;
+}

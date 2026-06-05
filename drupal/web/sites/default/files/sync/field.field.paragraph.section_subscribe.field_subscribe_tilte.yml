@@ -1,0 +1,19 @@
+uuid: 7a7ca5b0-3217-4e31-b9bd-add143461e7d
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_subscribe_tilte
+    - paragraphs.paragraphs_type.section_subscribe
+id: paragraph.section_subscribe.field_subscribe_tilte
+field_name: field_subscribe_tilte
+entity_type: paragraph
+bundle: section_subscribe
+label: 'Subscribe Tilte'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

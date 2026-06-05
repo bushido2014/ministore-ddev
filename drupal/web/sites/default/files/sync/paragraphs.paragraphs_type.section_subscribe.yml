@@ -1,0 +1,15 @@
+uuid: 3be78eec-0050-4764-833d-3c7fa981159b
+langcode: en
+status: true
+dependencies:
+  module:
+    - paragraphs_library
+third_party_settings:
+  paragraphs_library:
+    allow_library_conversion: true
+id: section_subscribe
+label: 'Section Subscribe'
+icon_uuid: null
+icon_default: null
+description: ''
+behavior_plugins: {  }

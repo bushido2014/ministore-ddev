@@ -1,0 +1,22 @@
+uuid: 25f497ed-810c-4321-97c3-551baa73252e
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_subscribe_text
+    - paragraphs.paragraphs_type.section_subscribe
+  module:
+    - text
+id: paragraph.section_subscribe.field_subscribe_text
+field_name: field_subscribe_text
+entity_type: paragraph
+bundle: section_subscribe
+label: 'Subscribe Text'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  allowed_formats: {  }
+field_type: text_long
