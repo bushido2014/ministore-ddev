@@ -1,0 +1,21 @@
+uuid: e5411605-0541-4937-a904-6bcd3a05a0a1
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_client_rating
+    - node.type.client
+  module:
+    - fontawesome
+id: node.client.field_client_rating
+field_name: field_client_rating
+entity_type: node
+bundle: client
+label: 'Client Rating'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: fontawesome_icon

@@ -1,0 +1,38 @@
+uuid: e6d87c97-7d91-4a16-9166-d569f313de5b
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.client.field_client_rating
+    - field.field.node.client.field_client_review
+    - node.type.client
+  module:
+    - fontawesome
+    - text
+    - user
+id: node.client.default
+targetEntityType: node
+bundle: client
+mode: default
+content:
+  field_client_rating:
+    type: fontawesome_icon_formatter
+    label: hidden
+    settings:
+      layers: false
+    third_party_settings: {  }
+    weight: 102
+    region: content
+  field_client_review:
+    type: text_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 101
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
+    region: content
+hidden: {  }

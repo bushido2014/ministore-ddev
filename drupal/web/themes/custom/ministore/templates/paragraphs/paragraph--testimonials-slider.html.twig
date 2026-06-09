@@ -1,0 +1,10 @@
+{{ attach_library('ministore/testimonials-slider') }}
+<section class="testimonials">
+  <div class="container">
+<div class="testimonials-quote-img"> 
+{# Media Image #}
+{% set media = paragraph.field_quote_image.entity %}
+{% set image = media.field_media_image.entity %}
+<img src="{{ file_url(image.uri.value) }}" alt="{{ media.field_media_image.alt }}" /></div>
+  </div>
+</section>

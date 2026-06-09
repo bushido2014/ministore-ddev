@@ -30,3 +30,10 @@ max-width: 400px;
     text-transform: uppercase;
     margin-block-end: 20px;
 }
+
+.subscribe-form {
+    padding-block-start: 30px;
+}
+.testimonials-quote-img {
+    text-align: center;
+}
