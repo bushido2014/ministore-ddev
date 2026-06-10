@@ -1,0 +1,19 @@
+uuid: fe6dc1e1-0d78-4b98-931e-470537ed870e
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_about_title
+    - paragraphs.paragraphs_type.about_us_content
+id: paragraph.about_us_content.field_about_title
+field_name: field_about_title
+entity_type: paragraph
+bundle: about_us_content
+label: 'About Title'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

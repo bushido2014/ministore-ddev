@@ -34,21 +34,35 @@ max-width: 400px;
 .subscribe-form {
     padding-block-start: 30px;
 }
+
 .testimonials-quote-img {
     text-align: center;
 }
 
 .testimonials-container {
     max-width: 860px;
-    margin: 0 auto;
+    margin: 30px auto;
+    overflow: hidden;
 }
 
 .testimonial-slide {
-    max-width: 860px;
-     overflow: hidden; 
-    margin: 10px auto;
-    display: flex;
-    justify-content: center;
+    text-align: center;
+}
+.client-review p{
+    font-size: 1.7rem;
+    margin-bottom: .6rem;
+    font-weight: 300;
+    color: #212529;
 }
 
-
+.client-rating svg {
+    color: var(--color-primary);
+}
+.client-name {
+    padding-block: 15px;
+    text-transform: uppercase;
+    font-weight: 300;
+}
+.content-description {
+    padding-top: 30px;
+}

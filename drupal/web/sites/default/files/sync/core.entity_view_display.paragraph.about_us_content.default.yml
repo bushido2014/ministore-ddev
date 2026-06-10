@@ -1,0 +1,55 @@
+uuid: c60e8d0d-8e86-43aa-97bf-168476e926f3
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.about_us_content.field_about_title
+    - field.field.paragraph.about_us_content.field_about_us_image
+    - field.field.paragraph.about_us_content.field_about_us_text
+    - field.field.paragraph.about_us_content.field_sale_link
+    - paragraphs.paragraphs_type.about_us_content
+  module:
+    - link
+    - text
+id: paragraph.about_us_content.default
+targetEntityType: paragraph
+bundle: about_us_content
+mode: default
+content:
+  field_about_title:
+    type: string
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 0
+    region: content
+  field_about_us_image:
+    type: entity_reference_entity_view
+    label: hidden
+    settings:
+      view_mode: default
+      link: false
+    third_party_settings: {  }
+    weight: 3
+    region: content
+  field_about_us_text:
+    type: text_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 1
+    region: content
+  field_sale_link:
+    type: link
+    label: hidden
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    weight: 2
+    region: content
+hidden: {  }

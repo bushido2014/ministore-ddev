@@ -1,0 +1,28 @@
+uuid: 24f623e7-5fb2-4994-a379-7ba4bd6d8437
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_section_delivery_about
+    - node.type.about_us
+  module:
+    - entity_reference_revisions
+id: node.about_us.field_section_delivery_about
+field_name: field_section_delivery_about
+entity_type: node
+bundle: about_us
+label: 'Section Delivery About'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:paragraphs_library_item'
+  handler_settings:
+    target_bundles: null
+    sort:
+      field: _none
+      direction: ASC
+    auto_create: false
+field_type: entity_reference_revisions

@@ -1,13 +1,13 @@
 {{ attach_library('ministore/testimonials-slider') }}
 <section class="testimonials">
-  <div class="container testimonials-container">
+  <div class="container">
 
 <div class="testimonials-quote-img"> 
 {% set media = paragraph.field_quote_image.entity %}
 {% set image = media.field_media_image.entity %}
 <img src="{{ file_url(image.uri.value) }}" alt="{{ media.field_media_image.alt }}" /></div>
   </div>
-
+<div class="testimonials-container">
 <div class="swiper testimonials-slider">
   <div class="swiper-wrapper">
 
@@ -34,6 +34,10 @@
               {% endfor %}
             </div>
           {% endif %}
+            
+           {% if client.label %}
+  <div class="client-name">{{ client.label }}</div>
+{% endif %}
 
            </div>
 
@@ -45,6 +49,7 @@
   </div>
 </div>
 
+</div>
 
 
 

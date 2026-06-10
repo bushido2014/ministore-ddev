@@ -1,0 +1,24 @@
+uuid: 42348899-d013-417e-b66c-92227876cd4b
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_about_us_text
+    - filter.format.full_html
+    - paragraphs.paragraphs_type.about_us_content
+  module:
+    - text
+id: paragraph.about_us_content.field_about_us_text
+field_name: field_about_us_text
+entity_type: paragraph
+bundle: about_us_content
+label: 'About Us Text'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  allowed_formats:
+    - full_html
+field_type: text_long
