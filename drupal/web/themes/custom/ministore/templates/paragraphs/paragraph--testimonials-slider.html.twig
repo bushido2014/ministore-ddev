@@ -1,10 +1,52 @@
 {{ attach_library('ministore/testimonials-slider') }}
 <section class="testimonials">
-  <div class="container">
+  <div class="container testimonials-container">
+
 <div class="testimonials-quote-img"> 
-{# Media Image #}
 {% set media = paragraph.field_quote_image.entity %}
 {% set image = media.field_media_image.entity %}
 <img src="{{ file_url(image.uri.value) }}" alt="{{ media.field_media_image.alt }}" /></div>
+  </div>
+
+<div class="swiper testimonials-slider">
+  <div class="swiper-wrapper">
+
+    {% for item in paragraph.field_testimonials_slider %}
+      {% set client = item.entity %}
+      {% if client %}
+
+        <div class="swiper-slide testimonial-slide">
+           <div class="client-content">
+          {# Client Review #}
+          {% if client.field_client_review.value %}
+            <div class="client-review">
+              {{ client.field_client_review.processed }}
+            </div>
+          {% endif %}
+
+          {# Client Rating - Font Awesome Icons #}
+          {% if client.field_client_rating %}
+            <div class="client-rating">
+              {% for icon_item in client.field_client_rating %}
+                {% set icon_name = icon_item.value.icon_name %}
+                {% set icon_style = icon_item.value.style|replace({'fa-': ''}) %}
+                <i class="{{ icon_style }} fa-{{ icon_name }}"></i>
+              {% endfor %}
+            </div>
+          {% endif %}
+
+           </div>
+
+        </div>
+
+      {% endif %}
+    {% endfor %}
+
+  </div>
+</div>
+
+
+
+
   </div>
 </section>

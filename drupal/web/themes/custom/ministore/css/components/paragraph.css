@@ -37,3 +37,18 @@ max-width: 400px;
 .testimonials-quote-img {
     text-align: center;
 }
+
+.testimonials-container {
+    max-width: 860px;
+    margin: 0 auto;
+}
+
+.testimonial-slide {
+    max-width: 860px;
+     overflow: hidden; 
+    margin: 10px auto;
+    display: flex;
+    justify-content: center;
+}
+
+

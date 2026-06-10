@@ -9,6 +9,8 @@
                     loop: true,
                     spaceBetween: 30,
                     slidesPerView: 1,
+                    
+   
                 });
             });
         }
