@@ -1,0 +1,21 @@
+uuid: 98a803ca-b4dc-4ab2-b675-2724d07d87f3
+langcode: en
+status: true
+dependencies:
+  module:
+    - entity_reference_revisions
+    - node
+    - paragraphs_library
+id: node.field_testimonials_slider_about
+field_name: field_testimonials_slider_about
+entity_type: node
+type: entity_reference_revisions
+settings:
+  target_type: paragraphs_library_item
+module: entity_reference_revisions
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

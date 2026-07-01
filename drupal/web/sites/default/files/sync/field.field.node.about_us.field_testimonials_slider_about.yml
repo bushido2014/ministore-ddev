@@ -1,0 +1,28 @@
+uuid: 2f7e4e80-70a3-420d-a02c-6cafab1b2de0
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_testimonials_slider_about
+    - node.type.about_us
+  module:
+    - entity_reference_revisions
+id: node.about_us.field_testimonials_slider_about
+field_name: field_testimonials_slider_about
+entity_type: node
+bundle: about_us
+label: 'Testimonials Slider'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:paragraphs_library_item'
+  handler_settings:
+    target_bundles: null
+    sort:
+      field: _none
+      direction: ASC
+    auto_create: false
+field_type: entity_reference_revisions
