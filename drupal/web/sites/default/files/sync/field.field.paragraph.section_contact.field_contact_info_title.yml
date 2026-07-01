@@ -1,0 +1,19 @@
+uuid: 7e6d1e90-486d-4824-a90d-cf943410a783
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_contact_info_title
+    - paragraphs.paragraphs_type.section_contact
+id: paragraph.section_contact.field_contact_info_title
+field_name: field_contact_info_title
+entity_type: paragraph
+bundle: section_contact
+label: 'Contact Info Title'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

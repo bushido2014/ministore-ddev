@@ -1,0 +1,62 @@
+uuid: 1cdc1b04-cab3-4dcb-be7a-72faa259cd17
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.section_contact.field_contact_info_text
+    - field.field.paragraph.section_contact.field_contact_info_title
+    - field.field.paragraph.section_contact.field_contact_webform
+    - field.field.paragraph.section_contact.field_contact_webform_text
+    - field.field.paragraph.section_contact.field_contact_webform_title
+    - paragraphs.paragraphs_type.section_contact
+  module:
+    - text
+    - webform
+id: paragraph.section_contact.default
+targetEntityType: paragraph
+bundle: section_contact
+mode: default
+content:
+  field_contact_info_text:
+    type: text_textarea
+    weight: 4
+    region: content
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+  field_contact_info_title:
+    type: string_textfield
+    weight: 3
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_contact_webform:
+    type: webform_entity_reference_select
+    weight: 2
+    region: content
+    settings:
+      default_data: true
+      webforms: {  }
+    third_party_settings: {  }
+  field_contact_webform_text:
+    type: text_textarea
+    weight: 1
+    region: content
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+  field_contact_webform_title:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+hidden:
+  created: true
+  status: true
