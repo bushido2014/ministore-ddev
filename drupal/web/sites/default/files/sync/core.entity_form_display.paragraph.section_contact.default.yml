@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.paragraph.section_contact.field_contact_info_list
     - field.field.paragraph.section_contact.field_contact_info_text
     - field.field.paragraph.section_contact.field_contact_info_title
     - field.field.paragraph.section_contact.field_contact_webform
@@ -10,6 +11,7 @@ dependencies:
     - field.field.paragraph.section_contact.field_contact_webform_title
     - paragraphs.paragraphs_type.section_contact
   module:
+    - paragraphs
     - text
     - webform
 id: paragraph.section_contact.default
@@ -17,31 +19,25 @@ targetEntityType: paragraph
 bundle: section_contact
 mode: default
 content:
-  field_contact_info_text:
-    type: text_textarea
-    weight: 4
-    region: content
-    settings:
-      rows: 5
-      placeholder: ''
-    third_party_settings: {  }
-  field_contact_info_title:
-    type: string_textfield
-    weight: 3
-    region: content
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-  field_contact_webform:
-    type: webform_entity_reference_select
+  field_contact_info_list:
+    type: paragraphs
     weight: 2
     region: content
     settings:
-      default_data: true
-      webforms: {  }
+      title: Paragraph
+      title_plural: Paragraphs
+      edit_mode: open
+      closed_mode: summary
+      autocollapse: none
+      closed_mode_threshold: 0
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: ''
+      features:
+        collapse_edit_all: collapse_edit_all
+        duplicate: duplicate
     third_party_settings: {  }
-  field_contact_webform_text:
+  field_contact_info_text:
     type: text_textarea
     weight: 1
     region: content
@@ -49,9 +45,33 @@ content:
       rows: 5
       placeholder: ''
     third_party_settings: {  }
-  field_contact_webform_title:
+  field_contact_info_title:
     type: string_textfield
     weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_contact_webform:
+    type: webform_entity_reference_select
+    weight: 5
+    region: content
+    settings:
+      default_data: true
+      webforms: {  }
+    third_party_settings: {  }
+  field_contact_webform_text:
+    type: text_textarea
+    weight: 4
+    region: content
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+  field_contact_webform_title:
+    type: string_textfield
+    weight: 3
     region: content
     settings:
       size: 60

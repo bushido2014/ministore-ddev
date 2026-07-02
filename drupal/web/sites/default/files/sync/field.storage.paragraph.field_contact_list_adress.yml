@@ -1,0 +1,19 @@
+uuid: 46df3fb3-c49c-4a01-9dd6-b041d16b56e3
+langcode: en
+status: true
+dependencies:
+  module:
+    - paragraphs
+    - text
+id: paragraph.field_contact_list_adress
+field_name: field_contact_list_adress
+entity_type: paragraph
+type: text_long
+settings: {  }
+module: text
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

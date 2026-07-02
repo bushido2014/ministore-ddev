@@ -1,0 +1,30 @@
+uuid: cb07dcf2-b3a9-4422-84a8-4a081ea92b53
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.contact.field_contact_info
+    - node.type.contact
+  module:
+    - entity_reference_revisions
+    - user
+id: node.contact.default
+targetEntityType: node
+bundle: contact
+mode: default
+content:
+  field_contact_info:
+    type: entity_reference_revisions_entity_view
+    label: hidden
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    weight: 101
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
+    region: content
+hidden: {  }

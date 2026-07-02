@@ -1,0 +1,24 @@
+uuid: 5bbd1352-728e-4665-9743-da892f4e7a9b
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_contact_list_adress
+    - filter.format.full_html
+    - paragraphs.paragraphs_type.contact_list
+  module:
+    - text
+id: paragraph.contact_list.field_contact_list_adress
+field_name: field_contact_list_adress
+entity_type: paragraph
+bundle: contact_list
+label: 'Contact List Adress'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  allowed_formats:
+    - full_html
+field_type: text_long

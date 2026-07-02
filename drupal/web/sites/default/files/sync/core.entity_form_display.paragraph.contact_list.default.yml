@@ -1,0 +1,44 @@
+uuid: 5832e1c7-1872-48ee-9ccc-fe68c3583c9d
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.contact_list.field_contact_list_adress
+    - field.field.paragraph.contact_list.field_contact_list_link
+    - field.field.paragraph.contact_list.field_contact_list_title
+    - paragraphs.paragraphs_type.contact_list
+  module:
+    - link
+    - text
+id: paragraph.contact_list.default
+targetEntityType: paragraph
+bundle: contact_list
+mode: default
+content:
+  field_contact_list_adress:
+    type: text_textarea
+    weight: 1
+    region: content
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+  field_contact_list_link:
+    type: link_default
+    weight: 2
+    region: content
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+  field_contact_list_title:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+hidden:
+  created: true
+  status: true

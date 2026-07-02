@@ -1,0 +1,58 @@
+uuid: e1a51244-4433-4abc-b94a-2228244f140f
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_contact_info_list
+    - paragraphs.paragraphs_type.contact_list
+    - paragraphs.paragraphs_type.section_contact
+  module:
+    - entity_reference_revisions
+id: paragraph.section_contact.field_contact_info_list
+field_name: field_contact_info_list
+entity_type: paragraph
+bundle: section_contact
+label: 'Contact Info List'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:paragraph'
+  handler_settings:
+    target_bundles:
+      contact_list: contact_list
+    negate: 0
+    target_bundles_drag_drop:
+      about_us_content:
+        weight: 11
+        enabled: false
+      card_item:
+        weight: 12
+        enabled: false
+      contact_list:
+        weight: 13
+        enabled: true
+      delivery_cards:
+        weight: 14
+        enabled: false
+      from_library:
+        weight: 15
+        enabled: false
+      home_slide:
+        weight: 16
+        enabled: false
+      section_contact:
+        weight: 17
+        enabled: false
+      section_sale:
+        weight: 18
+        enabled: false
+      section_subscribe:
+        weight: 19
+        enabled: false
+      testimonials_slider:
+        weight: 20
+        enabled: false
+field_type: entity_reference_revisions

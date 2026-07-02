@@ -1,0 +1,19 @@
+uuid: 1d140c92-48be-4312-ad99-19e76342cb7a
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_contact_list_title
+    - paragraphs.paragraphs_type.contact_list
+id: paragraph.contact_list.field_contact_list_title
+field_name: field_contact_list_title
+entity_type: paragraph
+bundle: contact_list
+label: 'Contact List Title'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

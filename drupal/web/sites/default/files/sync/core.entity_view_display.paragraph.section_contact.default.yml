@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.paragraph.section_contact.field_contact_info_list
     - field.field.paragraph.section_contact.field_contact_info_text
     - field.field.paragraph.section_contact.field_contact_info_title
     - field.field.paragraph.section_contact.field_contact_webform
@@ -10,6 +11,7 @@ dependencies:
     - field.field.paragraph.section_contact.field_contact_webform_title
     - paragraphs.paragraphs_type.section_contact
   module:
+    - entity_reference_revisions
     - text
     - webform
 id: paragraph.section_contact.default
@@ -17,6 +19,15 @@ targetEntityType: paragraph
 bundle: section_contact
 mode: default
 content:
+  field_contact_info_list:
+    type: entity_reference_revisions_entity_view
+    label: hidden
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    weight: 5
+    region: content
   field_contact_info_text:
     type: text_default
     label: hidden
