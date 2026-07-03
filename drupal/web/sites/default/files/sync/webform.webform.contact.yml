@@ -43,14 +43,18 @@ elements: |-
     '#required': true
     '#test': 'Testing contact webform from [site:name]'
   message:
-    '#title': Message
     '#type': textarea
+    '#title': Message
     '#required': true
     '#test': 'Please ignore this email.'
   actions:
     '#type': webform_actions
     '#title': 'Submit button(s)'
     '#submit__label': Submit
+    '#submit__attributes':
+      class:
+        - btn
+        - btn--primary
 css: ''
 javascript: ''
 settings:

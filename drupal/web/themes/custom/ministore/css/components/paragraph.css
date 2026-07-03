@@ -66,3 +66,6 @@ max-width: 400px;
 .content-description {
     padding-top: 30px;
 }
+.contact-list__item {
+    padding: 10px;
+}

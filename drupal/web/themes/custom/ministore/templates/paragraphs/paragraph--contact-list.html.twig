@@ -1,0 +1,25 @@
+<div class="contact-list__item">
+
+  {% if paragraph.field_contact_list_title.value %}
+    <h4>{{ paragraph.field_contact_list_title.value }}</h4>
+  {% endif %}
+
+  {% if paragraph.field_contact_list_adress.value %}
+    <div class="contact-list__address">
+      {{ paragraph.field_contact_list_adress.processed }}
+    </div>
+  {% endif %}
+
+  {% if paragraph.field_contact_list_link %}
+    <ul class="contact-list__links">
+      {% for link_item in paragraph.field_contact_list_link %}
+        <li>
+          <a href="{{ link_item.getUrl().toString() }}">
+            {{ link_item.title }}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+</div>
