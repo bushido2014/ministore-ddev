@@ -1,0 +1,23 @@
+<section class="contact-stores">
+  <div class="container">
+    <div class="d-grid cols-2 contact-stores__wrapper">
+
+    <div class="contact-stores__item">
+    {% set media = paragraph.field_contact_stores_img.entity %}
+{% set image = media.field_media_image.entity %}
+<img src="{{ file_url(image.uri.value) }}" alt="{{ media.field_media_image.alt }}" />
+         </div>
+
+    <div class="contact-stores__item">
+    <h3>{{paragraph.field_contact_info_title.value}}</h3>
+    {{ paragraph.field_contact_stores_text.processed  }}
+        <div class="d-grid cols-2">
+         {{content.field_contact_info_list}}
+         </div>
+
+    </div>
+
+</div>
+
+  </div>
+</section>

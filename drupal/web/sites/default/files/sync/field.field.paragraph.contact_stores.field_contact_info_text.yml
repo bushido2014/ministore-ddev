@@ -1,0 +1,24 @@
+uuid: e6e4bf48-a322-4dc9-90cd-88cad74781d9
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_contact_info_text
+    - filter.format.full_html
+    - paragraphs.paragraphs_type.contact_stores
+  module:
+    - text
+id: paragraph.contact_stores.field_contact_info_text
+field_name: field_contact_info_text
+entity_type: paragraph
+bundle: contact_stores
+label: 'Contact Info Text'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  allowed_formats:
+    - full_html
+field_type: text_long

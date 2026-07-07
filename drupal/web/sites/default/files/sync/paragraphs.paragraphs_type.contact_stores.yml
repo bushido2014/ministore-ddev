@@ -1,0 +1,10 @@
+uuid: bbaad98d-f8e4-4973-84fa-64ae378673e2
+langcode: en
+status: true
+dependencies: {  }
+id: contact_stores
+label: 'Contact Stores'
+icon_uuid: null
+icon_default: null
+description: ''
+behavior_plugins: {  }

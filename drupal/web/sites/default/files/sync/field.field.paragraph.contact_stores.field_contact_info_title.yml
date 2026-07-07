@@ -1,0 +1,19 @@
+uuid: 11354164-05b9-4eb4-8063-31f9898fb359
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_contact_info_title
+    - paragraphs.paragraphs_type.contact_stores
+id: paragraph.contact_stores.field_contact_info_title
+field_name: field_contact_info_title
+entity_type: paragraph
+bundle: contact_stores
+label: 'Contact Info Title'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

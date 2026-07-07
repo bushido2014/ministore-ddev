@@ -1,0 +1,52 @@
+uuid: f72e8879-3371-494f-8dde-84b277514bad
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.contact_stores.field_contact_info_list
+    - field.field.paragraph.contact_stores.field_contact_info_text
+    - field.field.paragraph.contact_stores.field_contact_info_title
+    - field.field.paragraph.contact_stores.field_contact_stores_img
+    - paragraphs.paragraphs_type.contact_stores
+  module:
+    - entity_reference_revisions
+    - text
+id: paragraph.contact_stores.default
+targetEntityType: paragraph
+bundle: contact_stores
+mode: default
+content:
+  field_contact_info_list:
+    type: entity_reference_revisions_entity_view
+    label: hidden
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    weight: 5
+    region: content
+  field_contact_info_text:
+    type: text_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 4
+    region: content
+  field_contact_info_title:
+    type: string
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 3
+    region: content
+  field_contact_stores_img:
+    type: entity_reference_entity_view
+    label: hidden
+    settings:
+      view_mode: default
+      link: false
+    third_party_settings: {  }
+    weight: 6
+    region: content
+hidden: {  }
