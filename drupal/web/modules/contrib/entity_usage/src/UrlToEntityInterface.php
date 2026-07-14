@@ -12,7 +12,7 @@ interface UrlToEntityInterface {
   /**
    * The entity route regex pattern.
    */
-  const ENTITY_ROUTE_PATTERN = '/^entity\.([a-z_]*)\./';
+  const ENTITY_ROUTE_PATTERN = '/^entity\.([a-z][a-z0-9_]*)\./';
 
   /**
    * Try to retrieve entity information from a URL string.

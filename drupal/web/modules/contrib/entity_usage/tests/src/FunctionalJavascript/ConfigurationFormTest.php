@@ -85,7 +85,7 @@ class ConfigurationFormTest extends EntityUsageJavascriptTestBase {
 
     $all_entity_types = \Drupal::entityTypeManager()->getDefinitions();
     $content_entity_types = [];
-    /** @var \Drupal\Core\Entity\EntityTypeInterface[] $entity_types */
+    /** @var \Drupal\Core\StringTranslation\TranslatableMarkup[] $entity_types */
     $entity_types = [];
     $tabs = [];
     foreach ($all_entity_types as $entity_type) {
@@ -165,13 +165,18 @@ class ConfigurationFormTest extends EntityUsageJavascriptTestBase {
     $assert_session->pageTextContains('Check which entity types should be tracked when source.');
     foreach ($entity_types as $entity_type_id => $entity_type) {
       $field_name = "track_enabled_source_entity_types[entity_types][$entity_type_id]";
-      $assert_session->fieldExists($field_name);
-      // By default all content entity types are tracked.
-      if (in_array($entity_type_id, array_keys($content_entity_types))) {
-        $assert_session->checkboxChecked($field_name);
+      if (!$all_entity_types[$entity_type_id]->hasKey('id')) {
+        $assert_session->fieldNotExists($field_name);
       }
       else {
-        $assert_session->checkboxNotChecked($field_name);
+        $assert_session->fieldExists($field_name);
+        // By default all content entity types are tracked.
+        if (in_array($entity_type_id, array_keys($content_entity_types))) {
+          $assert_session->checkboxChecked($field_name);
+        }
+        else {
+          $assert_session->checkboxNotChecked($field_name);
+        }
       }
     }
 
@@ -184,13 +189,18 @@ class ConfigurationFormTest extends EntityUsageJavascriptTestBase {
     $assert_session->pageTextContains('Check which entity types should be tracked when target.');
     foreach ($entity_types as $entity_type_id => $entity_type) {
       $field_name = "track_enabled_target_entity_types[entity_types][$entity_type_id]";
-      $assert_session->fieldExists($field_name);
-      // By default all content entity types are tracked.
-      if (in_array($entity_type_id, array_keys($content_entity_types))) {
-        $assert_session->checkboxChecked($field_name);
+      if (!$all_entity_types[$entity_type_id]->hasKey('id')) {
+        $assert_session->fieldNotExists($field_name);
       }
       else {
-        $assert_session->checkboxNotChecked($field_name);
+        $assert_session->fieldExists($field_name);
+        // By default all content entity types are tracked.
+        if (in_array($entity_type_id, array_keys($content_entity_types))) {
+          $assert_session->checkboxChecked($field_name);
+        }
+        else {
+          $assert_session->checkboxNotChecked($field_name);
+        }
       }
     }
 
@@ -334,12 +344,8 @@ class ConfigurationFormTest extends EntityUsageJavascriptTestBase {
     $assert_session->fieldExists('track_enabled_base_fields');
     // It should be off by default.
     $assert_session->checkboxNotChecked('track_enabled_base_fields');
-    $assert_session->pageTextContains('Track referencing basefields');
-    $assert_session->pageTextContains('If enabled, relationships generated through non-configurable fields (basefields) will also be tracked.');
     // Check the allowed domains element is there.
     $assert_session->elementExists('css', 'textarea[name="site_domains"]');
-    $assert_session->elementContains('css', '#edit-generic-settings', 'Domains for this website');
-    $assert_session->elementContains('css', '#edit-generic-settings', 'A comma or new-line separated list of domain names for this website. Absolute URL\'s in content will be checked against these domains to allow usage tracking.');
 
     $this->assertNotContains('filter_format', $this->config('entity_usage.settings')->get('track_enabled_source_entity_types'));
     // Enable all source entity types.
@@ -348,8 +354,10 @@ class ConfigurationFormTest extends EntityUsageJavascriptTestBase {
     $source_entity_types_details->click();
     foreach ($entity_types as $entity_type_id => $entity_type) {
       $field_name = "track_enabled_source_entity_types[entity_types][$entity_type_id]";
-      $assert_session->fieldExists($field_name);
-      $page->checkField($field_name);
+      if ($all_entity_types[$entity_type_id]->hasKey('id')) {
+        $assert_session->fieldExists($field_name);
+        $page->checkField($field_name);
+      }
     }
     $this->submitForm([], 'Save configuration');
     $this->rebuildAll();
@@ -366,6 +374,7 @@ class ConfigurationFormTest extends EntityUsageJavascriptTestBase {
     foreach ($entity_types as $entity_type_id => $entity_type) {
       $field_name = "track_enabled_source_entity_types[entity_types][$entity_type_id]";
       if (
+        $all_entity_types[$entity_type_id]->hasKey('id') &&
         in_array($entity_type_id, array_keys($content_entity_types), TRUE) ||
         in_array($entity_type_id, ['file', 'user'], TRUE)
       ) {

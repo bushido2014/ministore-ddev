@@ -2,7 +2,9 @@
 
 namespace Drupal\entity_usage\UrlToEntityIntegrations;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\StreamWrapper\LocalStream;
 use Drupal\Core\StreamWrapper\StreamWrapperInterface;
 use Drupal\entity_usage\Events\Events;
 use Drupal\entity_usage\Events\UrlToEntityEvent;
@@ -23,11 +25,31 @@ class PublicFileIntegration implements EventSubscriberInterface {
     private readonly EntityTypeManagerInterface $entityTypeManager,
     #[Autowire(service: 'stream_wrapper.public')]
     StreamWrapperInterface $publicStream,
+    ConfigFactoryInterface $configFactory,
   ) {
     $baseUrl = $publicStream->getExternalUrl();
     $parsed = parse_url($baseUrl);
 
     if (isset($parsed['path'])) {
+      // If the public stream is a local stream, we need to remove the base path
+      // if Drupal is installed in a subdirectory.
+      if ($publicStream instanceof LocalStream) {
+        $config = $configFactory->get('entity_usage.settings');
+        foreach ($config->get('site_domains') ?? [] as $site_domain) {
+          $site_domain = rtrim($site_domain, "/");
+          $host_pattern = str_replace('.', '\.', $site_domain) . "/";
+          $host_pattern = "/" . str_replace("/", '\/', $host_pattern) . "/";
+          if (preg_match($host_pattern, $baseUrl)) {
+            if (preg_match('/^[^\/]+(\/.+)/', $site_domain, $matches)) {
+              $sub_directory = $matches[1];
+              if (str_starts_with($parsed['path'], $sub_directory)) {
+                $parsed['path'] = substr($parsed['path'], strlen($sub_directory));
+              }
+            }
+            break;
+          }
+        }
+      }
       $this->publicFilePattern = '{^' . preg_quote(rtrim($parsed['path'], '/'), '{}') . '/}';
     }
     else {

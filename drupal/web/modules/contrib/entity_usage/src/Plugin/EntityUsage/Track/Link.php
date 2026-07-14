@@ -31,7 +31,12 @@ class Link extends EntityUsageTrackBase {
     }
     else {
       $url = $link->getUrl();
-      $entity_info = $this->urlToEntity->findEntityIdByRoutedUrl($url);
+      if ($url->isRouted()) {
+        $entity_info = $this->urlToEntity->findEntityIdByRoutedUrl($url);
+      }
+      else {
+        $entity_info = $this->urlToEntity->findEntityIdByUrl($url->toString());
+      }
     }
 
     if (empty($entity_info)) {

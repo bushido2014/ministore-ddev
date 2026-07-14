@@ -764,6 +764,34 @@ class EntityUsageTest extends EntityKernelTestBase {
 
     $real_usage = $this->injectedDatabase->select($this->tableName, 'e')->countQuery()->execute()->fetchField();
     $this->assertEquals(3, $real_usage);
+
+    // Verify the dedupe key includes method and field_name.
+    $this->injectedDatabase->truncate($this->tableName);
+    $entity_usage->enableBulkInsert();
+    $target = $this->testEntities[0];
+    // Same entity pair and source_vid=1 (truthy), but different field names.
+    $entity_usage->registerUsage($target->id(), $target->getEntityTypeId(), 1, 'foo', 'en', 1, 'entity_reference', 'field_a', 1);
+    $entity_usage->registerUsage($target->id(), $target->getEntityTypeId(), 1, 'foo', 'en', 1, 'entity_reference', 'field_b', 1);
+    // Same entity pair and source_vid=1, but a different method.
+    $entity_usage->registerUsage($target->id(), $target->getEntityTypeId(), 1, 'foo', 'en', 1, 'typed_data', 'field_a', 1);
+    $entity_usage->bulkInsert();
+    $real_usage = $this->injectedDatabase->select($this->tableName, 'e')->countQuery()->execute()->fetchField();
+    $this->assertEquals(6, $real_usage);
+    $field_names = $this->injectedDatabase->select($this->tableName, 'e')
+      ->fields('e', ['field_name'])
+      ->condition('method', 'entity_reference')
+      ->distinct()
+      ->orderBy('field_name')
+      ->execute()
+      ->fetchCol();
+    $this->assertEquals(['body', 'field_a', 'field_b'], $field_names);
+    $methods = $this->injectedDatabase->select($this->tableName, 'e')
+      ->fields('e', ['method'])
+      ->condition('field_name', 'field_a')
+      ->orderBy('method')
+      ->execute()
+      ->fetchCol();
+    $this->assertEquals(['entity_reference', 'typed_data'], $methods);
   }
 
   /**

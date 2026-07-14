@@ -21,6 +21,8 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Manages Entity Usage integration with Batch API.
+ *
+ * @phpstan-type BatchContext array{sandbox: array{progress?: int, total?: int<0, max>, current_item?: int, current_id?: int|string|null, revision_ids?: list<int>, entity_ids?: array<int|string, string>, batch_entity_revision?: array{status: int, current_vid: int, start: int}}, results: int[], finished: int|float, message: string|\Drupal\Core\StringTranslation\TranslatableMarkup}
  */
 class EntityUsageBatchManager implements LoggerAwareInterface {
 
@@ -88,7 +90,7 @@ class EntityUsageBatchManager implements LoggerAwareInterface {
    *   (optional) If TRUE existing usage records won't be deleted. Defaults to
    *   FALSE.
    *
-   * @return array{operations: array<array{callable-string, array}>, finished: callable-string, title: \Drupal\Core\StringTranslation\TranslatableMarkup, progress_message: \Drupal\Core\StringTranslation\TranslatableMarkup, error_message: \Drupal\Core\StringTranslation\TranslatableMarkup}
+   * @return array
    *   The batch array.
    */
   public function generateBatch($keep_existing_records = FALSE): array {
@@ -170,16 +172,28 @@ class EntityUsageBatchManager implements LoggerAwareInterface {
         $context['sandbox']['progress'] = 0;
         $context['sandbox']['total'] = $database->select(static::BULK_TABLE_NAME)->countQuery()->execute()->fetchField();
       }
-      // Should we trust that the database will return in a consistent order?
       $results = $database
         ->select(static::BULK_TABLE_NAME)
         ->fields(static::BULK_TABLE_NAME)
         ->range($context['sandbox']['progress'], 200)
+        ->orderBy('target_id')
+        ->orderBy('target_id_string')
+        ->orderBy('target_type')
+        ->orderBy('source_id')
+        ->orderBy('source_id_string')
+        ->orderBy('source_type')
+        ->orderBy('source_type')
+        ->orderBy('source_langcode')
+        ->orderBy('source_vid')
+        ->orderBy('method')
+        ->orderBy('field_name')
         ->execute()
         ->fetchAll(\PDO::FETCH_ASSOC);
       foreach ($results as $insert) {
         $context['sandbox']['progress']++;
-        $event = new EntityUsageEvent($insert['target_id'], $insert['target_type'], $insert['source_id'], $insert['source_type'], $insert['source_langcode'], $insert['source_vid'], $insert['method'], $insert['field_name'], $insert['count']);
+        $target_id_column = (int) $insert['target_id'] > 0 ? 'target_id' : 'target_id_string';
+        $source_id_column = (int) $insert['source_id'] > 0 ? 'source_id' : 'source_id_string';
+        $event = new EntityUsageEvent($insert[$target_id_column], $insert['target_type'], $insert[$source_id_column], $insert['source_type'], $insert['source_langcode'], $insert['source_vid'], $insert['method'], $insert['field_name'], $insert['count']);
         $dispatcher->dispatch($event, Events::USAGE_REGISTER);
       }
 
@@ -226,7 +240,7 @@ class EntityUsageBatchManager implements LoggerAwareInterface {
    *   The entity type id, for example 'node'.
    * @param bool $keep_existing_records
    *   If TRUE existing usage records won't be deleted.
-   * @param array{sandbox: array{progress?: int, total?: int, current_item?: int}, results: int[], finished: int|float, message: string|\Drupal\Core\StringTranslation\TranslatableMarkup} $context
+   * @param BatchContext $context
    *   Batch context.
    */
   public static function updateSourcesBatchWorker($entity_type_id, $keep_existing_records, &$context): void {
@@ -270,7 +284,7 @@ class EntityUsageBatchManager implements LoggerAwareInterface {
    *   The entity usage service.
    * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
    *   The entity type.
-   * @param array{sandbox: array{progress?: int, total?: int, current_item?: int}, results: int[], finished: int|float, message: string|\Drupal\Core\StringTranslation\TranslatableMarkup} $context
+   * @param BatchContext $context
    *   Batch context.
    *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
@@ -359,7 +373,7 @@ class EntityUsageBatchManager implements LoggerAwareInterface {
    *   The entity usage service.
    * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
    *   The entity type.
-   * @param array{sandbox: array{progress?: int, total?: int, current_item?: int}, results: int[], finished: int|float, message: string|\Drupal\Core\StringTranslation\TranslatableMarkup} $context
+   * @param BatchContext $context
    *   Batch context.
    *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
@@ -375,11 +389,6 @@ class EntityUsageBatchManager implements LoggerAwareInterface {
       if (($id_definition instanceof FieldStorageDefinitionInterface) && $id_definition->getType() === 'integer') {
         $context['sandbox']['current_id'] = -1;
       }
-      $context['sandbox']['entity_ids'] = $entity_storage->getQuery()
-        ->accessCheck(FALSE)
-        ->range(0, static::BULK_ID_LOAD)
-        ->sort($entity_type_key)
-        ->execute();
       $context['sandbox']['total'] = $entity_storage->getQuery()
         ->accessCheck(FALSE)
         ->count()
@@ -413,21 +422,6 @@ class EntityUsageBatchManager implements LoggerAwareInterface {
     if ($context['sandbox']['progress'] === $context['sandbox']['total']) {
       // Recalculate the total so that any new entities created while bulk
       // processing are included.
-      $context['sandbox']['entity_ids'] = $entity_storage->getQuery()
-        ->condition($entity_type_key, $context['sandbox']['current_id'], '>')
-        ->range(0, static::BULK_BATCH_SIZE)
-        ->accessCheck(FALSE)
-        ->sort($entity_type_key)
-        ->execute();
-      $context['sandbox']['total'] = $context['sandbox']['total'] + count($context['sandbox']['entity_ids']);
-    }
-    elseif (empty($context['sandbox']['entity_ids'])) {
-      $context['sandbox']['entity_ids'] = $entity_storage->getQuery()
-        ->condition($entity_type_key, $context['sandbox']['current_id'], '>')
-        ->accessCheck(FALSE)
-        ->range(0, static::BULK_ID_LOAD)
-        ->sort($entity_type_key)
-        ->execute();
       $context['sandbox']['total'] = $entity_storage->getQuery()
         ->accessCheck(FALSE)
         ->count()
@@ -443,7 +437,7 @@ class EntityUsageBatchManager implements LoggerAwareInterface {
    *   The entity storage.
    * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
    *   The entity type.
-   * @param array{sandbox: array{progress?: int, total?: int, current_item?: int}, results: int[], finished: int|float, message: string|\Drupal\Core\StringTranslation\TranslatableMarkup} $context
+   * @param BatchContext $context
    *   Batch context.
    *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
@@ -559,7 +553,11 @@ class EntityUsageBatchManager implements LoggerAwareInterface {
     $to_track = $entity_usage_config->get('track_enabled_source_entity_types');
     foreach (\Drupal::entityTypeManager()->getDefinitions() as $entity_type_id => $entity_type) {
       // Only look for entities enabled for tracking on the settings form.
-      if (!is_array($to_track) && ($entity_type->entityClassImplements('\Drupal\Core\Entity\ContentEntityInterface'))) {
+      if (
+        !is_array($to_track) &&
+        $entity_type->hasKey('id') &&
+        $entity_type->entityClassImplements('\Drupal\Core\Entity\ContentEntityInterface')
+      ) {
         // When no settings are defined, track all content entities by default,
         // except for Files and Users.
         if (!in_array($entity_type_id, ['file', 'user'])) {
@@ -595,7 +593,7 @@ class EntityUsageBatchManager implements LoggerAwareInterface {
         t('An error occurred while processing @operation with arguments : @args',
           [
             '@operation' => $error_operation[0],
-            '@args' => print_r($error_operation[0], TRUE),
+            '@args' => print_r($error_operation[1], TRUE),
           ]
         )
       );

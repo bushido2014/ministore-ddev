@@ -112,12 +112,14 @@ class BatchUpdateTest extends EntityUsageJavascriptTestBase {
     // Enable tracking for source nodes and try again.
     $config = \Drupal::configFactory()->getEditable('entity_usage.settings');
     $config->set('track_enabled_source_entity_types', ['node']);
+    $config->set('track_enabled_target_entity_types', ['node', 'node_type']);
+    $config->set('track_enabled_base_fields', TRUE);
     $config->save();
     $this->drupalGet('/admin/config/entity-usage/batch-update');
     $page->pressButton('Recreate all entity usage statistics');
     $assert_session->waitForText('Recreated entity usage for');
+    $this->htmlOutput();
     $assert_session->pageTextContains('Recreated entity usage for');
-    $this->saveHtmlOutput();
 
     // Check if the resulting usage is the expected.
     $usage = $usage_service->listSources($node1);
@@ -143,16 +145,27 @@ class BatchUpdateTest extends EntityUsageJavascriptTestBase {
     ]);
     /** @var \Drupal\entity_usage\Events\EntityUsageEvent[] $events */
     $events = \Drupal::keyValue('entity_usage_test')->get('register', []);
-    $this->assertCount(2, $events);
+    $this->assertCount(5, $events);
+    // Test a target with a string ID.
     $this->assertSame('1', $events[0]->getCount());
     $this->assertSame('entity_reference', $events[0]->getMethod());
-    $this->assertSame('field_eu_test_related_nodes', $events[0]->getFieldName());
-    $this->assertSame('2', $events[0]->getSourceEntityId());
-    $this->assertSame('2', $events[0]->getSourceEntityRevisionId());
+    $this->assertSame('type', $events[0]->getFieldName());
+    $this->assertSame('1', $events[0]->getSourceEntityId());
+    $this->assertSame('1', $events[0]->getSourceEntityRevisionId());
     $this->assertSame('node', $events[0]->getSourceEntityType());
     $this->assertSame('en', $events[0]->getSourceEntityLangcode());
-    $this->assertSame('1', $events[0]->getTargetEntityId());
-    $this->assertSame('node', $events[0]->getTargetEntityType());
+    $this->assertSame('eu_test_ct', $events[0]->getTargetEntityId());
+    $this->assertSame('node_type', $events[0]->getTargetEntityType());
+    // Test a target with an integer ID.
+    $this->assertSame('1', $events[3]->getCount());
+    $this->assertSame('entity_reference', $events[3]->getMethod());
+    $this->assertSame('field_eu_test_related_nodes', $events[3]->getFieldName());
+    $this->assertSame('2', $events[3]->getSourceEntityId());
+    $this->assertSame('2', $events[3]->getSourceEntityRevisionId());
+    $this->assertSame('node', $events[3]->getSourceEntityType());
+    $this->assertSame('en', $events[3]->getSourceEntityLangcode());
+    $this->assertSame('1', $events[3]->getTargetEntityId());
+    $this->assertSame('node', $events[3]->getTargetEntityType());
 
     $this->assertFalse(\Drupal::database()->schema()->tableExists(EntityUsageBatchManager::BULK_TABLE_NAME), 'Entity usage bulk table has been removed.');
   }

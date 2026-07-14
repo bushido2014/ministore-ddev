@@ -107,16 +107,18 @@ class EntityUsageSettingsForm extends ConfigFormBase {
     $tabs_options = [];
     $source_options = [];
     foreach ($all_entity_types as $entity_type) {
-      if (($entity_type instanceof ContentEntityTypeInterface)) {
-        $content_entity_types[$entity_type->id()] = $entity_type->getLabel();
-      }
-      $entity_type_options[$entity_type->id()] = $entity_type->getLabel();
-      if ($entity_type->hasLinkTemplate('canonical') || $entity_type->hasLinkTemplate('edit-form')) {
-        $tabs_options[$entity_type->id()] = $entity_type->getLabel();
-      }
+      if ($entity_type->hasKey('id')) {
+        if (($entity_type instanceof ContentEntityTypeInterface)) {
+          $content_entity_types[$entity_type->id()] = $entity_type->getLabel();
+        }
+        $entity_type_options[$entity_type->id()] = $entity_type->getLabel();
+        if ($entity_type->hasLinkTemplate('canonical') || $entity_type->hasLinkTemplate('edit-form')) {
+          $tabs_options[$entity_type->id()] = $entity_type->getLabel();
+        }
 
-      if ($this->usageTrackManager->isEntityTypeSource($entity_type)) {
-        $source_options[$entity_type->id()] = $entity_type->getLabel();
+        if ($this->usageTrackManager->isEntityTypeSource($entity_type)) {
+          $source_options[$entity_type->id()] = $entity_type->getLabel();
+        }
       }
     }
 
@@ -267,7 +269,7 @@ class EntityUsageSettingsForm extends ConfigFormBase {
     $form['generic_settings']['site_domains'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Domains for this website'),
-      '#description' => $this->t("A comma or new-line separated list of domain names for this website. Absolute URL's in content will be checked against these domains to allow usage tracking."),
+      '#description' => $this->t("A list of domain names for this website. Absolute URLs in content are matched against these domains to identify internal links and track their usage. If Drupal is installed in a subdirectory, include the path: <em>example.com/subdir</em>. Enter one value per line, e.g. <em>example.com</em> or <em>example.com/blog</em>."),
       '#default_value' => implode("\r\n", $config->get('site_domains') ?: []),
     ];
     $form['generic_settings']['usage_controller_items_per_page'] = [

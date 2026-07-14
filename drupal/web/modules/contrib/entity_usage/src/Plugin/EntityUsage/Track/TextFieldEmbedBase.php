@@ -15,10 +15,6 @@ abstract class TextFieldEmbedBase extends EntityUsageTrackBase implements EmbedT
    * {@inheritdoc}
    */
   public function getTargetEntities(FieldItemInterface $item): array {
-    $item_value = $item->getValue();
-    if (empty($item_value['value'])) {
-      return [];
-    }
     $text = $this->getTextFromField($item);
 
     $entities_in_text = $this->parseEntitiesFromText($text);

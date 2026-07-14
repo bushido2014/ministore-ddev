@@ -1,9 +1,12 @@
 parameters:
   entity_usage:
     always_track_base_fields:
-      # Redirect base fields are always since if you've enabled redirect as a
-      # source entity the only use case is to track entities in the
-      # redirect_redirect link field.
+      # Menu link and redirect base fields are always enabled. If you have
+      # enabled them as a source entity, the only use case is to track
+      # entities in the following base fields:
+      # - menu_link_content_data.link
+      # - redirect.redirect_redirect
+      - menu_link_content
       - redirect
   # Number of entity usage records to update on kernel terminate when an
   # entity's URL changes. Above this limit, remaining records will be

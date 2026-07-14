@@ -67,3 +67,37 @@ function entity_usage_post_update_fix_local_task_enabled_entity_types(): void {
     $config->set('local_task_enabled_entity_types', [])->save();
   }
 }
+
+/**
+ * Remove entity types with no IDs from config.
+ */
+function entity_usage_post_update_remove_entity_types_with_no_ids(): void {
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $config = \Drupal::configFactory()->getEditable('entity_usage.settings');
+  $keys_to_check = [
+    'track_enabled_source_entity_types',
+    'track_enabled_target_entity_types',
+    'edit_warning_message_entity_types',
+    'delete_warning_message_entity_types',
+    'local_task_enabled_entity_types',
+  ];
+  $changed = FALSE;
+  foreach ($keys_to_check as $key) {
+    $entity_types = $config->get($key) ?? [];
+    $updated_entity_types = [];
+    foreach ($entity_types as $entity_type_id) {
+      if ($entity_type_manager->hasDefinition($entity_type_id) && $entity_type_manager->getDefinition($entity_type_id)->hasKey('id')) {
+        $updated_entity_types[] = $entity_type_id;
+      }
+    }
+
+    if ($updated_entity_types !== $entity_types) {
+      $changed = TRUE;
+      $config->set($key, $updated_entity_types);
+    }
+  }
+
+  if ($changed) {
+    $config->save();
+  }
+}

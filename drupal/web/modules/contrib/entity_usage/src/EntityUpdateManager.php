@@ -189,7 +189,10 @@ class EntityUpdateManager implements EntityUpdateManagerInterface {
     $allow_tracking = FALSE;
     $entity_type = $entity->getEntityType();
     $enabled_source_entity_types = $this->config->get('track_enabled_source_entity_types');
-    if (!is_array($enabled_source_entity_types) && ($entity_type->entityClassImplements('\Drupal\Core\Entity\ContentEntityInterface'))) {
+    if (!is_array($enabled_source_entity_types)
+      && $entity_type->hasKey('id')
+      && $entity_type->entityClassImplements('\Drupal\Core\Entity\ContentEntityInterface')
+    ) {
       // When no settings are defined, track all content entities by default.
       $allow_tracking = TRUE;
     }
@@ -210,8 +213,12 @@ class EntityUpdateManager implements EntityUpdateManagerInterface {
    */
   protected function allowTargetEntityTracking(EntityInterface $entity): bool {
     $enabled_target_entity_types = $this->config->get('track_enabled_target_entity_types');
-    // Every entity type is tracked if not set.
-    return !is_array($enabled_target_entity_types) || in_array($entity->getEntityTypeId(), $enabled_target_entity_types, TRUE);
+    if (!is_array($enabled_target_entity_types)) {
+      $entity_type = $entity->getEntityType();
+      // Every entity type that has an ID is tracked if not set.
+      return $entity_type->hasKey('id');
+    }
+    return in_array($entity->getEntityTypeId(), $enabled_target_entity_types, TRUE);
   }
 
   /**

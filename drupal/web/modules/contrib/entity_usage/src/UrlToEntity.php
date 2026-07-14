@@ -41,6 +41,13 @@ class UrlToEntity implements UrlToEntityInterface {
    */
   private ?array $enabledTargetEntityTypes;
 
+  /**
+   * The site subdirectory if it is installed in one.
+   *
+   * @var string
+   */
+  private string $subPath = '';
+
   public function __construct(private readonly InboundPathProcessorInterface $pathProcessor, ConfigFactoryInterface $configFactory, private readonly EventDispatcherInterface $eventDispatcher) {
     $config = $configFactory->get('entity_usage.settings');
 
@@ -54,6 +61,11 @@ class UrlToEntity implements UrlToEntityInterface {
       }
       else {
         $this->siteDomains[$site_domain]['sub_directory'] = FALSE;
+      }
+      // If Drupal is installed in a subdirectory, we need to remove it from
+      // relative URLs. Assume we only have one base path to think about.
+      if ($this->subPath === '' && $this->siteDomains[$site_domain]['sub_directory'] !== FALSE) {
+        $this->subPath = $this->siteDomains[$site_domain]['sub_directory'];
       }
     }
 
@@ -125,19 +137,22 @@ class UrlToEntity implements UrlToEntityInterface {
    *   the site.
    */
   private function makeUrlRelative(string $url): ?string {
-    // Strip off the scheme and host, so we only get the path.
-    foreach ($this->siteDomains as $site_domain_info) {
-      if (preg_match($site_domain_info['host_pattern'], $url)) {
-        // Strip off everything that is not the internal path.
-        $url = parse_url($url, PHP_URL_PATH);
-        if ($site_domain_info['sub_directory'] !== FALSE && str_starts_with($url, $site_domain_info['sub_directory'])) {
-          $url = substr($url, strlen($site_domain_info['sub_directory']));
+    if (UrlHelper::isExternal($url)) {
+      // Strip off the scheme and host, so we only get the path.
+      foreach ($this->siteDomains as $site_domain_info) {
+        if (preg_match($site_domain_info['host_pattern'], $url)) {
+          // Strip off everything that is not the internal path.
+          $url = parse_url($url, PHP_URL_PATH);
+          if ($site_domain_info['sub_directory'] !== FALSE && str_starts_with($url, $site_domain_info['sub_directory'])) {
+            $url = substr($url, strlen($site_domain_info['sub_directory']));
+          }
+          return $url;
         }
-        break;
       }
-    }
-    if (UrlHelper::isExternal($url) && UrlHelper::isValid($url)) {
       return NULL;
+    }
+    elseif ($this->subPath !== '' && str_starts_with($url, $this->subPath)) {
+      $url = substr($url, strlen($this->subPath));
     }
     return $url;
   }
