@@ -9,6 +9,7 @@ use Drupal\commerce_order\Hook\CommerceOrderHooks;
 use Drupal\commerce_order\Hook\CommerceOrderThemeHooks;
 use Drupal\commerce_order\Hook\CommerceOrderTokensHooks;
 use Drupal\commerce_order\Hook\CommerceOrderViewsHooks;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -214,8 +215,8 @@ function commerce_order_field_storage_config_access(FieldStorageConfigInterface 
  * Hides the "Storage settings" operation for the profile "address" field.
  */
 #[LegacyHook]
-function commerce_order_entity_operation_alter(array &$operations, EntityInterface $entity): void {
-  \Drupal::service(CommerceOrderHooks::class)->entityOperationAlter($operations, $entity);
+function commerce_order_entity_operation_alter(array &$operations, EntityInterface $entity, ?CacheableMetadata $cacheability = NULL): void {
+  \Drupal::service(CommerceOrderHooks::class)->entityOperationAlter($operations, $entity, $cacheability);
 }
 
 /**

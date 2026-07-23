@@ -1,0 +1,10 @@
+uuid: b2497d5c-b882-4d4a-a882-fc39d14dd387
+langcode: en
+status: true
+dependencies: {  }
+id: ministore_product
+label: 'MiniStore Product'
+traits: {  }
+locked: false
+orderItemType: default
+generateTitle: null

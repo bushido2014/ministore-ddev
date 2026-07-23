@@ -416,6 +416,7 @@ class ProductLayoutBuilderIntegrationTest extends ProductWebDriverTestBase {
     $this->addBlockToLayout('Variations', function () {
       $this->getSession()->getPage()->selectFieldOption('Label', '- Hidden -');
       $this->getSession()->getPage()->selectFieldOption('Formatter', 'Add to cart form');
+      $this->assertSession()->assertWaitOnAjaxRequest();
     });
 
     $save_layout = $this->getSession()->getPage()->findButton('Save layout');
@@ -480,8 +481,7 @@ class ProductLayoutBuilderIntegrationTest extends ProductWebDriverTestBase {
       $configure();
     }
     $this->getSession()->getPage()->pressButton('Add block');
-    $assert_session->assertWaitOnAjaxRequest();
-    $assert_session->assertNoElementAfterWait('css', '#drupal-off-canvas');
+    $assert_session->waitForElementRemoved('css', '#drupal-off-canvas');
   }
 
   /**

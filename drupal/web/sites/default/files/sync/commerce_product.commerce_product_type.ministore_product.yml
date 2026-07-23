@@ -1,0 +1,13 @@
+uuid: 22b4050a-35ea-4266-bd8f-8a044464e8b2
+langcode: en
+status: true
+dependencies: {  }
+id: ministore_product
+label: 'MiniStore Product'
+traits: {  }
+locked: false
+description: ''
+variationTypes:
+  - ministore_product
+multipleVariations: true
+injectVariationFields: true

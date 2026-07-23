@@ -140,12 +140,17 @@
 
 /* Order item inline form */
 .commerce-order-items-inline-form {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  align-items: center;
+  display: flex;
+  flex-direction: column;
   padding: 1rem;
   background-color: var(--commerce-color--light);
   gap: 1.5rem;
+}
+
+.dialog-off-canvas-main-canvas .commerce-order-items-inline-form {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
 }
 
 .commerce-order-items-inline-form .form-item.form-type--commerce-number {

@@ -101,7 +101,7 @@
             {% endif %}
             {{ order.placed }}
             <div class="field order-admin__state-field field--label-inline">
-              <div class="field__label">{{ 'State' }}</div>
+              <div class="field__label">{{ 'State'|t }}</div>
               <div class="field__item">
                 {% if is_completed and order_entity.getCompletedTime %}
                   <span class="commerce-help-text" title="{{ order_entity.getCompletedTime|format_date('short') }}">{{ order_entity.getState.getLabel }}</span>

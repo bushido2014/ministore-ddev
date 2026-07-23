@@ -15,10 +15,8 @@ use Drupal\Core\Session\AccountInterface;
  * Implements hook_entity_access().
  */
 function commerce_product_test_entity_access(EntityInterface $entity, $operation, AccountInterface $account) {
-  if ($entity instanceof ProductVariationInterface) {
-    if ($operation == 'view') {
-      return AccessResult::forbiddenIf(str_contains($entity->getSku(), 'DENY'));
-    }
+  if (($entity instanceof ProductVariationInterface) && $operation === 'view') {
+    return AccessResult::forbiddenIf(str_contains($entity->getSku() ?? '', 'DENY'));
   }
   return AccessResult::neutral();
 }

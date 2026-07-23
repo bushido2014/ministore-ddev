@@ -13,6 +13,7 @@ use Drupal\commerce_order\Form\ProfileAddressBookForm;
 use Drupal\commerce_order\Plugin\Field\FieldFormatter\PriceCalculatedFormatter;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultInterface;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
@@ -356,7 +357,7 @@ class CommerceOrderHooks {
    * Hides the "Storage settings" operation for the profile "address" field.
    */
   #[Hook('entity_operation_alter')]
-  public function entityOperationAlter(array &$operations, EntityInterface $entity): void {
+  public function entityOperationAlter(array &$operations, EntityInterface $entity, ?CacheableMetadata $cacheability = NULL): void {
     if ($entity->getEntityTypeId() === 'commerce_order') {
       $order_type = $this->entityTypeManager->getStorage('commerce_order_type')->load($entity->bundle());
       if ($order_type instanceof OrderTypeInterface &&

@@ -79,7 +79,7 @@ entity.commerce_payment_method.set_default:
       commerce_payment_method:
         type: entity:commerce_payment_method
   requirements:
-    _custom_access: '\Drupal\commerce_payment\Access\PaymentMethodAccessCheck::checkAccess'
+    _entity_access: 'commerce_payment_method.update'
     _csrf_token: 'TRUE'
 
 commerce_payment.checkout.return:

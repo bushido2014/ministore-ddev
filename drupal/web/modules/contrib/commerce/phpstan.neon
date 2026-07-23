@@ -32,3 +32,12 @@ parameters:
       paths:
         - modules/price/src/Hook/CommercePriceViewsHooks.php
       reportUnmatched: false
+    - # The argument is commented out for BC reasons until Drupal 12. PhpStan
+      # apparently does not understand that syntax.
+      message: "#^Method Drupal\\\\Core\\\\Config\\\\Entity\\\\ConfigEntityListBuilder::getDefaultOperations\\(\\) invoked with 2 parameters, 1 required\\.$#"
+      path: modules/number_pattern/src/NumberPatternListBuilder.php
+      reportUnmatched: false
+    - # BC layer: the CacheableMetadata parameter was added in Drupal 11.3,
+      # but we still support earlier core versions.
+      identifier: drupal.entityListBuilderMissingCacheabilityParameter
+      reportUnmatched: false

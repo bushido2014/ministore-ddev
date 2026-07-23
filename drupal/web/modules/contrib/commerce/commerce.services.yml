@@ -87,6 +87,11 @@ services:
     tags:
       - { name: event_subscriber }
 
+  commerce.route_subscriber:
+    class: Drupal\commerce\EventSubscriber\RouteSubscriber
+    tags:
+      - { name: event_subscriber }
+
   commerce.inbox_message_storage:
     class: Drupal\commerce\InboxMessageStorage
   Drupal\commerce\InboxMessageStorageInterface: '@commerce.inbox_message_storage'

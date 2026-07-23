@@ -9,8 +9,7 @@ use Drupal\Core\Site\Settings;
 use Drupal\Core\State\StateInterface;
 use Drupal\commerce\Utility\Error;
 use GuzzleHttp\ClientInterface;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\DependencyInjection\Attribute\AutowireServiceClosure;
 
 /**
  * Provides the InboxMessageFetcher service.
@@ -30,7 +29,7 @@ class InboxMessageFetcher implements InboxMessageFetcherInterface {
    *
    * @param \GuzzleHttp\ClientInterface $httpClient
    *   The http client.
-   * @param \Psr\Log\LoggerInterface $logger
+   * @param \Closure $logger
    *   The logger.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $moduleHandler
    *   The module handler service.
@@ -43,8 +42,9 @@ class InboxMessageFetcher implements InboxMessageFetcherInterface {
    */
   public function __construct(
     protected ClientInterface $httpClient,
-    #[Autowire(service: 'commerce.logger')]
-    protected LoggerInterface $logger,
+    // Prevent circular reference:
+    #[AutowireServiceClosure('commerce.logger')]
+    protected \Closure $logger,
     protected ModuleHandlerInterface $moduleHandler,
     protected InboxMessageStorageInterface $inboxMessageStorage,
     protected StateInterface $state,
@@ -77,7 +77,9 @@ class InboxMessageFetcher implements InboxMessageFetcherInterface {
       }
     }
     catch (\Exception $exception) {
-      Error::logException($this->logger, $exception);
+      /** @var \Psr\Log\LoggerInterface $logger */
+      $logger = ($this->logger)();
+      Error::logException($logger, $exception);
     }
   }
 
@@ -101,7 +103,9 @@ class InboxMessageFetcher implements InboxMessageFetcherInterface {
       }
     }
     catch (\Exception $exception) {
-      Error::logException($this->logger, $exception);
+      /** @var \Psr\Log\LoggerInterface $logger */
+      $logger = ($this->logger)();
+      Error::logException($logger, $exception);
     }
   }
 

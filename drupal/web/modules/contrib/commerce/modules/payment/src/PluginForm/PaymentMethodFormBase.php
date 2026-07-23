@@ -2,6 +2,7 @@
 
 namespace Drupal\commerce_payment\PluginForm;
 
+use Drupal\commerce\AjaxFormTrait;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -11,6 +12,8 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class PaymentMethodFormBase extends PaymentGatewayFormBase implements ContainerInjectionInterface {
+
+  use AjaxFormTrait;
 
   /**
    * The current store.
@@ -103,6 +106,15 @@ class PaymentMethodFormBase extends PaymentGatewayFormBase implements ContainerI
         '#inline_form' => $inline_form,
       ];
       $form['billing_information'] = $inline_form->buildInlineForm($form['billing_information'], $form_state);
+
+      // Ensure the entire payment method form is refreshed when the selected
+      // address changes.
+      if (isset($form['billing_information']['select_address'])) {
+        $form['billing_information']['select_address']['#ajax'] = [
+          'callback' => [get_class($this), 'ajaxRefreshForm'],
+          'element' => $form['#parents'],
+        ];
+      }
     }
 
     return $form;

@@ -2,7 +2,6 @@
 
 namespace Drupal\commerce\Hook;
 
-use Drupal\commerce\InboxMessageFetcherInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Field\FieldTypePluginManagerInterface;
@@ -10,6 +9,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Hook\Attribute\Hook;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Render\RendererInterface;
+use Symfony\Component\DependencyInjection\Attribute\AutowireServiceClosure;
 
 /**
  * Hook implementations for Commerce.
@@ -21,8 +21,8 @@ class CommerceHooks {
    *
    * @param \Drupal\Core\Field\FieldTypePluginManagerInterface $fieldTypeManager
    *   The field type plugin manager.
-   * @param \Drupal\commerce\InboxMessageFetcherInterface $inboxMessageFetcher
-   *   The inbox message fetcher.
+   * @param \Closure $inboxMessageFetcher
+   *   Closure that returns the inbox message fetcher.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $moduleHandler
    *   The module handler.
    * @param \Drupal\Core\Render\RendererInterface $renderer
@@ -30,7 +30,8 @@ class CommerceHooks {
    */
   public function __construct(
     protected readonly FieldTypePluginManagerInterface $fieldTypeManager,
-    protected readonly InboxMessageFetcherInterface $inboxMessageFetcher,
+    #[AutowireServiceClosure('commerce.inbox_message_fetcher')]
+    protected \Closure $inboxMessageFetcher,
     protected readonly ModuleHandlerInterface $moduleHandler,
     protected readonly RendererInterface $renderer,
   ) {
@@ -41,7 +42,7 @@ class CommerceHooks {
    */
   #[Hook('cron')]
   public function cron(): void {
-    $this->inboxMessageFetcher->fetch();
+    ($this->inboxMessageFetcher)()->fetch();
   }
 
   /**
@@ -131,7 +132,7 @@ class CommerceHooks {
       // Not a base field.
       return;
     }
-    if (!str_starts_with($field_definition->getTargetEntityTypeId(), 'commerce_')) {
+    if (!str_starts_with($field_definition->getTargetEntityTypeId() ?? '', 'commerce_')) {
       // Not a Commerce entity type.
       return;
     }

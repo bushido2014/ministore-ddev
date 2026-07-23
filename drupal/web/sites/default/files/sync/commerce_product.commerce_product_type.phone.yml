@@ -1,0 +1,13 @@
+uuid: 8ff7750d-4782-48e4-9a8d-596a724e1782
+langcode: en
+status: true
+dependencies: {  }
+id: phone
+label: Phone
+traits: {  }
+locked: false
+description: ''
+variationTypes:
+  - phone
+multipleVariations: true
+injectVariationFields: true

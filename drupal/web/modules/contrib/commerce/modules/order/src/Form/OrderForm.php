@@ -172,6 +172,29 @@ class OrderForm extends OrderFormBase {
   /**
    * {@inheritdoc}
    */
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    /** @var \Drupal\commerce_order\Entity\OrderInterface $order */
+    $order = parent::validateForm($form, $form_state);
+    $currency_code = NULL;
+    foreach ($order->getItems() as $order_item) {
+      $unit_price = $order_item->getUnitPrice();
+      if (empty($currency_code)) {
+        $currency_code = $unit_price?->getCurrencyCode();
+        continue;
+      }
+
+      if ($currency_code !== $unit_price?->getCurrencyCode()) {
+        $form_state->setErrorByName('order_items', $this->t('This order contains items in different currencies. Please ensure all items use the same currency.'));
+        break;
+      }
+    }
+
+    return $order;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function save(array $form, FormStateInterface $form_state) {
     $status = $this->entity->save();
     $label = $this->entity->label();

@@ -995,16 +995,17 @@ class CheckoutOrderTest extends CommerceBrowserTestBase {
     $this->assertSession()->pageTextContains('Billing information');
     $this->assertSession()->pageTextContains('Order summary');
     $this->assertSession()->pageTextContains('Comments');
+
     $comment = "Customer's comment <br/><script>alert('Hello!')</script>";
     $this->submitForm([
       'customer_comments[comments]' => $comment,
     ], 'Complete checkout');
 
-    // Confirm that comment is shown correctly.
     $this->assertSession()->pageTextContains("Customer's comment");
+    $this->assertSession()->pageTextContains("<br/>");
     $this->assertSession()->pageTextContains("alert('Hello!')");
-    $this->assertSession()->pageTextNotContains("Customer's comment <br/>");
-    $this->assertSession()->pageTextNotContains("<script>alert('Hello!')</script>");
+    $this->assertSession()->pageTextContains("<script>alert('Hello!')</script>");
+    $this->assertSession()->responseNotContains("<script>alert('Hello!')</script>");
 
     // Confirm that comment is not filtered on input in the log.
     $order = Order::load(1);
@@ -1037,7 +1038,7 @@ class CheckoutOrderTest extends CommerceBrowserTestBase {
     $html = $this->getSession()->getPage()->getHtml();
     $this->assertStringContainsString("Customer's comment &lt;br/&gt;&lt;script&gt;alert('Hello!')&lt;/script&gt;", $html);
 
-    // Move the "Comments" pane in the order information step.
+    // Move the "Comments" pane to the order information step.
     $config = \Drupal::configFactory()->getEditable('commerce_checkout.commerce_checkout_flow.default');
     $panes = $config->get('configuration.panes');
     $panes['customer_comments'] = [

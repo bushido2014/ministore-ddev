@@ -53,6 +53,8 @@ local-actions:
   css:
     theme:
       css/commerce.local-actions.css: {}
+  dependencies:
+    - commerce/base
 
 field-ui:
   css:

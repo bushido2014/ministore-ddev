@@ -7,6 +7,7 @@
 
 use Drupal\commerce_payment\Hook\CommercePaymentHooks;
 use Drupal\commerce_payment\Hook\CommercePaymentThemeHooks;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
@@ -33,8 +34,8 @@ function commerce_payment_entity_base_field_info(EntityTypeInterface $entity_typ
  * Implements hook_entity_operation().
  */
 #[LegacyHook]
-function commerce_payment_entity_operation(EntityInterface $entity): array {
-  return \Drupal::service(CommercePaymentHooks::class)->entityOperation($entity);
+function commerce_payment_entity_operation(EntityInterface $entity, ?CacheableMetadata $cacheability = NULL): array {
+  return \Drupal::service(CommercePaymentHooks::class)->entityOperation($entity, $cacheability);
 }
 
 /**

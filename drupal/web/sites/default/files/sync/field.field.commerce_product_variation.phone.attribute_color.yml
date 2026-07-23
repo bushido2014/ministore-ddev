@@ -1,0 +1,24 @@
+uuid: c3b47fb9-e90c-4560-8bb3-aae6b305943c
+langcode: en
+status: true
+dependencies:
+  config:
+    - commerce_product.commerce_product_attribute.color
+    - commerce_product.commerce_product_variation_type.phone
+    - field.storage.commerce_product_variation.attribute_color
+id: commerce_product_variation.phone.attribute_color
+field_name: attribute_color
+entity_type: commerce_product_variation
+bundle: phone
+label: Color
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:commerce_product_attribute_value'
+  handler_settings:
+    target_bundles:
+      color: color
+field_type: entity_reference

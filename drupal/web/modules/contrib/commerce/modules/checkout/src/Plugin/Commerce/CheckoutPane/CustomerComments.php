@@ -24,7 +24,13 @@ class CustomerComments extends CheckoutPaneBase implements CheckoutPaneInterface
   public function buildPaneSummary() {
     $summary = parent::buildPaneSummary();
     if ($comments = $this->order->getCustomerComments()) {
-      $summary[] = ['#markup' => $comments];
+      $summary[] = [
+        '#type' => 'inline_template',
+        '#template' => '{{ comments|nl2br }}',
+        '#context' => [
+          'comments' => $comments,
+        ],
+      ];
     }
 
     return $summary;

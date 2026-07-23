@@ -9,6 +9,7 @@ use Drupal\commerce_product\Hook\CommerceProductHooks;
 use Drupal\commerce_product\Hook\CommerceProductThemeHooks;
 use Drupal\commerce_product\Hook\CommerceProductTokensHooks;
 use Drupal\commerce_product\Hook\CommerceProductViewsHooks;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\Display\EntityFormDisplayInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -280,8 +281,8 @@ function commerce_product_field_group_content_element_keys_alter(&$keys): void {
  * Implements hook_entity_operation_alter().
  */
 #[LegacyHook]
-function commerce_product_entity_operation_alter(array &$operations, EntityInterface $entity): void {
-  \Drupal::service(CommerceProductHooks::class)->entityOperationAlter($operations, $entity);
+function commerce_product_entity_operation_alter(array &$operations, EntityInterface $entity, ?CacheableMetadata $cacheability = NULL): void {
+  \Drupal::service(CommerceProductHooks::class)->entityOperationAlter($operations, $entity, $cacheability);
 }
 
 /**

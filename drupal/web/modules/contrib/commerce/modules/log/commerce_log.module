@@ -6,6 +6,8 @@
  */
 
 use Drupal\commerce_log\Hook\CommerceLogHooks;
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Hook\Attribute\LegacyHook;
 
@@ -31,4 +33,20 @@ function commerce_log_form_commerce_order_add_form_alter(array &$form, FormState
 #[LegacyHook]
 function commerce_log_views_data(): array {
   return \Drupal::service(CommerceLogHooks::class)->viewsData();
+}
+
+/**
+ * Implements hook_entity_extra_field_info().
+ */
+#[LegacyHook]
+function commerce_log_entity_extra_field_info(): array {
+  return \Drupal::service(CommerceLogHooks::class)->entityExtraFieldInfo();
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_view() for commerce_order.
+ */
+#[LegacyHook]
+function commerce_log_commerce_order_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, string $view_mode): void {
+  \Drupal::service(CommerceLogHooks::class)->commerceOrderView($build, $entity, $display, $view_mode);
 }

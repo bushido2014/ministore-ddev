@@ -8,6 +8,7 @@ use Drupal\commerce_product\ProductAttributeFieldManagerInterface;
 use Drupal\Component\Plugin\PluginBase;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\Display\EntityFormDisplayInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -235,7 +236,7 @@ class CommerceProductHooks {
    * Implements hook_entity_operation_alter().
    */
   #[Hook('entity_operation_alter')]
-  public function entityOperationAlter(array &$operations, EntityInterface $entity): void {
+  public function entityOperationAlter(array &$operations, EntityInterface $entity, ?CacheableMetadata $cacheability = NULL): void {
     // For the 'commerce_product_attribute' entity type when the 'translate'
     // operation does not exist, we need to check if the user has access to
     // manage translations.

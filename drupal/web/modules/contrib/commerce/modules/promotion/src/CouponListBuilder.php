@@ -2,11 +2,10 @@
 
 namespace Drupal\commerce_promotion;
 
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
-use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\Core\Routing\RouteMatchInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -36,34 +35,13 @@ class CouponListBuilder extends EntityListBuilder {
   protected $usageCounts;
 
   /**
-   * Constructs a new CouponListBuilder object.
-   *
-   * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
-   *   The entity type definition.
-   * @param \Drupal\Core\Entity\EntityStorageInterface $storage
-   *   The entity storage.
-   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
-   *   The current route match.
-   * @param \Drupal\commerce_promotion\PromotionUsageInterface $usage
-   *   The usage.
-   */
-  public function __construct(EntityTypeInterface $entity_type, EntityStorageInterface $storage, RouteMatchInterface $route_match, PromotionUsageInterface $usage) {
-    parent::__construct($entity_type, $storage);
-
-    $this->routeMatch = $route_match;
-    $this->usage = $usage;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type) {
-    return new static(
-      $entity_type,
-      $container->get('entity_type.manager')->getStorage($entity_type->id()),
-      $container->get('current_route_match'),
-      $container->get('commerce_promotion.usage')
-    );
+    $instance = parent::createInstance($container, $entity_type);
+    $instance->routeMatch = $container->get('current_route_match');
+    $instance->usage = $container->get('commerce_promotion.usage');
+    return $instance;
   }
 
   /**
@@ -71,7 +49,7 @@ class CouponListBuilder extends EntityListBuilder {
    */
   public function load() {
     $promotion = $this->routeMatch->getParameter('commerce_promotion');
-    $coupons = $this->storage->loadMultipleByPromotion($promotion);
+    $coupons = $this->getStorage()->loadMultipleByPromotion($promotion);
     // Load the usage counts for each coupon.
     $this->usageCounts = $this->usage->loadMultipleByCoupon($coupons);
 
@@ -111,10 +89,15 @@ class CouponListBuilder extends EntityListBuilder {
   /**
    * {@inheritdoc}
    */
-  protected function getDefaultOperations(EntityInterface $entity) {
-    $operations = parent::getDefaultOperations($entity);
+  protected function getDefaultOperations(EntityInterface $entity/* , ?CacheableMetadata $cacheability = NULL */) {
+    $cacheability = func_num_args() > 1 ? func_get_arg(1) : NULL;
+    $operations = parent::getDefaultOperations($entity, $cacheability);
 
-    if ($entity->access('update')) {
+    $access = $entity->access('update', NULL, TRUE);
+    if ($cacheability instanceof CacheableMetadata) {
+      $cacheability->addCacheableDependency($access);
+    }
+    if ($access->isAllowed()) {
       if (!$entity->isEnabled() && $entity->hasLinkTemplate('enable-form')) {
         $operations['enable'] = [
           'title' => $this->t('Enable'),

@@ -228,6 +228,7 @@ class OrderReceiptTest extends OrderKernelTestBase {
     $customer->save();
 
     $this->order->setOrderNumber('123456789');
+    $this->order->setCustomerComments("<br/><script>alert('Hello!')</script>");
     $this->order->getState()->applyTransitionById('place');
     $this->order->save();
 
@@ -248,12 +249,15 @@ class OrderReceiptTest extends OrderKernelTestBase {
     $this->assertEquals($this->order->getEmail(), $email['to']);
     $this->assertEquals('bcc@example.com', $email['headers']['Bcc']);
     $this->assertEquals($expected_langcode, $email['langcode']);
+    $rendered_body = (string) \Drupal::service('renderer')->renderInIsolation($email['params']['body']);
 
     $this->assertStringContainsString((string) $subject, $email['subject']);
     $this->assertStringContainsString($strings['Thank you for your order!'], $email['body']);
     $this->assertStringContainsString($strings['Default store'], $email['body']);
     $this->assertStringContainsString($strings['Cash on delivery'], $email['body']);
     $this->assertStringContainsString('Order Total: ' . $expected_order_total, $email['body']);
+    $this->assertStringNotContainsString("<script>alert('Hello!')</script>", $rendered_body);
+    $this->assertStringContainsString("&lt;script&gt;alert(&#039;Hello!&#039;)&lt;/script&gt;", $rendered_body);
   }
 
   /**

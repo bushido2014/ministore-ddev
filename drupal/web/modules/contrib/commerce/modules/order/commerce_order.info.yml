@@ -14,7 +14,7 @@ dependencies:
   - state_machine:state_machine
   - drupal:options
 
-# Information added by Drupal.org packaging script on 2026-06-02
-version: '3.3.6'
+# Information added by Drupal.org packaging script on 2026-07-17
+version: '3.3.8'
 project: 'commerce'
-datestamp: 1780406627
+datestamp: 1784272837

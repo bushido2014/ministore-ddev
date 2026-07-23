@@ -3,6 +3,7 @@
 namespace Drupal\commerce_order\Plugin\views\area;
 
 use Drupal\commerce_order\Entity\OrderItemInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\views\Attribute\ViewsArea;
 use Drupal\views\Plugin\views\area\AreaPluginBase;
@@ -25,7 +26,7 @@ class OrderTotal extends AreaPluginBase {
    *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
-  protected $entityTypeManager;
+  protected EntityTypeManagerInterface $entityTypeManager;
 
   /**
    * {@inheritdoc}

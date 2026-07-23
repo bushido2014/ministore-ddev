@@ -5,6 +5,8 @@ namespace Drupal\commerce_payment\Form;
 use Drupal\commerce\AjaxFormTrait;
 use Drupal\commerce_payment\Entity\PaymentGatewayInterface;
 use Drupal\commerce_payment\Entity\PaymentInterface;
+use Drupal\commerce_payment\Exception\DeclineException;
+use Drupal\commerce_payment\Exception\PaymentGatewayException;
 use Drupal\commerce_payment\PaymentOption;
 use Drupal\commerce_payment\Plugin\Commerce\PaymentGateway\ManualPaymentGatewayInterface;
 use Drupal\commerce_payment\Plugin\Commerce\PaymentGateway\SupportsAuthorizationsInterface;
@@ -162,13 +164,26 @@ class OrderPaymentAddForm extends FormBase implements ContainerInjectionInterfac
     // 4. Process the payment using the gateway plugin.
     $payment_gateway = $this->getPaymentGatewayById($payment_gateway_id);
     $payment_gateway_plugin = $payment_gateway->getPlugin();
-    if ($payment_gateway_plugin instanceof ManualPaymentGatewayInterface) {
-      $received = (bool) $form_state->getValue('payment_received');
-      $payment_gateway_plugin->createPayment($payment, $received);
+    try {
+      if ($payment_gateway_plugin instanceof ManualPaymentGatewayInterface) {
+        $received = (bool) $form_state->getValue('payment_received');
+        $payment_gateway_plugin->createPayment($payment, $received);
+      }
+      else {
+        $capture = ($form_state->getValue('transaction_type') === 'capture');
+        $payment_gateway_plugin->createPayment($payment, $capture);
+      }
     }
-    else {
-      $capture = ($form_state->getValue('transaction_type') === 'capture');
-      $payment_gateway_plugin->createPayment($payment, $capture);
+    catch (DeclineException $e) {
+      $this->messenger()->addError($e->getMessage());
+      $form_state->setRebuild();
+      return;
+    }
+    catch (PaymentGatewayException $e) {
+      $this->logger('commerce_payment')->error($e->getMessage());
+      $this->messenger()->addError($this->t('We encountered an error processing your payment. Please try again or use a different payment method.'));
+      $form_state->setRebuild();
+      return;
     }
     // 5. Save payment gateway and method references on order entity.
     $this->updateOrderWithPaymentData($payment);

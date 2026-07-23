@@ -14,13 +14,6 @@ use Drupal\commerce_order\Entity\OrderType;
 class CartExpirationTest extends CartKernelTestBase {
 
   /**
-   * The order storage.
-   *
-   * @var \Drupal\commerce_order\OrderStorage
-   */
-  protected $orderStorage;
-
-  /**
    * A sample user.
    *
    * @var \Drupal\user\UserInterface
@@ -35,7 +28,6 @@ class CartExpirationTest extends CartKernelTestBase {
 
     $user = $this->createUser();
     $this->user = $this->reloadEntity($user);
-    $this->orderStorage = $this->container->get('entity_type.manager')->getStorage('commerce_order');
   }
 
   /**
@@ -99,7 +91,8 @@ class CartExpirationTest extends CartKernelTestBase {
     // By default, cart expiration is disabled.
     // Confirm that no orders are deleted.
     $this->container->get('commerce_cart.cron')->run();
-    $this->assertEquals(5, $this->orderStorage->getQuery()->accessCheck(FALSE)->count()->execute());
+    $order_storage = $this->entityTypeManager->getStorage('commerce_order');
+    $this->assertEquals(5, $order_storage->getQuery()->accessCheck(FALSE)->count()->execute());
 
     // Set expiration to 3 days.
     $order_type->setThirdPartySetting('commerce_cart', 'cart_expiration', [
@@ -112,16 +105,16 @@ class CartExpirationTest extends CartKernelTestBase {
     // Confirm that cron has queued IDs.
     $this->container->get('commerce_cart.cron')->run();
     // Confirm that $cart1 and $cart2 were deleted.
-    $this->assertEquals(3, $this->orderStorage->getQuery()->accessCheck(FALSE)->count()->execute());
-    $this->assertNull($this->orderStorage->load($cart1->id()));
-    $this->assertNull($this->orderStorage->load($cart2->id()));
+    $this->assertEquals(3, $order_storage->getQuery()->accessCheck(FALSE)->count()->execute());
+    $this->assertNull($order_storage->load($cart1->id()));
+    $this->assertNull($order_storage->load($cart2->id()));
 
     // Disable cart expiration.
     $order_type->setThirdPartySetting('commerce_cart', 'cart_expiration', []);
     $order_type->save();
 
     $this->container->get('cron')->run();
-    $this->assertEquals(3, $this->orderStorage->getQuery()->accessCheck(FALSE)->count()->execute());
+    $this->assertEquals(3, $order_storage->getQuery()->accessCheck(FALSE)->count()->execute());
 
     // Re-enable cart expiration.
     $order_type->setThirdPartySetting('commerce_cart', 'cart_expiration', [
@@ -137,7 +130,7 @@ class CartExpirationTest extends CartKernelTestBase {
       ->execute();
 
     $this->container->get('commerce_cart.cron')->run();
-    $this->assertEquals(2, $this->orderStorage->getQuery()->accessCheck(FALSE)->count()->execute());
+    $this->assertEquals(2, $order_storage->getQuery()->accessCheck(FALSE)->count()->execute());
 
     // Allow expiring non-anonymous carts
     $order_type->setThirdPartySetting('commerce_cart', 'cart_expiration', [
@@ -148,7 +141,7 @@ class CartExpirationTest extends CartKernelTestBase {
     $order_type->save();
 
     $this->container->get('commerce_cart.cron')->run();
-    $this->assertEquals(0, $this->orderStorage->getQuery()->accessCheck(FALSE)->count()->execute());
+    $this->assertEquals(0, $order_storage->getQuery()->accessCheck(FALSE)->count()->execute());
   }
 
 }

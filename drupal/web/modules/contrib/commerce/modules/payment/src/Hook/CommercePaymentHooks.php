@@ -3,6 +3,7 @@
 namespace Drupal\commerce_payment\Hook;
 
 use Drupal\commerce_payment\Plugin\Field\FieldFormatter\BillingInformationFormatter;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
@@ -54,7 +55,7 @@ class CommercePaymentHooks {
    * Implements hook_entity_operation().
    */
   #[Hook('entity_operation')]
-  public function entityOperation(EntityInterface $entity): array {
+  public function entityOperation(EntityInterface $entity, ?CacheableMetadata $cacheability = NULL): array {
     $operations = [];
     if ($entity->getEntityTypeId() === 'commerce_order') {
       $url = Url::fromRoute('entity.commerce_payment.collection', [

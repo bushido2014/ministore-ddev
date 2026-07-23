@@ -1,0 +1,43 @@
+uuid: efb6bada-6730-4f76-8177-1bd3a06cc7dd
+langcode: en
+status: true
+dependencies:
+  config:
+    - commerce_product.commerce_product_type.ministore_product
+    - field.field.commerce_product.ministore_product.body
+  module:
+    - commerce_product
+    - text
+id: commerce_product.ministore_product.default
+targetEntityType: commerce_product
+bundle: ministore_product
+mode: default
+content:
+  body:
+    type: text_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 11
+    region: content
+  title:
+    type: string
+    label: hidden
+    settings:
+      link_to_entity: false
+      link_rel: canonical
+    third_party_settings: {  }
+    weight: -5
+    region: content
+  variations:
+    type: commerce_add_to_cart
+    label: above
+    settings:
+      combine: true
+    third_party_settings: {  }
+    weight: 10
+    region: content
+hidden:
+  created: true
+  stores: true
+  uid: true

@@ -8,7 +8,6 @@ use Drupal\commerce_order\Entity\OrderInterface;
 use Drupal\commerce_order\Entity\OrderItemInterface;
 use Drupal\commerce_order\Form\OrderFormBase;
 use Drupal\commerce_product\Entity\ProductVariationInterface;
-use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Component\Utility\SortArray;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -262,11 +261,13 @@ class OrderItemsWidget extends WidgetBase implements ContainerFactoryPluginInter
 
     if ($widget_state['form'] === 'add') {
       $element = NestedArray::getValue($form, [$field_name, 'widget', 'add_new_item']);
-      /** @var \Drupal\commerce\Plugin\Commerce\InlineForm\EntityInlineFormInterface $inline_form */
-      $inline_form = $element['#inline_form'];
-      $values[] = [
-        'entity' => $inline_form->getEntity(),
-      ];
+      if (isset($element['#inline_form'])) {
+        /** @var \Drupal\commerce\Plugin\Commerce\InlineForm\EntityInlineFormInterface $inline_form */
+        $inline_form = $element['#inline_form'];
+        $values[] = [
+          'entity' => $inline_form->getEntity(),
+        ];
+      }
     }
 
     // Check open duplicate forms and set entity to the list.
@@ -986,6 +987,11 @@ class OrderItemsWidget extends WidgetBase implements ContainerFactoryPluginInter
           '#submit' => [[get_class($this), 'submitOpenForm']],
           '#oiw_form' => 'add',
           '#oiw_field_name' => $this->fieldName,
+          '#states' => [
+            'disabled' => [
+              ':input[name="order_items[add_new_item][entity_selector][purchasable_entity]"]' => ['value' => ''],
+            ],
+          ],
         ],
       ],
     ];
