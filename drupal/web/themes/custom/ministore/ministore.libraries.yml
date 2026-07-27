@@ -7,6 +7,7 @@ global-styling:
       css/components/page.css: {}
       css/components/paragraph.css: {}
       css/components/form.css: {}
+      css/components/media.css: {}
   js:
     js/main.js: {}
   dependencies:

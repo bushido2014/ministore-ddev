@@ -1,0 +1,14 @@
+@media (max-width: 1024px) {}
+
+@media (max-width: 980px) {
+    .cols-2 {
+    grid-template-columns: repeat(1, 1fr);
+}
+
+  .cols-4 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+}
+
+@media (max-width: 768px) {}
