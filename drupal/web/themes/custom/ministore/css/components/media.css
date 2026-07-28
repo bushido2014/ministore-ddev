@@ -3,6 +3,7 @@
 @media (max-width: 980px) {
     .cols-2 {
     grid-template-columns: repeat(1, 1fr);
+    text-align: center;
 }
 
   .cols-4 {
@@ -11,4 +12,9 @@
 
 }
 
-@media (max-width: 768px) {}
+@media (max-width: 768px) {
+   .cols-4 {
+    grid-template-columns: repeat(1, 1fr);
+    place-items: center;
+}
+}
