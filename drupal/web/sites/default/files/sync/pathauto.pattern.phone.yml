@@ -1,0 +1,23 @@
+uuid: 3d3e6901-0283-4075-915c-de86833b1480
+langcode: en
+status: true
+dependencies:
+  config:
+    - commerce_product.commerce_product_type.phone
+  module:
+    - commerce_product
+id: phone
+label: Phone
+type: 'canonical_entities:commerce_product'
+pattern: '/shop/[commerce_product:title]'
+selection_criteria:
+  2a296cdc-ddfb-44aa-a504-4b990d618aa3:
+    id: 'entity_bundle:commerce_product'
+    negate: false
+    context_mapping:
+      commerce_product: commerce_product
+    bundles:
+      phone: phone
+selection_logic: and
+weight: -5
+relationships: {  }
