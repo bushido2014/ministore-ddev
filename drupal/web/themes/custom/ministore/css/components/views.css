@@ -1,0 +1,10 @@
+.product-card__footer {
+   align-items: initial;
+   justify-content: space-between; 
+}
+
+.product-card__title,.product-card__price {
+        font-size: 1.5em;
+        text-transform: uppercase;
+        
+}

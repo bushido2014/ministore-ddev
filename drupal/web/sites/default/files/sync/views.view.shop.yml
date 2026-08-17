@@ -3,11 +3,11 @@ langcode: en
 status: true
 dependencies:
   config:
-    - field.storage.commerce_product.field_brand
     - field.storage.commerce_product.field_product_image
     - image.style.large
     - system.menu.main
   module:
+    - commerce_price
     - commerce_product
     - media
 id: shop
@@ -158,13 +158,15 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-        field_brand:
-          id: field_brand
-          table: commerce_product__field_brand
-          field: field_brand
-          relationship: none
+        price__number:
+          id: price__number
+          table: commerce_product_variation_field_data
+          field: price__number
+          relationship: reverse__commerce_product_variation__product_id
           group_type: group
           admin_label: ''
+          entity_type: commerce_product_variation
+          entity_field: price
           plugin_id: field
           label: ''
           exclude: false
@@ -207,11 +209,12 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
-          click_sort_column: target_id
-          type: entity_reference_label
+          click_sort_column: number
+          type: commerce_price_default
           settings:
-            link: true
-          group_column: target_id
+            strip_trailing_zeroes: false
+            currency_display: symbol
+          group_column: ''
           group_columns: {  }
           group_rows: true
           delta_limit: 0
@@ -283,7 +286,17 @@ display:
           distinct: false
           replica: false
           query_tags: {  }
-      relationships: {  }
+      relationships:
+        reverse__commerce_product_variation__product_id:
+          id: reverse__commerce_product_variation__product_id
+          table: commerce_product_field_data
+          field: reverse__commerce_product_variation__product_id
+          relationship: none
+          group_type: group
+          admin_label: 'Product variation'
+          entity_type: commerce_product
+          plugin_id: standard
+          required: true
       header: {  }
       footer: {  }
       display_extenders: {  }
@@ -294,7 +307,6 @@ display:
         - 'languages:language_interface'
         - url.query_args
       tags:
-        - 'config:field.storage.commerce_product.field_brand'
         - 'config:field.storage.commerce_product.field_product_image'
   page_1:
     id: page_1
@@ -316,5 +328,4 @@ display:
         - 'languages:language_interface'
         - url.query_args
       tags:
-        - 'config:field.storage.commerce_product.field_brand'
         - 'config:field.storage.commerce_product.field_product_image'
