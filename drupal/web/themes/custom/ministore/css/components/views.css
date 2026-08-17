@@ -1,10 +1,21 @@
+.product-card {
+    padding: 8px;
+}
 .product-card__footer {
-   align-items: initial;
+   align-items: stretch;
    justify-content: space-between; 
+   padding: 10px 0;
+}
+.product-card__title {
+    padding-top: 8px;
 }
 
 .product-card__title,.product-card__price {
-        font-size: 1.5em;
-        text-transform: uppercase;
+  font-size: 1.3em;
+  text-transform: uppercase;
         
+}
+
+.product-card__price {
+   color: var(--color-primary);
 }
