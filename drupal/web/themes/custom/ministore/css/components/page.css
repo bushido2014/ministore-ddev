@@ -100,3 +100,42 @@
 .fa-arrow-up {
     font-size: 1.70rem;
 }
+
+
+.shop-layout {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 30px;
+  align-items: start;
+  padding: 40px 0;
+}
+
+.shop-sidebar {
+  position: sticky;
+  top: 20px;
+}
+
+.sidebar-widget {
+  margin-bottom: 25px;
+  padding-bottom: 25px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.sidebar-widget h4 {
+  margin-bottom: 15px;
+}
+
+.sidebar-list {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar-list li a {
+  display: block;
+  padding: 5px 0;
+  color: var(--text-color);
+}
+
+.sidebar-list li a:hover {
+  color: var(--primary-color);
+}
