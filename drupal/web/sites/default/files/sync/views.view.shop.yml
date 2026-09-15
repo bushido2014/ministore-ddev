@@ -373,6 +373,7 @@ display:
       menu:
         type: normal
         title: Shop
+        weight: -48
         menu_name: main
         parent: ''
     cache_metadata:
