@@ -376,6 +376,33 @@ class OrderAdminTest extends OrderWebDriverTestBase {
   }
 
   /**
+   * Tests skipping the order receipt when placing an order from the admin UI.
+   */
+  public function testPlaceOrderSkipReceipt() {
+    /** @var \Drupal\commerce_order\Entity\OrderInterface $order */
+    $order = $this->createEntity('commerce_order', [
+      'type' => 'default',
+      'mail' => $this->loggedInUser->getEmail(),
+      'uid' => $this->loggedInUser,
+      'store_id' => $this->store,
+      'state' => 'draft',
+    ]);
+
+    $this->drupalGet($order->toUrl());
+    $this->click('a.button#edit-place');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+    $checkbox = $this->assertSession()->fieldExists('Email the customer an order receipt');
+    $this->assertTrue($checkbox->isChecked());
+    $checkbox->uncheck();
+    $this->click('button:contains("Confirm")');
+    $this->assertSession()->linkNotExists('Place order');
+
+    $this->assertCount(0, $this->getMails());
+    $order = $this->reloadEntity($order);
+    $this->assertEquals('completed', $order->getState()->getId());
+  }
+
+  /**
    * Tests resending the order receipt.
    */
   public function testResendReceipt() {

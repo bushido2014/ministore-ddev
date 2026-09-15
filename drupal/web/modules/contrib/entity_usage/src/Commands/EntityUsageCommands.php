@@ -60,9 +60,18 @@ class EntityUsageCommands extends DrushCommands {
    * @option keep-existing-records
    *   When --keep-existing-records is used, existing entity usage records
    *   won't be deleted.
+   * @option entity-types
+   *   A comma-separated list of entity type IDs to recreate usage statistics
+   *   for, e.g. "node,media". If omitted, statistics are recreated for all
+   *   entity types enabled for tracking. When provided, only usage records
+   *   for these entity types are deleted and rebuilt.
    */
-  public function recreate(array $options = ['keep-existing-records' => FALSE]): void {
-    $this->batchManager->recreate($options['keep-existing-records']);
+  public function recreate(array $options = ['keep-existing-records' => FALSE, 'entity-types' => NULL]): void {
+    $entity_types = NULL;
+    if (!empty($options['entity-types'])) {
+      $entity_types = array_map('trim', explode(',', $options['entity-types']));
+    }
+    $this->batchManager->recreate($options['keep-existing-records'], $entity_types);
     drush_backend_batch_process();
   }
 

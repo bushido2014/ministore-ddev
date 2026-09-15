@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\entity_usage\Kernel;
 
+use Drupal\Core\Database\DatabaseExceptionWrapper;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\RevisionableInterface;
 use Drupal\KernelTests\Core\Entity\EntityKernelTestBase;
@@ -795,6 +796,44 @@ class EntityUsageTest extends EntityKernelTestBase {
   }
 
   /**
+   * Tests that the rows of a failed bulk insert are not sent again.
+   *
+   * @covers \Drupal\entity_usage\EntityUsage::bulkInsert
+   */
+  public function testBulkInsertAfterFailure(): void {
+    /** @var \Drupal\entity_usage\EntityUsage $entity_usage */
+    $entity_usage = $this->container->get('entity_usage.usage');
+
+    // Queue a row against a table that does not exist so the insert fails.
+    $entity_usage->enableBulkInsert('entity_usage_missing_table');
+    $entity_usage->registerUsage(1, 'entity_test', 1, 'foo', 'en', 1, 'entity_reference', 'body');
+    try {
+      $entity_usage->bulkInsert();
+      $this->fail('Inserting into a missing table throws an exception.');
+    }
+    catch (DatabaseExceptionWrapper) {
+      // Expected.
+    }
+
+    // The row of the failed insert has been discarded: the next bulk insert
+    // only writes the rows registered after the failure.
+    $entity_usage->enableBulkInsert();
+    $entity_usage->registerUsage(2, 'entity_test', 1, 'foo', 'en', 1, 'entity_reference', 'body');
+    $entity_usage->bulkInsert();
+
+    $target_ids = $this->injectedDatabase->select($this->tableName, 'e')
+      ->fields('e', ['target_id'])
+      ->execute()
+      ->fetchCol();
+    $this->assertEquals([2], $target_ids);
+
+    // Only the inserted row dispatched an event.
+    $events = $this->state->get('entity_usage_events_test.usage_register', []);
+    $this->assertCount(1, $events);
+    $this->assertSame(2, $events[0]['target_id']);
+  }
+
+  /**
    * Tests the truncateTable() methods.
    *
    * @covers \Drupal\entity_usage\EntityUsage::truncateTable
@@ -809,6 +848,37 @@ class EntityUsageTest extends EntityKernelTestBase {
 
     $entity_usage->truncateTable();
     $this->assertSame(0, (int) $this->container->get('database')->select('entity_usage')->countQuery()->execute()->fetchField());
+  }
+
+  /**
+   * Tests that __wakeup() refreshes container-derived state after unserialize.
+   *
+   * @covers \Drupal\entity_usage\EntityUsageTrackBase::__wakeup
+   */
+  public function testWakeup(): void {
+    $entity = $this->testEntities[0];
+    $config_factory = $this->container->get('config.factory');
+
+    /** @var \Drupal\entity_usage\EntityUsageTrackBase $plugin */
+    $plugin = $this->container->get('plugin.manager.entity_usage.track')->createInstance('entity_reference');
+    // Base field tracking is disabled by default, and 'entity_test' is not in
+    // the 'always_track_base_fields' container parameter, so the 'user_id'
+    // base field is not returned.
+    $this->assertArrayNotHasKey('user_id', $plugin->getReferencingFields($entity, ['entity_reference']));
+
+    $serialized = serialize($plugin);
+
+    // Enable base field tracking after the plugin was constructed, so the
+    // serialized plugin's state is now stale.
+    $config_factory->getEditable('entity_usage.settings')
+      ->set('track_enabled_base_fields', TRUE)
+      ->save();
+
+    /** @var \Drupal\entity_usage\EntityUsageTrackBase $plugin */
+    $plugin = unserialize($serialized);
+    // __wakeup() re-reads the config from the container, rather than relying
+    // on the stale value captured when the plugin was serialized.
+    $this->assertArrayHasKey('user_id', $plugin->getReferencingFields($entity, ['entity_reference']));
   }
 
   /**

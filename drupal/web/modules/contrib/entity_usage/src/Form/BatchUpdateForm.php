@@ -16,7 +16,7 @@ class BatchUpdateForm extends FormBase {
    * BatchUpdateForm constructor.
    */
   final public function __construct(
-    private EntityUsageBatchManager $batchManager,
+    protected EntityUsageBatchManager $batchManager,
   ) {
   }
 

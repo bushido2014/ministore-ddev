@@ -10,7 +10,7 @@ dependencies:
   - drupal:media
   - drupal:ckeditor5
 
-# Information added by Drupal.org packaging script on 2026-07-01
-version: '8.x-2.1'
+# Information added by Drupal.org packaging script on 2026-09-15
+version: '8.x-2.3'
 project: 'entity_usage'
-datestamp: 1782902225
+datestamp: 1789472343

@@ -9,6 +9,7 @@ use Drupal\commerce_product\Entity\ProductVariationType;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\Tests\system\Traits\OffCanvasTestTrait;
+use Drupal\views\Entity\View;
 
 /**
  * @group commerce
@@ -218,24 +219,44 @@ class ProductLayoutBuilderIntegrationTest extends ProductWebDriverTestBase {
     $this->addBlockToLayout('SKU');
     $this->configureDefaultLayout();
 
-    $this->drupalGet('admin/structure/views/add');
-    $page = $this->getSession()->getPage();
-
-    $name = 'Product list';
-    $name_input = $page->findField('label');
-    $name_input->setValue($name);
-
-    $this->getSession()->getPage()->selectFieldOption('show[wizard_key]', 'standard:commerce_product_field_data');
-    $this->assertSession()->assertWaitOnAjaxRequest();
-
-    $page->findField('page[create]')->click();
-    $this->assertEquals($name, $page->findField('page[title]')->getValue());
-    $this->assertEquals(strtolower(str_replace(' ', '-', $name)), $page->findField('page[path]')->getValue());
-    $this->getSession()->getPage()->selectFieldOption('page[style][row_plugin]', 'entity:commerce_product');
-    $this->assertSession()->assertWaitOnAjaxRequest();
-
-    $this->submitForm([], 'Save and edit');
-    $this->assertSession()->addressEquals('admin/structure/views/view/product_list');
+    // A page view listing products with the entity row, so each product
+    // (including those without variations) is rendered through its Layout
+    // Builder-enabled display. Built directly rather than through the Views UI
+    // wizard, whose live-preview AJAX is unreliable in this test.
+    View::create([
+      'id' => 'product_list',
+      'label' => 'Product list',
+      'base_table' => 'commerce_product_field_data',
+      'base_field' => 'product_id',
+      'display' => [
+        'default' => [
+          'display_plugin' => 'default',
+          'id' => 'default',
+          'display_title' => 'Default',
+          'position' => 0,
+          'display_options' => [
+            'title' => 'Product list',
+            'access' => ['type' => 'none'],
+            'row' => [
+              'type' => 'entity:commerce_product',
+              'options' => ['view_mode' => 'default'],
+            ],
+            'style' => ['type' => 'default'],
+          ],
+        ],
+        'page_1' => [
+          'display_plugin' => 'page',
+          'id' => 'page_1',
+          'display_title' => 'Page',
+          'position' => 1,
+          'display_options' => [
+            'path' => 'product-list',
+          ],
+        ],
+      ],
+    ])->save();
+    // Register the new page display's route.
+    $this->container->get('router.builder')->rebuild();
 
     $this->drupalGet('product-list');
     $this->assertSession()->pageTextContains('Product list');

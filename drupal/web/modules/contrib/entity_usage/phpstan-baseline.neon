@@ -1,6 +1,12 @@
 parameters:
 	ignoreErrors:
 		-
+			rawMessage: 'Parameter #1 $mode of method Drupal\Core\Database\StatementInterface::fetchAll() expects Drupal\Core\Database\Statement\FetchAs|null, int given.'
+			identifier: argument.type
+			count: 1
+			path: src/EntityUsageBatchManager.php
+
+		-
 			rawMessage: 'Method Drupal\entity_usage\EntityUsageTrackManager::processDefinition() has parameter $definition with no type specified.'
 			identifier: missingType.parameter
 			count: 1

@@ -55,6 +55,7 @@ use Drupal\user\UserInterface;
  *       "add-items" = "Drupal\commerce_order\Form\OrderAddItemsForm",
  *       "billing-information" = "Drupal\commerce_order\Form\OrderBillingInformation",
  *       "order_details" = "Drupal\commerce_order\Form\OrderDetailsForm",
+ *       "state-transition-confirm" = "Drupal\commerce_order\Form\StateTransitionConfirmForm",
  *     },
  *     "local_task_provider" = {
  *       "default" = "Drupal\entity\Menu\DefaultEntityLocalTaskProvider",

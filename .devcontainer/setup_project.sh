@@ -27,4 +27,4 @@ ddev poweroff
 ddev start -y
 
 # further automated install / setup steps, e.g.
-ddev composer installcd 
+ddev composer install

@@ -24,7 +24,7 @@ class TestPlugin extends EntityUsageTrackBase {
   /**
    * Key value store for testing.
    */
-  private KeyValueStoreInterface $keyValue;
+  protected KeyValueStoreInterface $keyValue;
 
   /**
    * {@inheritdoc}

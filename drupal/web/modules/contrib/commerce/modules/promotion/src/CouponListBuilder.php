@@ -61,8 +61,11 @@ class CouponListBuilder extends EntityListBuilder {
    */
   public function buildHeader() {
     $header['code'] = $this->t('Code');
+    $header['status'] = $this->t('Status');
     $header['usage'] = $this->t('Usage');
     $header['customer_limit'] = $this->t('Per-customer limit');
+    $header['start_date'] = $this->t('Start date');
+    $header['end_date'] = $this->t('End date');
     return $header + parent::buildHeader();
   }
 
@@ -76,12 +79,16 @@ class CouponListBuilder extends EntityListBuilder {
     $usage_limit = $usage_limit ?: $this->t('Unlimited');
     $customer_limit = $entity->getCustomerUsageLimit();
     $customer_limit = $customer_limit ?: $this->t('Unlimited');
+    $start_date = $entity->getStartDate();
+    $end_date = $entity->getEndDate();
     $row['code'] = $entity->label();
-    if (!$entity->isEnabled()) {
-      $row['code'] .= ' (' . $this->t('Disabled') . ')';
-    }
+    $row['status'] = $entity->isEnabled() ? $this->t('Enabled') : $this->t('Disabled');
     $row['usage'] = $current_usage . ' / ' . $usage_limit;
     $row['customer_limit'] = $customer_limit;
+    // These are floating wall-clock values, so format them as-is without any
+    // timezone handling (matching PromotionListBuilder).
+    $row['start_date'] = $start_date ? $start_date->format('M jS Y H:i:s') : '—';
+    $row['end_date'] = $end_date ? $end_date->format('M jS Y H:i:s') : '—';
 
     return $row + parent::buildRow($entity);
   }

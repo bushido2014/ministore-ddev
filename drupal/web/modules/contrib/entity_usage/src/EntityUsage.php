@@ -70,14 +70,20 @@ class EntityUsage implements EntityUsageBulkInterface {
     if (empty($this->inserts)) {
       return $this;
     }
-    $query = $this->connection->insert($this->bulkTableName)->fields(array_keys($this->inserts[array_key_first($this->inserts)]));
+    // Take the rows and empty the queue before running the query. The batch
+    // worker catches and logs a failed insert and then moves on to the next
+    // chunk: rows left in the queue would be sent again on top of that chunk,
+    // so the query would grow and keep hitting the same duplicate key.
+    $inserts = $this->inserts;
+    $this->inserts = [];
+    $query = $this->connection->insert($this->bulkTableName)->fields(array_keys($inserts[array_key_first($inserts)]));
 
-    foreach ($this->inserts as $insert) {
+    foreach ($inserts as $insert) {
       $query->values($insert);
     }
     $query->execute();
     if ($this->tableName === $this->bulkTableName) {
-      foreach ($this->inserts as $insert) {
+      foreach ($inserts as $insert) {
         $event = new EntityUsageEvent(
           $insert['target_id_string'] !== '' ? $insert['target_id_string'] : $insert['target_id'],
           $insert['target_type'],
@@ -92,7 +98,6 @@ class EntityUsage implements EntityUsageBulkInterface {
         $this->eventDispatcher->dispatch($event, Events::USAGE_REGISTER);
       }
     }
-    $this->inserts = [];
     return $this;
   }
 
@@ -135,7 +140,9 @@ class EntityUsage implements EntityUsageBulkInterface {
         $target_id_int = $this->isInt($target_id);
         $source_id_int = $this->isInt($source_id);
 
-        $key = $target_id . $target_type . $source_id . $source_type . $source_langcode . ($source_vid ?: 0) . $method . $field_name;
+        // Avoid key collisions by concatenating with a null byte character.
+        // @phpcs:ignore Drupal.Arrays.Array.LongLineDeclaration
+        $key = implode("\0", [$target_id, $target_type, $source_id, $source_type, $source_langcode, $source_vid ?: 0, $method, $field_name]);
         $this->inserts[$key] = [
           'target_id' => $target_id_int ? $target_id : 0,
           // Target ID string default value is an empty string.

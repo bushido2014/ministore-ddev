@@ -297,7 +297,7 @@ class ProductVariationListBuilder extends EntityListBuilder implements FormInter
     if ($cacheability instanceof CacheableMetadata) {
       $cacheability->addCacheableDependency($access);
     }
-    if ($access && $entity->hasLinkTemplate('duplicate-form')) {
+    if ($access->isAllowed() && $entity->hasLinkTemplate('duplicate-form')) {
       $operations['duplicate'] = [
         'title' => $this->t('Duplicate'),
         'weight' => 20,

@@ -18,6 +18,7 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\entity_usage\EntityUsageInterface;
 use Drupal\layout_builder\InlineBlockUsageInterface;
 use Drupal\paragraphs\ParagraphInterface;
+use Drupal\trash\Trash;
 use Drupal\trash\TrashManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -257,114 +258,124 @@ class ListUsageController extends ControllerBase {
       $this->trashManager->setTrashContext('ignore');
     }
 
-    $entity = $this->entityTypeManager->getStorage($entity_type)->load($entity_id);
-    if (!$entity) {
-      return $rows;
-    }
-    $entity_types = $this->entityTypeManager->getDefinitions();
-    $languages = $this->languageManager()->getLanguages(LanguageInterface::STATE_ALL);
-    $all_usages = $this->entityUsage->listSources($entity);
+    try {
+      $entity = $this->entityTypeManager->getStorage($entity_type)->load($entity_id);
+      if (!$entity) {
+        return $rows;
+      }
 
-    $revision_groups = [
-      static::REVISION_DEFAULT => $this->t("Default"),
-      static::REVISION_PENDING => $this->t("Pending revision(s) / Draft(s)"),
-      static::REVISION_OLD => $this->t("Old revision(s)"),
-    ];
+      $all_usages = $this->entityUsage->listSources($entity);
+      // Batch load all the source entities per type, instead of loading them
+      // one at a time.
+      $source_entities = [];
+      foreach ($all_usages as $source_type => $ids) {
+        $source_entities[$source_type] = $this->entityTypeManager->getStorage($source_type)->loadMultiple(array_keys($ids));
+      }
 
-    foreach ($all_usages as $source_type => $ids) {
-      $type_storage = $this->entityTypeManager->getStorage($source_type);
-      foreach ($ids as $source_id => $records) {
-        // We will show a single row per source entity. If the target is not
-        // referenced on its default revision on the default language, we will
-        // just show indicate that in a specific column.
-        $source_entity = $type_storage->load($source_id);
-        if (!$source_entity) {
-          // If for some reason this record is broken, just skip it.
-          continue;
-        }
+      $entity_types = $this->entityTypeManager->getDefinitions();
+      $languages = $this->languageManager()->getLanguages(LanguageInterface::STATE_ALL);
 
-        // Skip soft-deleted inline blocks. Layout Builder's cron hook will
-        // delete them, but until then we don't want them showing as a source.
-        if ($source_entity instanceof BlockContentInterface && !$source_entity->isReusable() && $this->inlineBlockUsage) {
-          $blockUsageData = $this->inlineBlockUsage->getUsage($source_entity->id());
-          if (!$blockUsageData || is_null($blockUsageData->layout_entity_id)) {
+      $revision_groups = [
+        static::REVISION_DEFAULT => $this->t("Default"),
+        static::REVISION_PENDING => $this->t("Pending revision(s) / Draft(s)"),
+        static::REVISION_OLD => $this->t("Old revision(s)"),
+      ];
+
+      foreach ($all_usages as $source_type => $ids) {
+        foreach ($ids as $source_id => $records) {
+          // We will show a single row per source entity. If the target is not
+          // referenced on its default revision on the default language, we will
+          // just show indicate that in a specific column.
+          $source_entity = $source_entities[$source_type][$source_id] ?? NULL;
+          if (!$source_entity) {
+            // If for some reason this record is broken, just skip it.
             continue;
           }
-        }
 
-        $field_definitions = $this->entityFieldManager->getFieldDefinitions($source_type, $source_entity->bundle());
-        $default_langcode = $source_entity->language()->getId();
-        $used_in = [];
-        $revisions = [];
-        if ($source_entity instanceof RevisionableInterface) {
-          $default_revision_id = $source_entity->getRevisionId();
-          foreach (array_reverse($records) as $record) {
-            [
-              'source_vid' => $source_vid,
-              'source_langcode' => $source_langcode,
-              'field_name' => $field_name,
-            ] = $record;
-            // Track which languages are used in pending, default and old
-            // revisions.
-            $revision_group = (int) $source_vid <=> (int) $default_revision_id;
-            $revisions[$revision_group][$source_langcode] = $field_name;
-          }
-
-          foreach ($revision_groups as $index => $label) {
-            if (!empty($revisions[$index])) {
-              $used_in[] = $this->summarizeRevisionGroup($default_langcode, $label, $revisions[$index]);
+          // Skip soft-deleted inline blocks. Layout Builder's cron hook will
+          // delete them, but until then we don't want them showing as a source.
+          if ($source_entity instanceof BlockContentInterface && !$source_entity->isReusable() && $this->inlineBlockUsage) {
+            $blockUsageData = $this->inlineBlockUsage->getUsage($source_entity->id());
+            if (!$blockUsageData || is_null($blockUsageData->layout_entity_id)) {
+              continue;
             }
           }
 
-          if (count($used_in) > 1) {
-            $used_in = [
-              '#theme' => 'item_list',
-              '#items' => $used_in,
-              '#list_type' => 'ul',
-            ];
-          }
-        }
-        $link = $this->getSourceEntityLink($source_entity);
-        // If the label is empty it means this usage shouldn't be shown
-        // on the UI, just skip this row.
-        if (empty($link)) {
-          continue;
-        }
-        $published = $this->getSourceEntityStatus($source_entity);
-        $get_field_name = function (array $field_names) use ($default_langcode, $revision_groups) {
-          foreach (array_keys($revision_groups) as $group) {
-            if (isset($field_names[$group])) {
-              return $field_names[$group][$default_langcode] ?? reset($field_names[$group]);
+          $field_definitions = $this->entityFieldManager->getFieldDefinitions($source_type, $source_entity->bundle());
+          $default_langcode = $source_entity->language()->getId();
+          $used_in = [];
+          $revisions = [];
+          if ($source_entity instanceof RevisionableInterface) {
+            $default_revision_id = $source_entity->getRevisionId();
+            foreach (array_reverse($records) as $record) {
+              [
+                'source_vid' => $source_vid,
+                'source_langcode' => $source_langcode,
+                'field_name' => $field_name,
+              ] = $record;
+              // Track which languages are used in pending, default and old
+              // revisions.
+              $revision_group = (int) $source_vid <=> (int) $default_revision_id;
+              $revisions[$revision_group][$source_langcode] = $field_name;
+            }
+
+            foreach ($revision_groups as $index => $label) {
+              if (!empty($revisions[$index])) {
+                $used_in[] = $this->summarizeRevisionGroup($default_langcode, $label, $revisions[$index]);
+              }
+            }
+
+            if (count($used_in) > 1) {
+              $used_in = [
+                '#theme' => 'item_list',
+                '#items' => $used_in,
+                '#list_type' => 'ul',
+              ];
             }
           }
-        };
-        $field_name = $get_field_name($revisions);
-        $field_label = isset($field_definitions[$field_name]) ? $field_definitions[$field_name]->getLabel() : $this->t('Unknown');
-        $type = $entity_types[$source_type]->getLabel();
-        if ($source_bundle_key = $source_entity->getEntityType()->getKey('bundle')) {
-          $bundle_field = $source_entity->{$source_bundle_key};
-          if ($bundle_field->getFieldDefinition()->getType() === 'entity_reference') {
-            $bundle_label = $bundle_field->entity->label();
+          $link = $this->getSourceEntityLink($source_entity);
+          // If the label is empty it means this usage shouldn't be shown
+          // on the UI, just skip this row.
+          if (empty($link)) {
+            continue;
           }
-          else {
-            $bundle_label = $bundle_field->getString();
+          $published = $this->getSourceEntityStatus($source_entity);
+          $get_field_name = function (array $field_names) use ($default_langcode, $revision_groups) {
+            foreach (array_keys($revision_groups) as $group) {
+              if (isset($field_names[$group])) {
+                return $field_names[$group][$default_langcode] ?? reset($field_names[$group]);
+              }
+            }
+          };
+          $field_name = $get_field_name($revisions);
+          $field_label = isset($field_definitions[$field_name]) ? $field_definitions[$field_name]->getLabel() : $this->t('Unknown');
+          $type = $entity_types[$source_type]->getLabel();
+          if ($source_bundle_key = $source_entity->getEntityType()->getKey('bundle')) {
+            $bundle_field = $source_entity->{$source_bundle_key};
+            if ($bundle_field->getFieldDefinition()->getType() === 'entity_reference') {
+              $bundle_label = $bundle_field->entity->label();
+            }
+            else {
+              $bundle_label = $bundle_field->getString();
+            }
+            $type .= ': ' . $bundle_label;
           }
-          $type .= ': ' . $bundle_label;
+          $rows[] = [
+            $link,
+            $type,
+            $languages[$default_langcode]->getName(),
+            $field_label,
+            $published,
+            ['data' => $used_in],
+          ];
         }
-        $rows[] = [
-          $link,
-          $type,
-          $languages[$default_langcode]->getName(),
-          $field_label,
-          $published,
-          ['data' => $used_in],
-        ];
       }
     }
-
-    // Restore previous trash context if we changed it.
-    if (isset($prev_trash_context)) {
-      $this->trashManager->setTrashContext($prev_trash_context);
+    finally {
+      // Restore previous trash context if we changed it.
+      if (isset($prev_trash_context)) {
+        $this->trashManager->setTrashContext($prev_trash_context);
+      }
     }
 
     $this->allRows = $rows;
@@ -530,7 +541,7 @@ class ListUsageController extends ControllerBase {
       }
     }
 
-    $entity_in_trash = !is_null($this->trashManager) && trash_entity_is_deleted($source_entity);
+    $entity_in_trash = !is_null($this->trashManager) && Trash::entityIsDeleted($source_entity);
 
     $entity_label = $source_entity->access('view label') ? $source_entity->label() : $this->t('- Restricted access -');
     if ($entity_in_trash) {
@@ -608,10 +619,10 @@ class ListUsageController extends ControllerBase {
    */
   public function checkAccess($entity_type, $entity_id): AccessResultInterface {
     $entity = $this->entityTypeManager->getStorage($entity_type)->load($entity_id);
-    if (!$entity || !$entity->access('view')) {
+    if (!$entity) {
       return AccessResult::forbidden();
     }
-    return AccessResult::allowed();
+    return $entity->access('view', NULL, TRUE);
   }
 
 }

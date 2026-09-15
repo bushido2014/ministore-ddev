@@ -207,6 +207,17 @@ class OrderReceiptTest extends OrderKernelTestBase {
   }
 
   /**
+   * Tests skipping the order receipt via the "skip_order_receipt" flag.
+   */
+  public function testOrderReceiptSkipped() {
+    $this->order->setData('skip_order_receipt', TRUE);
+    $this->order->getState()->applyTransitionById('place');
+    $this->order->save();
+
+    $this->assertCount(0, $this->getMails());
+  }
+
+  /**
    * Tests that the email is sent and translated to the customer's language.
    *
    * The email is sent in the customer's langcode  if the user is not anonymous,
