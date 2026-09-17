@@ -1,4 +1,45 @@
-<div class="container">
-{{ product.title }}
-{{ product.field_image }}
+
+
+
+<div class="product-single">
+  <div class="container">
+    <div class="product-single__wrapper d-grid cols-2">
+
+      {# IMAGINE: presupunând că e pe variație, cu machine name 'field_image' #}
+      <div class="product-single__image">
+        {{ product.field_product_image }}
+      </div>
+
+      {# DETALII #}
+      <div class="product-single__details">
+
+        {# TITLU #}
+        <h1 class="product-single__title">{{ product.title }}</h1>
+
+        {# PREȚ #}
+        <div class="product-single__price">
+          {{ product.variation_price }}
+        </div>
+
+        {# CATEGORIE / BRAND / TAGS (câmpuri pe produs) #}
+        <div class="product-single__meta">
+          {{ product.field_category }}
+          {{ product.field_brand }}
+          {{ product.field_tags }}
+        </div>
+
+        {# DESCRIERE (dacă e pe produs) #}
+        <div class="product-single__description">
+          {{ product.body }}
+        </div>
+
+        {# ADD TO CART #}
+        <div class="product-single__cart">
+          {{ product.variations }}
+        </div>
+
+      </div>
+
+    </div>
+  </div>
 </div>
