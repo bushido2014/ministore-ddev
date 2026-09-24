@@ -1,0 +1,27 @@
+.product-single__title {
+  font-size: 1.75rem;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+ {
+
+}
+
+.product-card__title {
+    padding-top: 8px;
+}
+
+.product-card__title,.product-card__price {
+  font-size: 1.3em;
+  text-transform: uppercase;
+        
+}
+
+.product-card__price,.product-single__price {
+   color: var(--color-primary);
+}
+.product-single__price {
+    font-weight: 700;
+    font-size: 2.5rem;
+    
+}

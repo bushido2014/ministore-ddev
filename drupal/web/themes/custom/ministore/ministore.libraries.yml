@@ -6,6 +6,7 @@ global-styling:
       css/components/header.css: {}
       css/components/page.css: {}
       css/components/paragraph.css: {}
+      css/components/commerce.css: {}
       css/components/form.css: {}
       css/components/media.css: {}
       css/components/views.css: {}

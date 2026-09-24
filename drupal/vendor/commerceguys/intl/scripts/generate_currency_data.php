@@ -53,6 +53,9 @@ function export_base_data($baseData)
     foreach ($baseData as $currencyCode => $currencyData) {
         $export .= "    '" . $currencyCode . "' => ['";
         $export .= $currencyData['numeric_code'] . "', " . $currencyData['fraction_digits'];
+        if (isset($currencyData['display_fraction_digits'])) {
+            $export .= ', ' . $currencyData['display_fraction_digits'];
+        }
         $export .= "],\n";
     }
     $export .= "];";
@@ -102,15 +105,18 @@ function generate_base_data(array $currencyData, $isoData)
         }
 
         $currencyCode = $currency['Ccy'];
+        // Take the fraction digits from ISO, not CLDR. CLDR's digits are a
+        // display preference that changes between releases (e.g. HUF went
+        // from 2 to 0 in CLDR 48), while consumers rely on the fraction digits
+        // for stored amounts and payment gateway minor units.
         $baseData[$currencyCode] = [
             'numeric_code' => $currency['CcyNbr'],
+            'fraction_digits' => $currency['CcyMnrUnts'],
         ];
-        // Take the fraction digits from CLDR, not ISO, because it reflects real
-        // life usage more closely.
-        if (isset($currencyData[$currencyCode]['_digits'])) {
-            $baseData[$currencyCode]['fraction_digits'] = $currencyData[$currencyCode]['_digits'];
-        } else {
-            $baseData[$currencyCode]['fraction_digits'] = $currencyData['DEFAULT']['_digits'];
+        // CLDR's digits are used for display, stored only when different.
+        $displayFractionDigits = $currencyData[$currencyCode]['_digits'] ?? $currencyData['DEFAULT']['_digits'];
+        if ($displayFractionDigits != $currency['CcyMnrUnts']) {
+            $baseData[$currencyCode]['display_fraction_digits'] = $displayFractionDigits;
         }
     }
     ksort($baseData);

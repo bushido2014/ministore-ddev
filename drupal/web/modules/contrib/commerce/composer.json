@@ -15,7 +15,7 @@
         "drupal/profile": "^1.2",
         "drupal/state_machine": "^1.5",
         "drupal/token": "^1.7",
-        "commerceguys/intl": "^2.0.6"
+        "commerceguys/intl": "^2.1.0"
     },
     "require-dev": {
         "drupal/entity_print": "^2.2",

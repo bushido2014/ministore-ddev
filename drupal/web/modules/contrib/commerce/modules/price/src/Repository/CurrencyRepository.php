@@ -97,11 +97,12 @@ class CurrencyRepository extends ExternalCurrencyRepository implements CurrencyR
    */
   public function getDefaultFractionDigits(string $currency_code): int {
     $base_definitions = $this->getBaseDefinitions();
-    if (!isset($base_definitions[$currency_code])) {
-      throw new UnknownCurrencyException($currency_code);
+    if (isset($base_definitions[$currency_code])) {
+      return $base_definitions[$currency_code][1];
     }
-
-    return $base_definitions[$currency_code][1];
+    // Currencies withdrawn from ISO 4217 (e.g. BGN) are no longer defined by
+    // the library, fall back to the stored currency for existing data.
+    return $this->get($currency_code)->getFractionDigits();
   }
 
 }

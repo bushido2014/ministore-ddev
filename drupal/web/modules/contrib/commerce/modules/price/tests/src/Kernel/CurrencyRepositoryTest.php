@@ -5,6 +5,7 @@ namespace Drupal\Tests\commerce_price\Kernel;
 use CommerceGuys\Intl\Currency\Currency;
 use CommerceGuys\Intl\Exception\UnknownCurrencyException;
 use Drupal\Tests\commerce\Kernel\CommerceKernelTestBase;
+use Drupal\commerce_price\Entity\Currency as CurrencyEntity;
 
 /**
  * Tests the currency repository.
@@ -102,6 +103,40 @@ class CurrencyRepositoryTest extends CommerceKernelTestBase {
    */
   public function testGetDefaultFractionDigits(string $currency_code, int $expected_fraction_digits) {
     $this->assertEquals($this->currencyRepository->getDefaultFractionDigits($currency_code), $expected_fraction_digits);
+  }
+
+  /**
+   * Tests the fallback for currencies not defined by the library.
+   *
+   * Covers currencies withdrawn from ISO 4217 (e.g. BGN) and custom ones.
+   *
+   * @covers ::getDefaultFractionDigits
+   */
+  public function testGetDefaultFractionDigitsFallback() {
+    CurrencyEntity::create([
+      'currencyCode' => 'XYZ',
+      'name' => 'Withdrawn currency',
+      'numericCode' => '999',
+      'symbol' => 'XYZ',
+      'fractionDigits' => 3,
+    ])->save();
+    $this->assertEquals(3, $this->currencyRepository->getDefaultFractionDigits('XYZ'));
+
+    $this->expectException(UnknownCurrencyException::class);
+    $this->currencyRepository->getDefaultFractionDigits('ZZZ');
+  }
+
+  /**
+   * Tests that imported currencies use the display fraction digits.
+   *
+   * The minor units used by payment gateways must remain unchanged.
+   *
+   * @covers ::getDefaultFractionDigits
+   */
+  public function testImportedFractionDigits() {
+    $this->container->get('commerce_price.currency_importer')->import('HUF');
+    $this->assertEquals(0, $this->currencyRepository->get('HUF')->getFractionDigits());
+    $this->assertEquals(2, $this->currencyRepository->getDefaultFractionDigits('HUF'));
   }
 
   /**

@@ -42,7 +42,7 @@ content:
     region: content
   field_product_image:
     type: entity_reference_entity_view
-    label: above
+    label: hidden
     settings:
       view_mode: default
       link: false
@@ -68,7 +68,7 @@ content:
     region: content
   variations:
     type: commerce_add_to_cart
-    label: above
+    label: hidden
     settings:
       combine: true
     third_party_settings: {  }
