@@ -1,4 +1,4 @@
-.btn {
+.btn, .button {
   display: inline-block;
   font-weight: 400;
   line-height: 1.5;
@@ -18,7 +18,7 @@
     border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
-.btn--primary {
+.btn--primary,.button--primary {
   color: var(--color-white);
   background-color: #212529;
   border-color: #212529;
@@ -28,13 +28,13 @@
   text-transform: uppercase;
 }
 
-.btn--primary:hover {
+.btn--primary:hover, .button--primary:hover {
   color: var(--color-white);
   background-color: #1c1f23;
   border-color: #1a1e21;
 }
 
-.btn--primary:focus {
+.btn--primary:focus,.button--primary:focus {
   color: var(--color-white);
   background-color: #1c1f23;
   border-color: #1a1e21;
@@ -46,3 +46,4 @@
   background-color: var(--color-primary);
   margin-left: -0.95rem;
 }
+

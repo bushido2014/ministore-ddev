@@ -1,0 +1,11 @@
+<div{{ attributes.addClass('product-tags d-flex') }}>
+  {% if not label_hidden %}
+    <h4{{ title_attributes }}>{{ label }}:</h4>
+  {% endif %}
+
+  {% for item in items %}
+    <a href="{{ item.content['#url'] }}" class="btn btn-primary">
+      {{ item.content['#title'] }}
+    </a>
+  {% endfor %}
+</div>

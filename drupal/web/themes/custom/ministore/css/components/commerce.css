@@ -25,3 +25,21 @@
     font-size: 2.5rem;
     
 }
+.product-category {
+  padding-block: 10px;
+}
+.product-single__meta h4 {
+  font-weight: 500;
+  font-size: 1.2em;
+  margin-bottom: 0;
+}
+
+.field--widget-commerce-product-variation-attributes {
+  margin-block: 10px;
+}
+
+.attribute-widgets {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
