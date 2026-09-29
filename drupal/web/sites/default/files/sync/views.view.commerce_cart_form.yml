@@ -406,10 +406,38 @@ display:
           row_class: ''
           default_row_class: true
           columns:
-            order_number: order_number
+            purchased_entity: purchased_entity
+            unit_price__number: unit_price__number
+            edit_quantity: edit_quantity
+            remove_button: remove_button
+            total_price__number: total_price__number
           default: '-1'
           info:
-            order_number:
+            purchased_entity:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            unit_price__number:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            edit_quantity:
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            remove_button:
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            total_price__number:
               sortable: false
               default_sort_order: asc
               align: ''
@@ -422,6 +450,7 @@ display:
           empty_table: false
           caption: ''
           description: ''
+          class: ''
       row:
         type: fields
         options:
