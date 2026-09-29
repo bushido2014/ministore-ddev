@@ -12,7 +12,10 @@ regions:
   content: "Content"
   content_bottom: "Content Bottom"
   sidebar: "Sidebar"
-  footer: "Footer"
+  footer_first: "Footer First"
+  footer_second: "Footer Second"
+  footer_third: "Footer Third"
+  footer_fourth: "Footer Fourth"
 
 libraries:
   - ministore/global-styling

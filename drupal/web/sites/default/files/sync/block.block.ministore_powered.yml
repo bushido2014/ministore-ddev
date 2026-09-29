@@ -1,6 +1,6 @@
 uuid: 261b4a1b-a5a1-4c3c-ad2c-f0fc6ac191e5
 langcode: en
-status: true
+status: false
 dependencies:
   module:
     - system
@@ -10,7 +10,7 @@ _core:
   default_config_hash: eYL19CLDyinGTWYQfBD1DswWzglEotE_kHnHx3AxTXM
 id: ministore_powered
 theme: ministore
-region: footer
+region: header_left
 weight: -7
 provider: null
 plugin: system_powered_by_block
