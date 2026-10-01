@@ -1,0 +1,29 @@
+uuid: 766adfd5-97ab-4bbd-a47f-d390ea042489
+langcode: en
+status: true
+dependencies:
+  config:
+    - views.view.related_products
+  module:
+    - system
+    - views
+  theme:
+    - ministore
+id: ministore_views_block__related_products_block_1
+theme: ministore
+region: content_bottom
+weight: 0
+provider: null
+plugin: 'views_block:related_products-block_1'
+settings:
+  id: 'views_block:related_products-block_1'
+  label: ''
+  label_display: visible
+  provider: views
+  views_label: ''
+  items_per_page: null
+visibility:
+  request_path:
+    id: request_path
+    negate: false
+    pages: '/shop/*'
