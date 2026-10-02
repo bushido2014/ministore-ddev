@@ -1,47 +1,40 @@
-{% if page.footer_first or page.footer_second or page.footer_third or page.footer_fourth or page.footer %}
-  <footer class="site-footer" role="contentinfo">
-    <div class="container">
+<footer class="site-footer" role="contentinfo">
+  <div class="container">
+
+    {% if page.footer_top %}
       <div class="site-footer__top">
-        {% if page.footer_first %}
-          <div class="site-footer__block site-footer__block--first">
-            {{ page.footer_first }}
-          </div>
-        {% endif %}
+        {{ page.footer_top }}
+      </div>
+    {% endif %}
 
-        {% if page.footer_second %}
-          <div class="site-footer__block site-footer__block--second">
-            {{ page.footer_second }}
-          </div>
+    {# Coloane dinamice #}
+    {% if page.footer %}
+      {% set column_count = 0 %}
+      {% for key, item in page.footer %}
+        {% if key|first != '#' %}
+          {% set column_count = column_count + 1 %}
         {% endif %}
+      {% endfor %}
+      <div class="site-footer__middle d-grid cols-{{ column_count }}">
+        {{ page.footer }}
+      </div>
+    {% endif %}
 
-        {% if page.footer_third %}
-          <div class="site-footer__block site-footer__block--third">
-            {{ page.footer_third }}
-          </div>
-        {% endif %}
-
-        {% if page.footer_fourth %}
-          <div class="site-footer__block site-footer__block--fourth">
-            {{ page.footer_fourth }}
-          </div>
-        {% endif %}
+    <div class="site-footer__bottom">
+      <div class="site-footer__brand">
+        <a href="{{ url('<front>') }}" rel="home">{{ site_name }}</a>
       </div>
 
-      <div class="site-footer__bottom">
-        <div class="site-footer__brand">
-          <a href="{{ url('<front>') }}" rel="home">{{ site_name }}</a>
+      {% if page.footer_bottom %}
+        <div class="site-footer__meta">
+          {{ page.footer_bottom }}
         </div>
+      {% endif %}
 
-        {% if page.footer %}
-          <div class="site-footer__meta">
-            {{ page.footer }}
-          </div>
-        {% endif %}
-
-        <div class="site-footer__copyright">
-          &copy; {{ "now"|date("Y") }} {{ site_name }}. All rights reserved.
-        </div>
+      <div class="site-footer__copyright">
+        &copy; {{ "now"|date("Y") }} {{ site_name }}. All rights reserved.
       </div>
     </div>
-  </footer>
-{% endif %}
+
+  </div>
+</footer>
