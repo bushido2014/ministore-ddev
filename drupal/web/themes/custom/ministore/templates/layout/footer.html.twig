@@ -7,7 +7,7 @@
       </div>
     {% endif %}
 
-    {# Coloane dinamice #}
+    {#  #}
     {% if page.footer %}
       {% set column_count = 0 %}
       {% for key, item in page.footer %}
@@ -20,9 +20,9 @@
       </div>
     {% endif %}
 
-    <div class="site-footer__bottom">
+    <div class="site-footer__bottom d-flex j-between">
       <div class="site-footer__brand">
-        <a href="{{ url('<front>') }}" rel="home">{{ site_name }}</a>
+        <a href="{{ url('<front>') }}" rel="home">Ministore</a>
       </div>
 
       {% if page.footer_bottom %}
@@ -32,7 +32,9 @@
       {% endif %}
 
       <div class="site-footer__copyright">
-        &copy; {{ "now"|date("Y") }} {{ site_name }}. All rights reserved.
+         
+        <p>&copy; {{ "now"|date("Y") }} {{ site_name }}. Design by <a href="https://templatesjungle.com/">TemplatesJungle</a>
+              </p>
       </div>
     </div>
 

@@ -1,0 +1,23 @@
+uuid: d57f14c3-12f1-48b1-b5e0-2d87f0156561
+langcode: en
+status: true
+dependencies:
+  content:
+    - 'block_content:basic:fc5dba8a-fa96-41b8-9d45-6f8cfa2623c8'
+  module:
+    - block_content
+  theme:
+    - ministore
+id: ministore_ministore
+theme: ministore
+region: footer
+weight: 0
+provider: null
+plugin: 'block_content:fc5dba8a-fa96-41b8-9d45-6f8cfa2623c8'
+settings:
+  id: 'block_content:fc5dba8a-fa96-41b8-9d45-6f8cfa2623c8'
+  label: Ministore
+  label_display: visible
+  provider: block_content
+  view_mode: full
+visibility: {  }
