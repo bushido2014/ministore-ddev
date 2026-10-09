@@ -8,6 +8,7 @@ global-styling:
       css/components/paragraph.css: {}
       css/components/commerce.css: {}
       css/components/form.css: {}
+      css/components/footer.css: {}
       css/components/media.css: {}
       css/components/views.css: {}
   js:

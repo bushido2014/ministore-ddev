@@ -1,0 +1,25 @@
+uuid: e7d5502f-7171-405e-a457-0939afc12906
+langcode: en
+status: true
+dependencies:
+  config:
+    - system.menu.main
+  module:
+    - system
+  theme:
+    - ministore
+id: ministore_mainnavigation
+theme: ministore
+region: footer
+weight: -8
+provider: null
+plugin: 'system_menu_block:main'
+settings:
+  id: 'system_menu_block:main'
+  label: 'Quick Links'
+  label_display: visible
+  provider: system
+  level: 1
+  depth: null
+  expand_all_items: false
+visibility: {  }

@@ -1,0 +1,27 @@
+
+.site-footer__middle .region-footer {
+  display: grid;
+  gap: 2rem;
+}
+.site-footer__middle.cols-1 .region-footer { grid-template-columns: 1fr; }
+.site-footer__middle.cols-2 .region-footer { grid-template-columns: repeat(2, 1fr); }
+.site-footer__middle.cols-3 .region-footer { grid-template-columns: repeat(3, 1fr); }
+.site-footer__middle.cols-4 .region-footer { grid-template-columns: repeat(4, 1fr); }
+
+.site-footer__middle h4 {
+    font-size: 1.25rem;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+
+
+.footer-menu .main-menu {
+    flex-direction: column;
+     align-items: stretch;
+}
+
+.footer-menu .main-menu a {
+    text-transform: uppercase;
+    padding: .2rem 0.6rem;
+}

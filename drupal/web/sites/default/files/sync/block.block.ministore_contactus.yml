@@ -1,0 +1,23 @@
+uuid: 4a642ad8-42f0-4e47-9a04-8fcacd3d251c
+langcode: en
+status: true
+dependencies:
+  content:
+    - 'block_content:basic:8b2aa31c-7000-4725-a284-b7d5b647e4bd'
+  module:
+    - block_content
+  theme:
+    - ministore
+id: ministore_contactus
+theme: ministore
+region: footer
+weight: -7
+provider: null
+plugin: 'block_content:8b2aa31c-7000-4725-a284-b7d5b647e4bd'
+settings:
+  id: 'block_content:8b2aa31c-7000-4725-a284-b7d5b647e4bd'
+  label: 'Contact Us'
+  label_display: visible
+  provider: block_content
+  view_mode: full
+visibility: {  }
