@@ -49,3 +49,4 @@ function ministore_preprocess_node(array &$variables): void {
 function ministore_preprocess_menu__main(array &$variables): void {
    $variables['attributes']['class'][] = 'main-menu d-flex';
 }
+

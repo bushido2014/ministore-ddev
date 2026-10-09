@@ -18,9 +18,11 @@
   {% endif %} 
 
  {% if page.content_bottom %}
-  <div class="content-bottom-region">
-    {{ page.content_bottom  }}
-  </div>
+  <section class="content-bottom-region">
+    <div class="container">
+      {{ page.content_bottom  }}
+    </div>
+  </section>
 {% endif %} 
 
 {{ include('@ministore/layout/footer.html.twig') }}
