@@ -1,0 +1,28 @@
+uuid: a0e71edf-d699-409d-90d7-30516abbef17
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.help_info_help.field_body_content
+    - node.type.help_info_help
+  module:
+    - text
+    - user
+id: node.help_info_help.default
+targetEntityType: node
+bundle: help_info_help
+mode: default
+content:
+  field_body_content:
+    type: text_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 101
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
+    region: content
+hidden: {  }

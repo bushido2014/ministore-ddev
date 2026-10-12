@@ -1,0 +1,25 @@
+uuid: 34cc0115-342a-4b5d-aac1-9637460a268d
+langcode: en
+status: true
+dependencies:
+  config:
+    - system.menu.help-info-help
+  module:
+    - system
+  theme:
+    - ministore
+id: ministore_helpinfohelp
+theme: ministore
+region: footer
+weight: -8
+provider: null
+plugin: 'system_menu_block:help-info-help'
+settings:
+  id: 'system_menu_block:help-info-help'
+  label: 'Help & Info Help'
+  label_display: visible
+  provider: system
+  level: 1
+  depth: null
+  expand_all_items: false
+visibility: {  }

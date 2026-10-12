@@ -1,0 +1,26 @@
+uuid: 2318c255-9d50-4bc2-b9e8-eae48b2a1aa2
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_body_content
+    - filter.format.full_html
+    - node.type.help_info_help
+  module:
+    - text
+id: node.help_info_help.field_body_content
+field_name: field_body_content
+entity_type: node
+bundle: help_info_help
+label: 'Body Content'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  display_summary: false
+  required_summary: false
+  allowed_formats:
+    - full_html
+field_type: text_with_summary

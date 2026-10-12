@@ -21,7 +21,13 @@
      align-items: stretch;
 }
 
-.footer-menu .main-menu a {
+.footer-help-menu a {
     text-transform: uppercase;
-    padding: .2rem 0.6rem;
+    display: block;
+    padding: .5rem 1rem;
+    transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out;}
+}
+
+.footer-help-menu  a:hover {
+    color: var(--color-primary);
 }
