@@ -1,14 +1,16 @@
 uuid: fdf5f782-c826-41fb-a9a0-40f099d9eec3
 langcode: en
-status: false
+status: true
 dependencies:
+  module:
+    - system
   theme:
     - ministore
 _core:
   default_config_hash: 6aOgWsNTXjqrDm98TXSAjP6qd2nCijD1xw45MrnbK-Y
 id: ministore_page_title
 theme: ministore
-region: header_left
+region: content_top
 weight: -5
 provider: null
 plugin: page_title_block
@@ -17,4 +19,8 @@ settings:
   label: 'Page title'
   label_display: '0'
   provider: core
-visibility: {  }
+visibility:
+  request_path:
+    id: request_path
+    negate: true
+    pages: '<front>'

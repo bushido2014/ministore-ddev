@@ -12,10 +12,12 @@
   text-transform: uppercase;
   margin-bottom: 2rem;
 }
+
 .delivery-item .d-flex {
   gap:8px;
   align-items:normal;
 }
+
 .delivery-content h3 {
   font-size:1.5rem;
   font-weight: 300;
@@ -110,10 +112,10 @@
   padding: 40px 0;
 }
 
-.shop-sidebar {
+/* .shop-sidebar {
   position: sticky;
   top: 20px;
-}
+} */
 
 .sidebar-widget {
   margin-bottom: 25px;
@@ -140,3 +142,10 @@
   color: var(--primary-color);
 }
 
+.content-top-region {
+  background-color: var(--color-light-blue);
+  text-align: center;
+}
+.region-content-top h1 {
+  text-transform: uppercase;
+}

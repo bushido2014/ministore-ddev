@@ -1,0 +1,14 @@
+% if breadcrumb %}
+  <div class="breadcrumbs">
+    {% for item in breadcrumb %}
+      <span class="item">
+        {% if item.url %}
+          <a href="{{ item.url }}">{{ item.text }}</a>
+        {% else %}
+          {{ item.text }}
+        {% endif %}
+        {% if not loop.last %} &gt; {% endif %}
+      </span>
+    {% endfor %}
+  </div>
+{% endif %}

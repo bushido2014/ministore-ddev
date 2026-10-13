@@ -1,7 +1,16 @@
 {{ include('@ministore/layout/header.html.twig') }}
 <div class="shop-page">
+  {% if page.content_top %}
+  <section class="content-top-region">
+      <div class="container">
+      {{ page.content_top}}
+      </div>
+    </section>
+ {% endif %} 
   <div class="container">
     <div class="shop-layout">
+      
+    
       {# PRODUCTS #}
       <main class="shop-main">
         {{ page.content }}

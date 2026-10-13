@@ -1,21 +1,21 @@
-uuid: e7d5502f-7171-405e-a457-0939afc12906
+uuid: 4e5463c1-43f1-4de6-9929-e903312854f1
 langcode: en
 status: true
 dependencies:
   config:
-    - system.menu.main
+    - system.menu.quick-links
   module:
     - system
   theme:
     - ministore
-id: ministore_mainnavigation
+id: ministore_quicklinks
 theme: ministore
 region: footer
 weight: -9
 provider: null
-plugin: 'system_menu_block:main'
+plugin: 'system_menu_block:quick-links'
 settings:
-  id: 'system_menu_block:main'
+  id: 'system_menu_block:quick-links'
   label: 'Quick Links'
   label_display: visible
   provider: system

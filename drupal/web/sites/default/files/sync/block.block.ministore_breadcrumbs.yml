@@ -1,6 +1,6 @@
 uuid: cebd4067-b3ba-4cf2-be2f-c66e834d7240
 langcode: en
-status: false
+status: true
 dependencies:
   module:
     - system
@@ -10,7 +10,7 @@ _core:
   default_config_hash: VhBzWb7lMRtIOg9G7VSw_0uopi-7zXeHq4vXqqV1HFE
 id: ministore_breadcrumbs
 theme: ministore
-region: header_left
+region: content_top
 weight: 0
 provider: null
 plugin: system_breadcrumb_block
@@ -19,4 +19,8 @@ settings:
   label: Breadcrumbs
   label_display: '0'
   provider: system
-visibility: {  }
+visibility:
+  request_path:
+    id: request_path
+    negate: true
+    pages: '<front>'
