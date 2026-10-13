@@ -149,3 +149,19 @@
 .region-content-top h1 {
   text-transform: uppercase;
 }
+
+.breadcrumb-list {
+  padding: 8px 16px;
+  list-style: none;
+}
+
+.breadcrumb-list li {
+  display: inline;
+  border-bottom: none;
+  padding: 5px 3px 5px;
+}
+
+.breadcrumb-list li+li:before {
+  padding: 8px 0;
+  content: "/\00a0";
+}

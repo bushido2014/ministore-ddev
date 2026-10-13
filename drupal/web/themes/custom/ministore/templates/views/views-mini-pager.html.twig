@@ -1,0 +1,61 @@
+{#
+/**
+ * @file
+ * Șablon tematic implicit pentru paginarea simplificată (Mini Pager) în Views.
+ *
+ * Variabile disponibile:
+ * - heading_id: Un ID unic pentru titlul de accesibilitate.
+ * - pagination_heading_level: Nivelul tag-ului HTML pentru titlu (ex: 'h4').
+ * - items: Listă cu elementele de paginare.
+ *   - items.previous: Link-ul către pagina precedentă (dacă există).
+ *     - items.previous.href: URL-ul paginii precedente.
+ *     - items.previous.text: Textul afișat (implicit "‹ Înapoi").
+ *     - items.previous.attributes: Atribute HTML adiționale.
+ *   - items.current: Numărul paginii curente.
+ *   - items.next: Link-ul către pagina următoare (dacă există).
+ *     - items.next.href: URL-ul paginii următoare.
+ *     - items.next.text: Textul afișat (implicit "Înainte ›").
+ *     - items.next.attributes: Atribute HTML adiționale.
+ *
+ * @see template_preprocess_views_mini_pager()
+ */
+#}
+{% if items.previous or items.next %}
+  <nav class="pager pager--mini" role="navigation" aria-labelledby="{{ heading_id }}">
+    <{{ pagination_heading_level }} id="{{ heading_id }}" class="visually-hidden">
+      {{ 'Pagination'|t }}
+    </{{ pagination_heading_level }}>
+    
+    <ul class="pager__items js-pager__items">
+      {# Pagina Precedentă #}
+      {% if items.previous %}
+        <li class="pager__item pager__item--previous">
+          <a href="{{ items.previous.href }}" title="{{ 'Go to previous page'|t }}" rel="prev"{{ items.previous.attributes|without('href', 'title', 'rel') }}>
+            <span class="visually-hidden">{{ 'Previous page'|t }}</span>
+            <span aria-hidden="true">{{ items.previous.text|default('‹'|t) }}</span>
+          </a>
+        </li>
+      {% endif %}
+
+      {# Pagina Curentă #}
+      {% if items.current %}
+        <li class="pager__item pager__item--current">
+          <span>
+            <span class="visually-hidden">{{ 'Current page'|t }}</span>
+            {{ items.current }}
+          </span>
+        </li>
+      {% endif %}
+
+      {# Pagina Următoare #}
+      {% if items.next %}
+        <li class="pager__item pager__item--next">
+          <a href="{{ items.next.href }}" title="{{ 'Go to next page'|t }}" rel="next"{{ items.next.attributes|without('href', 'title', 'rel') }}>
+            <span class="visually-hidden">{{ 'Next page'|t }}</span>
+            <span aria-hidden="true">{{ items.next.text|default('›'|t) }}</span>
+          </a>
+        </li>
+      {% endif %}
+    </ul>
+  </nav>
+{% endif %}

@@ -1,0 +1,23 @@
+uuid: 4ccfe7f1-f9cd-4245-932c-978cc06bf6d8
+langcode: en
+status: true
+dependencies:
+  content:
+    - 'block_content:basic:9346e585-1e7b-43ff-b95c-024f0ffa4e0c'
+  module:
+    - block_content
+  theme:
+    - ministore
+id: ministore_carticon
+theme: ministore
+region: header_right
+weight: 0
+provider: null
+plugin: 'block_content:9346e585-1e7b-43ff-b95c-024f0ffa4e0c'
+settings:
+  id: 'block_content:9346e585-1e7b-43ff-b95c-024f0ffa4e0c'
+  label: 'Cart Icon'
+  label_display: '0'
+  provider: block_content
+  view_mode: full
+visibility: {  }

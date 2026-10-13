@@ -16,3 +16,8 @@ header.header {
 .main-menu .is-active {
     color: var(--color-primary);
 }
+
+.header-cart img {
+  width: 24px;
+  height: auto;
+}
