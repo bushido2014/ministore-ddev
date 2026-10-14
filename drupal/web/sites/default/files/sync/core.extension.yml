@@ -53,11 +53,14 @@ module:
   path: 0
   path_alias: 0
   profile: 0
+  responsive_image: 0
   search: 0
   search_help: 0
   search_node: 0
   shortcut: 0
   state_machine: 0
+  svg_image: 0
+  svg_image_responsive: 0
   system: 0
   taxonomy: 0
   text: 0

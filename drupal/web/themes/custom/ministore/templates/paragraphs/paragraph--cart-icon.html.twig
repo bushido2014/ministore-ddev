@@ -10,28 +10,19 @@
     'cart-icon-wrapp',
   ]
 %}
+
+
 <div {{ create_attribute().addClass(classes) }}>
-<a href="{{ paragraph.field_cart_icon_link.uri }}" 
-  class="icon-link"
->
+
   
- {% if content.field_cart_icon %}
-        {{ content.field_cart_icon }}
-      {% endif %}
-</a>
-</div>
-
-<div class="paragraph paragraph--type--cart-icon paragraph--view-mode--default">
-
-  {# 1. Extragem URL-ul curat din obiectul de link (intern sau extern) #}
   {% set cart_url = paragraph.field_cart_icon_link.0.url %}
 
-  {# 2. Verificăm dacă URL-ul există #}
+  
   {% if cart_url %}
     
     <a href="{{ cart_url }}" class="social-icon-link">
       
-      {# Afișăm iconița Font Awesome în interiorul link-ului #}
+   
       {% if content.field_cart_icon %}
         {{ content.field_cart_icon }}
       {% endif %}
@@ -40,7 +31,7 @@
 
   {% else %}
     
-    {# Safe fallback: Dacă nu s-a completat link-ul, afișăm doar iconița #}
+   
     {% if content.field_cart_icon %}
       {{ content.field_cart_icon }}
     {% endif %}
