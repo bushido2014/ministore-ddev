@@ -6,5 +6,8 @@ ddev start
 
 ddev drush cr
 
+ddev drush updatedb
+
+
 Admin username: admin
 Admin password: kADzK6mAoM

@@ -1,0 +1,8 @@
+uuid: beddbe1e-11e1-41a3-87d9-113fffcf617f
+langcode: en
+status: true
+dependencies: {  }
+id: cart_icon_block
+label: 'Cart Icon Block'
+revision: false
+description: null

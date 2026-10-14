@@ -1,0 +1,23 @@
+uuid: 9feb4f3a-d6f6-4da2-b827-59975f13e894
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_cart_icon_link
+    - paragraphs.paragraphs_type.cart_icon
+  module:
+    - link
+id: paragraph.cart_icon.field_cart_icon_link
+field_name: field_cart_icon_link
+entity_type: paragraph
+bundle: cart_icon
+label: 'Cart Icon Link'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  title: 1
+  link_type: 17
+field_type: link

@@ -1,0 +1,21 @@
+uuid: e871def1-722f-44f7-9368-417809665c66
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_cart_icon
+    - paragraphs.paragraphs_type.cart_icon
+  module:
+    - fontawesome
+id: paragraph.cart_icon.field_cart_icon
+field_name: field_cart_icon
+entity_type: paragraph
+bundle: cart_icon
+label: 'Cart Icon'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: fontawesome_icon

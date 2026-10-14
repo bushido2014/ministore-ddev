@@ -1,0 +1,33 @@
+uuid: bb3c2730-5e75-4fea-9dab-3a771aef9886
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.cart_icon.field_cart_icon
+    - field.field.paragraph.cart_icon.field_cart_icon_link
+    - paragraphs.paragraphs_type.cart_icon
+  module:
+    - fontawesome
+    - link
+id: paragraph.cart_icon.default
+targetEntityType: paragraph
+bundle: cart_icon
+mode: default
+content:
+  field_cart_icon:
+    type: fontawesome_icon_widget
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_cart_icon_link:
+    type: link_default
+    weight: 1
+    region: content
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+hidden:
+  created: true
+  status: true

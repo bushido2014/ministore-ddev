@@ -1,0 +1,37 @@
+uuid: 57273ab8-c36d-4e8b-8684-76747c618b0a
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.cart_icon.field_cart_icon
+    - field.field.paragraph.cart_icon.field_cart_icon_link
+    - paragraphs.paragraphs_type.cart_icon
+  module:
+    - fontawesome
+    - link
+id: paragraph.cart_icon.default
+targetEntityType: paragraph
+bundle: cart_icon
+mode: default
+content:
+  field_cart_icon:
+    type: fontawesome_icon_formatter
+    label: hidden
+    settings:
+      layers: false
+    third_party_settings: {  }
+    weight: 0
+    region: content
+  field_cart_icon_link:
+    type: link
+    label: hidden
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    weight: 1
+    region: content
+hidden: {  }
