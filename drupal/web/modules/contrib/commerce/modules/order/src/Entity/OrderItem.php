@@ -38,6 +38,7 @@ use Drupal\Core\Url;
  *       "default" = "Drupal\Core\Entity\ContentEntityForm",
  *       "edit" = "Drupal\commerce_order\Form\OrderItemEditForm",
  *       "delete" = "Drupal\commerce_order\Form\OrderItemDeleteForm",
+ *       "duplicate" = "Drupal\commerce_order\Form\OrderItemDuplicateForm",
  *     },
  *     "inline_form" = "Drupal\commerce_order\Form\OrderItemInlineForm",
  *   },
@@ -52,6 +53,7 @@ use Drupal\Core\Url;
  *   links = {
  *     "edit-form" = "/admin/commerce/orders/{commerce_order}/items/{commerce_order_item}/edit",
  *     "delete-form" = "/admin/commerce/orders/{commerce_order}/items/{commerce_order_item}/delete",
+ *     "duplicate-form" = "/admin/commerce/orders/{commerce_order}/items/{commerce_order_item}/duplicate",
  *   },
  *   bundle_entity_type = "commerce_order_item_type",
  *   field_ui_base_route = "entity.commerce_order_item_type.edit_form",
@@ -293,7 +295,17 @@ class OrderItem extends CommerceContentEntityBase implements OrderItemInterface 
     }
     else {
       $adjusted_total_price = $this->getAdjustedTotalPrice($adjustment_types);
-      $adjusted_unit_price = $adjusted_total_price->divide($this->getQuantity());
+      // The total price can be missing until the order item is saved.
+      if (!$adjusted_total_price) {
+        return NULL;
+      }
+      if (Calculator::compare($this->getQuantity(), '0') !== 0) {
+        $adjusted_unit_price = $adjusted_total_price->divide($this->getQuantity());
+      }
+      else {
+        // On zero quantities, the unit price should be zero.
+        $adjusted_unit_price = new Price('0', $unit_price->getCurrencyCode());
+      }
     }
 
     $rounder = \Drupal::service('commerce_price.rounder');

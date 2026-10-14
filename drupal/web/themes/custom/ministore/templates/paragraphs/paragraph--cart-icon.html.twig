@@ -1,41 +1,25 @@
-{#
-/**
- * @file
- * Template pentru Paragraph-ul Cart Icon.
- */
-#}
-
 {%
   set classes = [
     'cart-icon-wrapp',
   ]
 %}
 
+<div{{ create_attribute().addClass(classes) }}>
 
-<div {{ create_attribute().addClass(classes) }}>
-
-  
+  {# Extragem URL-ul din câmpul de link #}
   {% set cart_url = paragraph.field_cart_icon_link.0.url %}
 
-  
+  {# Extragem numele iconiței din câmpul Font Awesome #}
+  {% set icon_name = paragraph.field_cart_icon.0.icon_name|default('cart-shopping') %}
+
   {% if cart_url %}
-    
-    <a href="{{ cart_url }}" class="social-icon-link">
-      
-   
-      {% if content.field_cart_icon %}
-        {{ content.field_cart_icon }}
-      {% endif %}
-      
+    <a href="{{ cart_url }}" class="social-icon-link" aria-label="View cart">
+      <i class="fa-solid fa-{{ icon_name }}"></i>
     </a>
-
   {% else %}
-    
-   
-    {% if content.field_cart_icon %}
-      {{ content.field_cart_icon }}
-    {% endif %}
-
+    <span class="social-icon-link">
+      <i class="fa-solid fa-{{ icon_name }}"></i>
+    </span>
   {% endif %}
 
 </div>

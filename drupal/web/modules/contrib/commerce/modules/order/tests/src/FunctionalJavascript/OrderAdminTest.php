@@ -639,25 +639,7 @@ class OrderAdminTest extends OrderWebDriverTestBase {
    * Tests order item editing in the modal form.
    */
   public function testOrderItemEditingModals() {
-    // Create order with one order item.
-    /** @var \Drupal\commerce_order\Entity\OrderItemInterface $order_item */
-    $order_item = $this->createEntity('commerce_order_item', [
-      'type' => 'default',
-      'quantity' => 1,
-      'purchased_entity' => $this->variation,
-      'unit_price' => $this->variation->getPrice(),
-    ]);
-
-    /** @var \Drupal\commerce_order\Entity\OrderInterface $order */
-    $order = $this->createEntity('commerce_order', [
-      'type' => 'default',
-      'store_id' => $this->store->id(),
-      'mail' => $this->loggedInUser->getEmail(),
-      'state' => 'draft',
-      'uid' => $this->loggedInUser,
-      'order_items' => [$order_item],
-    ]);
-    $order_item = $this->reloadEntity($order_item);
+    [$order, $order_item] = $this->createOrderWithOrderItem();
     $order_item_edit_link = $order_item->toUrl('edit-form')->toString();
     // Confirm that order item added and "Edit" link is available.
     $this->drupalGet($order->toUrl()->toString());
@@ -688,6 +670,45 @@ class OrderAdminTest extends OrderWebDriverTestBase {
     $this->getSession()->getPage()->find('css', '.ui-dialog .ui-dialog-buttonpane')->pressButton('Save');
     $this->assertSession()->pageTextContains($this->variation->label());
     $this->assertSession()->pageTextContains('Subtotal $375.00');
+  }
+
+  /**
+   * Tests order item duplicate in the modal form.
+   */
+  public function testOrderItemDuplicateModals() {
+    [$order, $order_item] = $this->createOrderWithOrderItem();
+    $order_item_duplicate_link = $order_item->toUrl('duplicate-form')->toString();
+    // Confirm that order item added and "Duplicate" link is available.
+    $this->drupalGet($order->toUrl()->toString());
+    $this->assertSession()->pageTextContains($this->variation->label());
+    $this->assertSession()->pageTextContains('Subtotal $999.00');
+    $this->assertSession()->linkByHrefExists(sprintf($order_item_duplicate_link, $order->id()));
+
+    // Open the edit order item modal and confirm it contains correct data.
+    $this->getSession()->getPage()->find('css', sprintf('a[href="%s"]', $order_item_duplicate_link))->click();
+    $this->assertSession()->assertWaitOnAjaxRequest();
+    $this->assertSession()->elementTextContains('css', '.ui-dialog .ui-dialog-title', 'Duplicate ' . $order_item->label());
+    $this->assertSession()->elementTextContains('css', '.ui-dialog .form-item-purchased-entity-info', $this->variation->label());
+    $this->assertSession()->fieldValueEquals('unit_price[0][amount][number]', '999.00');
+    $this->assertSession()->fieldValueEquals('quantity[0][value]', '1');
+    $this->assertSession()->elementTextContains('css', '.ui-dialog #estimated_price', 'Estimated Price: $999.00');
+
+    // Check that estimated price is updated by ajax.
+    $this->getSession()->getPage()->checkField('Override the unit price');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+    $this->getSession()->getPage()->fillField('unit_price[0][amount][number]', '99.00');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+    $this->assertSession()->elementTextContains('css', '.ui-dialog #estimated_price', 'Estimated Price: $99.00');
+    $this->getSession()->getPage()->fillField('quantity[0][value]', '2');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+    $this->assertSession()->elementTextContains('css', '.ui-dialog #estimated_price', 'Estimated Price: $198.00');
+
+    // Confirm that order totals recalculated after modal form submission.
+    $this->getSession()->getPage()->find('css', '.ui-dialog .ui-dialog-buttonpane')->pressButton('Save');
+    $order = $this->reloadEntity($order);
+    $this->assertCount(2, $order->getItems());
+    $this->assertSession()->pageTextContains($this->variation->label());
+    $this->assertSession()->pageTextContains('Subtotal $1,197.00');
   }
 
   /**
@@ -888,6 +909,32 @@ class OrderAdminTest extends OrderWebDriverTestBase {
     $this->getSession()->getPage()->find('css', '.ui-autocomplete li:first-child a')->click();
     $page->pressButton('Add new order item');
     $this->assertSession()->assertWaitOnAjaxRequest();
+  }
+
+  /**
+   * Creates an order with a single order item.
+   */
+  private function createOrderWithOrderItem(): array {
+    // Create order with one order item.
+    /** @var \Drupal\commerce_order\Entity\OrderItemInterface $order_item */
+    $order_item = $this->createEntity('commerce_order_item', [
+      'type' => 'default',
+      'quantity' => 1,
+      'purchased_entity' => $this->variation,
+      'unit_price' => $this->variation->getPrice(),
+    ]);
+
+    /** @var \Drupal\commerce_order\Entity\OrderInterface $order */
+    $order = $this->createEntity('commerce_order', [
+      'type' => 'default',
+      'store_id' => $this->store->id(),
+      'mail' => $this->loggedInUser->getEmail(),
+      'state' => 'draft',
+      'uid' => $this->loggedInUser,
+      'order_items' => [$order_item],
+    ]);
+    $order_item = $this->reloadEntity($order_item);
+    return [$order, $order_item];
   }
 
 }

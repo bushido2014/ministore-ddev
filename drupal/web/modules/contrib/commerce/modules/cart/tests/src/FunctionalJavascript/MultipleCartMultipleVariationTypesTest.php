@@ -50,6 +50,7 @@ class MultipleCartMultipleVariationTypesTest extends CartWebDriverTestBase {
     $this->createProductAndVariationType('color_sizes', 'Colors and Sizes');
     $this->createProductAndVariationType('colors', 'Colors');
     $this->createProductAndVariationType('sizes', 'Sizes');
+    $this->createProductAndVariationType('colors_shared', 'Colors (shared)');
     // Create a product type referencing multiple variation types.
     $product_type = ProductType::create([
       'id' => 'multiple',
@@ -58,6 +59,17 @@ class MultipleCartMultipleVariationTypesTest extends CartWebDriverTestBase {
         'colors',
         'color_sizes',
         'sizes',
+      ],
+    ]);
+    $product_type->save();
+    // Create a product type referencing variation types that share the same
+    // attribute fields.
+    $product_type = ProductType::create([
+      'id' => 'multiple_shared',
+      'label' => 'Product type referencing variation types sharing attributes',
+      'variationTypes' => [
+        'colors',
+        'colors_shared',
       ],
     ]);
     $product_type->save();
@@ -70,6 +82,7 @@ class MultipleCartMultipleVariationTypesTest extends CartWebDriverTestBase {
     $color_attribute->save();
     $this->attributeFieldManager->createField($color_attribute, 'color_sizes');
     $this->attributeFieldManager->createField($color_attribute, 'colors');
+    $this->attributeFieldManager->createField($color_attribute, 'colors_shared');
 
     $options = ['red' => 'Red', 'green' => 'Green', 'blue' => 'Blue'];
     foreach ($options as $key => $value) {
@@ -223,6 +236,19 @@ class MultipleCartMultipleVariationTypesTest extends CartWebDriverTestBase {
           ],
         ],
       ],
+      'Shared attributes' => [
+        'type' => 'multiple_shared',
+        'variations' => [
+          [
+            'type' => 'colors',
+            'attribute_color' => $this->colorAttributes['red']->id(),
+          ],
+          [
+            'type' => 'colors_shared',
+            'attribute_color' => $this->colorAttributes['green']->id(),
+          ],
+        ],
+      ],
     ];
     foreach ($product_matrix as $product_title => $product_data) {
       /** @var \Drupal\commerce_product\Entity\ProductInterface $product */
@@ -263,19 +289,26 @@ class MultipleCartMultipleVariationTypesTest extends CartWebDriverTestBase {
     $forms[1]->pressButton('Add to cart');
     $this->assertSession()->pageTextContains('My Colors and Sizes FIRST - Green, Medium added to your cart.');
 
-    $last_form = end($forms);
     // Assert the title widget is used when a product references variations of
-    // a different type.
-    $this->assertTrue($last_form->hasField('Please select'));
-    $last_form->selectFieldOption('Please select', 'Multiple variation types - Blue');
+    // different types that do not share the same attribute fields.
+    $this->assertTrue($forms[6]->hasField('Please select'));
+    $forms[6]->selectFieldOption('Please select', 'Multiple variation types - Blue');
     $this->assertSession()->assertWaitOnAjaxRequest();
-    $last_form->pressButton('Add to cart');
+    $forms[6]->pressButton('Add to cart');
     $this->assertSession()->pageTextContains('Multiple variation types - Blue added to your cart.');
+
+    // Assert the attributes widget is kept when the variation types share the
+    // same attribute fields, and can select a variation of another type.
+    $this->assertFalse($forms[7]->hasField('Please select'));
+    $forms[7]->selectFieldOption('Color', 'Green');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+    $forms[7]->pressButton('Add to cart');
+    $this->assertSession()->pageTextContains('Shared attributes - Green added to your cart.');
 
     $this->container->get('entity_type.manager')->getStorage('commerce_order')->resetCache([$this->cart->id()]);
     $this->cart = Order::load($this->cart->id());
     $order_items = $this->cart->getItems();
-    $this->assertCount(2, $order_items);
+    $this->assertCount(3, $order_items);
     /** @var \Drupal\commerce_product\Entity\ProductVariationInterface $variation */
     $variation = $order_items[0]->getPurchasedEntity();
     $this->assertEquals($this->colorAttributes['green']->id(), $variation->getAttributeValueId('attribute_color'));
@@ -283,6 +316,10 @@ class MultipleCartMultipleVariationTypesTest extends CartWebDriverTestBase {
 
     $variation = $order_items[1]->getPurchasedEntity();
     $this->assertEquals($this->colorAttributes['blue']->id(), $variation->getAttributeValueId('attribute_color'));
+
+    $variation = $order_items[2]->getPurchasedEntity();
+    $this->assertEquals('colors_shared', $variation->bundle());
+    $this->assertEquals($this->colorAttributes['green']->id(), $variation->getAttributeValueId('attribute_color'));
   }
 
   /**

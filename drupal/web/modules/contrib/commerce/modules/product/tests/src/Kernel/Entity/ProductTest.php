@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\commerce_product\Kernel\Entity;
 
+use Drupal\Component\Serialization\PhpSerialize;
 use Drupal\Tests\commerce\Kernel\CommerceKernelTestBase;
 use Drupal\commerce_product\Entity\Product;
 use Drupal\commerce_product\Entity\ProductVariation;
@@ -180,6 +181,44 @@ class ProductTest extends CommerceKernelTestBase {
     $variation_storage = $this->entityTypeManager->getStorage('commerce_product_variation');
     $this->assertNull($variation_storage->load($variation1->id()));
     $this->assertNull($variation_storage->load($variation2->id()));
+  }
+
+  /**
+   * Tests that the computed default_variation field never saves variations.
+   *
+   * Simulates Inline Entity Form re-opening the form of a new product: the
+   * product and its new variation are unserialized separately, leaving the
+   * product with a stale copy of the default variation.
+   */
+  public function testStaleDefaultVariationIsNotSaved() {
+    $variation = ProductVariation::create([
+      'type' => 'default',
+      'sku' => 'STALE-SKU',
+      'status' => 1,
+    ]);
+    $product = Product::create([
+      'type' => 'default',
+      'title' => 'My product',
+      'variations' => [$variation],
+    ]);
+    // Compute the default variation before the product is saved.
+    $this->assertSame($variation, $product->get('default_variation')->entity);
+
+    /** @var \Drupal\commerce_product\Entity\ProductInterface $product */
+    $product = PhpSerialize::decode(PhpSerialize::encode($product));
+    /** @var \Drupal\commerce_product\Entity\ProductVariationInterface $variation */
+    $variation = PhpSerialize::decode(PhpSerialize::encode($variation));
+    $this->assertNotSame($variation, $product->get('default_variation')->entity);
+    $product->setVariations([$variation]);
+    $variation->save();
+    $product->save();
+
+    $variation_storage = $this->entityTypeManager->getStorage('commerce_product_variation');
+    $variations = $variation_storage->loadByProperties(['sku' => 'STALE-SKU']);
+    $this->assertCount(1, $variations);
+    $this->assertEquals([$variation->id()], $product->getVariationIds());
+    $variation = $this->reloadEntity($variation);
+    $this->assertEquals($product->id(), $variation->getProductId());
   }
 
   /**

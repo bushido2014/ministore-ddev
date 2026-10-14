@@ -29,6 +29,7 @@ commerce_payment.order.merchant_return:
         type: 'entity:commerce_order'
       commerce_payment_gateway:
         type: 'entity:commerce_payment_gateway'
+        with_config_overrides: TRUE
   requirements:
     _entity_create_any_access: 'commerce_payment'
     _commerce_payment_create_access: 'TRUE'

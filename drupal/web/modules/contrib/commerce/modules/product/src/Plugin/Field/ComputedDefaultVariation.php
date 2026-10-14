@@ -21,4 +21,15 @@ class ComputedDefaultVariation extends EntityReferenceFieldItemList {
     $this->list[0] = $this->createItem(0, $product->getDefaultVariation());
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function preSave() {
+    // This field is computed from the "variations" field, which is responsible
+    // for saving new variations. The referenced variation must never be saved
+    // from here: it can be a stale copy of a variation that has already been
+    // saved through another object (e.g. after an Inline Entity Form cache
+    // round-trip), which would result in a duplicate insert.
+  }
+
 }

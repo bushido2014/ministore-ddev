@@ -428,6 +428,12 @@ class BuyXGetY extends OrderPromotionOfferBase {
 
     foreach ($final_quantities as $order_item_id => $quantity) {
       $order_item = $get_order_items[$order_item_id];
+      // Prevent division by zero: OrderItem::getAdjustedUnitPrice() divides
+      // the adjusted total price by the quantity (unless the item uses legacy
+      // adjustments), which throws for zero-quantity items.
+      if (Calculator::compare($order_item->getQuantity(), '0') === 0) {
+        continue;
+      }
       $adjusted_unit_price = $order_item->getAdjustedUnitPrice(['promotion']);
 
       // The adjusted unit price is already reduced to 0, no need to continue

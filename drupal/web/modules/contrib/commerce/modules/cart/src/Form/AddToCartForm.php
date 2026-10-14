@@ -61,6 +61,13 @@ class AddToCartForm extends ContentEntityForm implements AddToCartFormInterface 
   protected $currentUser;
 
   /**
+   * The attribute field manager.
+   *
+   * @var \Drupal\commerce_product\ProductAttributeFieldManagerInterface
+   */
+  protected $attributeFieldManager;
+
+  /**
    * The form ID.
    *
    * @var string
@@ -78,6 +85,7 @@ class AddToCartForm extends ContentEntityForm implements AddToCartFormInterface 
     $instance->currentStore = $container->get('commerce_store.current_store');
     $instance->chainPriceResolver = $container->get('commerce_price.chain_price_resolver');
     $instance->currentUser = $container->get('current_user');
+    $instance->attributeFieldManager = $container->get('commerce_product.attribute_field_manager');
     return $instance;
   }
 
@@ -155,23 +163,33 @@ class AddToCartForm extends ContentEntityForm implements AddToCartFormInterface 
    */
   public function setFormDisplay(EntityFormDisplayInterface $form_display, FormStateInterface $form_state) {
     $component = $form_display->getComponent('purchased_entity');
-    // If the product references variations of a different type, fallback
-    // to using the title widget as the attributes widget cannot properly
-    // work.
+    // If the product references variations of different types that do not
+    // share the same attribute fields, fallback to using the title widget as
+    // the attributes widget cannot properly work.
     if ($component && $component['type'] === 'commerce_product_variation_attributes') {
       $product = $form_state->get('product');
       /** @var \Drupal\commerce_product\ProductVariationStorageInterface $product_variation_storage */
       $product_variation_storage = $this->entityTypeManager->getStorage('commerce_product_variation');
       $variations = $product_variation_storage->loadEnabled($product);
 
-      $variation_types = [];
+      $variation_type_ids = [];
       foreach ($variations as $variation) {
-        $variation_types[$variation->bundle()] = $variation->bundle();
-        if (count($variation_types) > 1) {
+        $variation_type_ids[$variation->bundle()] = $variation->bundle();
+      }
+      if (count($variation_type_ids) > 1) {
+        // The attributes widget can only select across variation types that
+        // have the same (non-empty) attribute fields, in the same order, and
+        // the same order item type.
+        $variation_types = $this->entityTypeManager->getStorage('commerce_product_variation_type')->loadMultiple($variation_type_ids);
+        $attribute_setups = [];
+        foreach ($variation_types as $variation_type) {
+          /** @var \Drupal\commerce_product\Entity\ProductVariationTypeInterface $variation_type */
+          $field_names = array_column($this->attributeFieldManager->getFieldMap($variation_type->id()), 'field_name');
+          $attribute_setups[] = [$field_names, $variation_type->getOrderItemTypeId()];
+        }
+        if (empty($field_names) || count(array_unique($attribute_setups, SORT_REGULAR)) > 1) {
           $component['type'] = 'commerce_product_variation_title';
           $form_display->setComponent('purchased_entity', $component);
-          $this->setFormDisplay($form_display, $form_state);
-          break;
         }
       }
     }

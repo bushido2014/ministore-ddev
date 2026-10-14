@@ -69,6 +69,10 @@ class OrderItemInlineOperations extends FieldPluginBase {
         'title' => $this->t('delete'),
         'url' => $order_item->toUrl('delete-form'),
       ],
+      'duplicate' => [
+        'title' => $this->t('duplicate'),
+        'url' => $order_item->toUrl('duplicate-form'),
+      ],
     ];
 
     foreach ($link_definitions as $operation => $definition) {

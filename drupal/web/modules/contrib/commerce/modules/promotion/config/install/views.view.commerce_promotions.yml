@@ -820,7 +820,7 @@ display:
           tokenize: false
           content:
             value: 'There are no promotions yet.'
-            format: basic_html
+            format: plain_text
           plugin_id: text
       relationships:
         coupons_target_id:

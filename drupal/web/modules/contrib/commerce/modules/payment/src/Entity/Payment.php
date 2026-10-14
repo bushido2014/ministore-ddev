@@ -52,7 +52,7 @@ use Drupal\commerce_price\Price;
  *   },
  *   links = {
  *     "collection" = "/admin/commerce/orders/{commerce_order}/payments",
- *     "edit-form" = "/admin/commerce/orders/{commerce_order}/payments/commerce_payment/edit",
+ *     "edit-form" = "/admin/commerce/orders/{commerce_order}/payments/{commerce_payment}/edit",
  *     "delete-form" = "/admin/commerce/orders/{commerce_order}/payments/{commerce_payment}/delete",
  *   },
  * )

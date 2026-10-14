@@ -1040,4 +1040,55 @@ class CustomerProfileTest extends OrderWebDriverTestBase {
     }
   }
 
+  /**
+   * Tests the "Save" process for the inline form in "single" mode.
+   */
+  public function testSaveButtonSingle(): void {
+    /** @var \Drupal\profile\Entity\ProfileTypeInterface $profile_type */
+    $profile_type = ProfileType::load('customer');
+    if ($profile_type->allowsMultiple()) {
+      $profile_type->setMultiple(FALSE);
+      $profile_type->save();
+    }
+
+    $profile = $this->createEntity('profile', [
+      'type' => 'customer',
+      'uid' => $this->adminUser->id(),
+      'address' => $this->usAddress,
+    ]);
+    $this->drupalGet(Url::fromRoute('commerce_order_test.customer_profile_test_form', ['profile' => $profile->id(), 'admin' => TRUE, 'save' => TRUE]));
+    $this->assertSession()->fieldNotExists('profile[select_address]');
+    $this->assertSession()->buttonExists('Edit');
+    $this->getSession()->getPage()->pressButton('Edit');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+    foreach ($this->usAddress as $field_name => $value) {
+      $this->assertSession()->fieldValueEquals("profile[address][0][address][$field_name]", $value);
+    }
+
+    // Change the street, save the profile within the form and confirm the
+    // saved changes are rendered instead of the original address.
+    $this->getSession()->getPage()->fillField('profile[address][0][address][address_line1]', '10 Drupal Ave');
+    $this->getSession()->getPage()->pressButton('Save');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+    $rendered_address = $this->usAddress;
+    $rendered_address['country_code'] = 'United States';
+    $rendered_address['address_line1'] = '10 Drupal Ave';
+    $prefix = 'profile[address][0][address]';
+    foreach ($rendered_address as $property => $value) {
+      $this->assertSession()->fieldNotExists($prefix . '[' . $property . ']');
+      $this->assertSession()->pageTextContains($value);
+    }
+    $this->assertSession()->pageTextNotContains('9 Drupal Ave');
+
+    // Edit the saved profile again, confirm there are no warnings and the
+    // form is pre-filled with the saved changes.
+    $this->getSession()->getPage()->pressButton('Edit');
+    $this->assertSession()->assertWaitOnAjaxRequest();
+    $expected_address = $this->usAddress;
+    $expected_address['address_line1'] = '10 Drupal Ave';
+    foreach ($expected_address as $property => $value) {
+      $this->assertSession()->fieldValueEquals("profile[address][0][address][$property]", $value);
+    }
+  }
+
 }

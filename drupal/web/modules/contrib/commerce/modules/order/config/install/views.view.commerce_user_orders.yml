@@ -510,7 +510,7 @@ display:
           tokenize: false
           content:
             value: 'You have not placed any orders with us yet.'
-            format: basic_html
+            format: plain_text
           plugin_id: text
       relationships: {  }
       arguments:

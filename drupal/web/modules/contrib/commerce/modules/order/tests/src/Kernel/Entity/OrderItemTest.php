@@ -166,6 +166,36 @@ class OrderItemTest extends OrderKernelTestBase {
   }
 
   /**
+   * Tests price calculating on a zero quantity order item with an adjustment.
+   *
+   * @covers ::getAdjustedUnitPrice
+   */
+  public function testApplyAdjustmentOnZeroQuantityOrderItem() {
+    // Create an order item.
+    $order_item = OrderItem::create([
+      'type' => 'test',
+      'quantity' => 1,
+      'unit_price' => new Price('9.99', 'USD'),
+      'adjustments' => [
+        new Adjustment([
+          'type' => 'fee',
+          'label' => 'Random fee',
+          'amount' => new Price('2.00', 'USD'),
+        ]),
+      ],
+    ]);
+    // The total price isn't calculated until the order item is saved.
+    $this->assertNull($order_item->getTotalPrice());
+    $this->assertNull($order_item->getAdjustedUnitPrice());
+    $order_item->save();
+    $this->assertEquals(new Price('11.99', 'USD'), $order_item->getAdjustedUnitPrice());
+
+    // Set the order item's quantity to zero.
+    $order_item->setQuantity('0');
+    $this->assertEquals(new Price('0.00', 'USD'), $order_item->getAdjustedUnitPrice());
+  }
+
+  /**
    * Tests the handling of invalid bundles.
    *
    * @covers ::bundleFieldDefinitions

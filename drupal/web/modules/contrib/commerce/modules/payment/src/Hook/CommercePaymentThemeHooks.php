@@ -50,6 +50,11 @@ class CommercePaymentThemeHooks {
           'order_entity' => NULL,
         ],
       ],
+      'commerce_payment_information_gateway_summary' => [
+        'variables' => [
+          'payment_gateway' => NULL,
+        ],
+      ],
       'commerce_admin_payment_form' => [
         'render element' => 'form',
       ],

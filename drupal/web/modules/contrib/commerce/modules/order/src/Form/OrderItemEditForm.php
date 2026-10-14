@@ -3,6 +3,7 @@
 namespace Drupal\commerce_order\Form;
 
 use Drupal\commerce\Context;
+use Drupal\commerce_order\Entity\OrderInterface;
 use Drupal\commerce_price\Price;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\HtmlCommand;
@@ -110,7 +111,7 @@ class OrderItemEditForm extends ContentEntityForm {
     // Resave related order to update totals.
     $order = $this->entity->getOrder();
     if ($order) {
-      $order->save();
+      $this->saveOrder($order);
       $form_state->setRedirectUrl($order->toUrl());
     }
     return $return;
@@ -144,6 +145,20 @@ class OrderItemEditForm extends ContentEntityForm {
         'price' => $price,
       ],
     ];
+  }
+
+  /**
+   * Saves the parent order of the order item.
+   *
+   * Called after the order item is saved, so the order totals are updated.
+   * Subclasses can override this to change the order before it is saved,
+   * and must call the parent method so the order is saved only once.
+   *
+   * @param \Drupal\commerce_order\Entity\OrderInterface $order
+   *   The order.
+   */
+  protected function saveOrder(OrderInterface $order): void {
+    $order->save();
   }
 
   /**

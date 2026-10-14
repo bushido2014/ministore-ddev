@@ -650,7 +650,7 @@ display:
           tokenize: false
           content:
             value: 'There are no coupons yet.'
-            format: basic_html
+            format: plain_text
           plugin_id: text
       relationships: {  }
       arguments:

@@ -155,16 +155,15 @@ class PaymentInformation extends PaymentCheckoutPaneBase {
       $summary = $view_builder->view($payment_method, 'default');
     }
     else {
-      if ($payment_gateway) {
-        $summary = [
-          'payment_gateway' => [
-            '#markup' => $payment_gateway->getPlugin()->getDisplayLabel(),
-          ],
-        ];
-      }
       if ($billing_profile) {
         $view_builder = $this->entityTypeManager->getViewBuilder('profile');
         $summary['profile'] = $view_builder->view($billing_profile, 'default');
+      }
+      if ($payment_gateway) {
+        $summary['payment_gateway'] = [
+          '#theme' => 'commerce_payment_information_gateway_summary',
+          '#payment_gateway' => $payment_gateway,
+        ];
       }
     }
 
@@ -487,7 +486,11 @@ class PaymentInformation extends PaymentCheckoutPaneBase {
         /** @var \Drupal\commerce_payment\Entity\PaymentMethodInterface $payment_method */
         $this->order->set('payment_gateway', $payment_method->getPaymentGateway());
         $this->order->set('payment_method', $payment_method);
-        $this->order->setBillingProfile($payment_method->getBillingProfile());
+        // A gateway that does not collect billing information stores its
+        // payment methods without a billing profile.
+        if ($payment_method_profile = $payment_method->getBillingProfile()) {
+          $this->order->setBillingProfile($payment_method_profile);
+        }
       }
       // The new payment method is created when the transaction processes.
       else {

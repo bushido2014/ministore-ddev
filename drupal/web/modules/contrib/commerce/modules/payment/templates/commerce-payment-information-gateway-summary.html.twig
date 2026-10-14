@@ -1,0 +1,16 @@
+{#
+/**
+ * @file
+ * Default payment gateway summary template.
+ *
+ * Shown in the payment information checkout pane summary when a payment
+ * gateway was selected but no payment method was collected, e.g. offsite or
+ * manual payment gateways.
+ *
+ * Available variables:
+ * - payment_gateway: The payment gateway entity.
+ *
+ * @ingroup themeable
+ */
+#}
+<div class="payment-gateway-summary">{{ payment_gateway.getPlugin.getDisplayLabel ?? '' }}</div>

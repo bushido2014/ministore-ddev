@@ -177,13 +177,13 @@ class OrderForm extends OrderFormBase {
     $order = parent::validateForm($form, $form_state);
     $currency_code = NULL;
     foreach ($order->getItems() as $order_item) {
-      $unit_price = $order_item->getUnitPrice();
-      if (empty($currency_code)) {
-        $currency_code = $unit_price?->getCurrencyCode();
+      $item_currency_code = $order_item->getUnitPrice()?->getCurrencyCode();
+      if ($item_currency_code === NULL) {
         continue;
       }
 
-      if ($currency_code !== $unit_price?->getCurrencyCode()) {
+      $currency_code ??= $item_currency_code;
+      if ($currency_code !== $item_currency_code) {
         $form_state->setErrorByName('order_items', $this->t('This order contains items in different currencies. Please ensure all items use the same currency.'));
         break;
       }

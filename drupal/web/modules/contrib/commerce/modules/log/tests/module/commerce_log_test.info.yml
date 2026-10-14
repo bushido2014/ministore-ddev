@@ -6,7 +6,7 @@ dependencies:
   - commerce:commerce_log
   - drupal:entity_test
 
-# Information added by Drupal.org packaging script on 2026-09-23
-version: '3.3.10'
+# Information added by Drupal.org packaging script on 2026-10-14
+version: '3.3.11'
 project: 'commerce'
-datestamp: 1790160112
+datestamp: 1791983969

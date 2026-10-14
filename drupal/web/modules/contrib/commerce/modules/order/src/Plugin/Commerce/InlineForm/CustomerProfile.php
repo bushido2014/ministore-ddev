@@ -178,7 +178,7 @@ class CustomerProfile extends EntityInlineFormBase {
     $user_input = (array) NestedArray::getValue($form_state->getUserInput(), $inline_form['#parents']);
     if ($saved_profile) {
       $use_saved_profile = match ($triggering_element_name) {
-        'select_address', 'edit_button' => $user_input['select_address'] === '_original',
+        'select_address', 'edit_button' => ($user_input['select_address'] ?? '_original') === '_original',
         'save_button' => TRUE,
         default => FALSE,
       };
@@ -233,6 +233,11 @@ class CustomerProfile extends EntityInlineFormBase {
         ],
         '#weight' => -999,
       ];
+    }
+    elseif ($use_saved_profile) {
+      // A single address book profile is allowed, and a profile was saved
+      // via the "Save" button, use it to pre-fill the profile form.
+      $address_book_profile = $saved_profile;
     }
     elseif (!$customer->isAnonymous() && $this->entity->isNew()) {
       // A single address book profile is allowed.
