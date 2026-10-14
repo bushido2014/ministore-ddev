@@ -4,6 +4,23 @@
  * Template pentru Paragraph-ul Cart Icon.
  */
 #}
+
+{%
+  set classes = [
+    'cart-icon-wrapp',
+  ]
+%}
+<div {{ create_attribute().addClass(classes) }}>
+<a href="{{ paragraph.field_cart_icon_link.uri }}" 
+  class="icon-link"
+>
+  
+ {% if content.field_cart_icon %}
+        {{ content.field_cart_icon }}
+      {% endif %}
+</a>
+</div>
+
 <div class="paragraph paragraph--type--cart-icon paragraph--view-mode--default">
 
   {# 1. Extragem URL-ul curat din obiectul de link (intern sau extern) #}
