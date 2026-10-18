@@ -1,0 +1,29 @@
+uuid: 3a463996-0917-4705-9b94-9f5c7a7bbe3b
+langcode: en
+status: true
+dependencies:
+  config:
+    - commerce_product.commerce_product_type.tablet
+    - field.storage.commerce_product.field_category
+    - taxonomy.vocabulary.product_category
+id: commerce_product.tablet.field_category
+field_name: field_category
+entity_type: commerce_product
+bundle: tablet
+label: Category
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      product_category: product_category
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

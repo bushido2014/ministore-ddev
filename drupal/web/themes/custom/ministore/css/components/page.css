@@ -165,3 +165,7 @@
   padding: 8px 0;
   content: "/\00a0";
 }
+
+.node-help {
+  padding: 20px 0;
+}

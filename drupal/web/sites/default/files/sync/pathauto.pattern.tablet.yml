@@ -1,0 +1,23 @@
+uuid: 487a74c6-98ff-41b4-b523-ae2d8782331b
+langcode: en
+status: true
+dependencies:
+  config:
+    - commerce_product.commerce_product_type.tablet
+  module:
+    - commerce_product
+id: tablet
+label: Tablet
+type: 'canonical_entities:commerce_product'
+pattern: '/shop/[commerce_product:title]'
+selection_criteria:
+  09a259d3-53da-485d-b7d5-761757b342de:
+    id: 'entity_bundle:commerce_product'
+    negate: false
+    context_mapping:
+      commerce_product: commerce_product
+    bundles:
+      tablet: tablet
+selection_logic: and
+weight: -5
+relationships: {  }

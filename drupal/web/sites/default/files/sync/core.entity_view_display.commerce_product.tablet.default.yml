@@ -1,0 +1,80 @@
+uuid: 0e01acd3-9afb-4baa-9084-5e0c807f446f
+langcode: en
+status: true
+dependencies:
+  config:
+    - commerce_product.commerce_product_type.tablet
+    - field.field.commerce_product.tablet.body
+    - field.field.commerce_product.tablet.field_brand
+    - field.field.commerce_product.tablet.field_category
+    - field.field.commerce_product.tablet.field_product_image
+    - field.field.commerce_product.tablet.field_tags
+  module:
+    - commerce_product
+    - text
+id: commerce_product.tablet.default
+targetEntityType: commerce_product
+bundle: tablet
+mode: default
+content:
+  body:
+    type: text_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 11
+    region: content
+  field_brand:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 3
+    region: content
+  field_category:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 2
+    region: content
+  field_product_image:
+    type: entity_reference_entity_view
+    label: hidden
+    settings:
+      view_mode: default
+      link: false
+    third_party_settings: {  }
+    weight: 12
+    region: content
+  field_tags:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 4
+    region: content
+  title:
+    type: string
+    label: hidden
+    settings:
+      link_to_entity: false
+      link_rel: canonical
+    third_party_settings: {  }
+    weight: -5
+    region: content
+  variations:
+    type: commerce_add_to_cart
+    label: hidden
+    settings:
+      combine: true
+    third_party_settings: {  }
+    weight: 10
+    region: content
+hidden:
+  created: true
+  stores: true
+  uid: true

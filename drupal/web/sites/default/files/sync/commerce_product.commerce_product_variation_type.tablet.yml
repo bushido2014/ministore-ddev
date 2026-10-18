@@ -1,0 +1,10 @@
+uuid: 87e90735-62f9-462c-adbd-a8a13ee0effb
+langcode: en
+status: true
+dependencies: {  }
+id: tablet
+label: Tablet
+traits: {  }
+locked: false
+orderItemType: default
+generateTitle: false

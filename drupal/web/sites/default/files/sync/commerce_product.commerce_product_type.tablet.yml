@@ -1,0 +1,13 @@
+uuid: 028e29fb-4b12-40e1-bf1e-a484399d3368
+langcode: en
+status: true
+dependencies: {  }
+id: tablet
+label: Tablet
+traits: {  }
+locked: false
+description: ''
+variationTypes:
+  - tablet
+multipleVariations: true
+injectVariationFields: true
