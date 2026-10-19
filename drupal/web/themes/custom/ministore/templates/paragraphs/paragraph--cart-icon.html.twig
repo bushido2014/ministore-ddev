@@ -3,13 +3,13 @@
     'cart-icon-wrapp',
   ]
 %}
-
+ 
 <div{{ create_attribute().addClass(classes) }}>
 
-  {# Extragem URL-ul din câmpul de link #}
+  
   {% set cart_url = paragraph.field_cart_icon_link.0.url %}
 
-  {# Extragem numele iconiței din câmpul Font Awesome #}
+  
   {% set icon_name = paragraph.field_cart_icon.0.icon_name|default('cart-shopping') %}
 
   {% if cart_url %}
@@ -23,3 +23,24 @@
   {% endif %}
 
 </div>
+
+{#
+<div{{ create_attribute().addClass(classes) }}>
+
+  {% set cart_url = paragraph.field_cart_icon_link.0.url %}
+  {% set icon_name = paragraph.field_cart_icon.0.icon_name|default('cart-shopping') %}
+
+  {% if cart_url %}
+    <a href="{{ cart_url }}" class="social-icon-link" aria-label="View cart">
+      <i class="fa-solid fa-{{ icon_name }}"></i>
+      {{ drupal_block('commerce_cart') }}
+    </a>
+  {% else %}
+    <span class="social-icon-link">
+      <i class="fa-solid fa-{{ icon_name }}"></i>
+      {{ drupal_block('commerce_cart') }}
+    </span>
+  {% endif %}
+
+</div>
+#}
