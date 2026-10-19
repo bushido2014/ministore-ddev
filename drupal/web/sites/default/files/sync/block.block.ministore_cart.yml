@@ -1,0 +1,22 @@
+uuid: 20bdb7c8-71bc-4616-8e31-384c67888def
+langcode: en
+status: true
+dependencies:
+  module:
+    - commerce_cart
+  theme:
+    - ministore
+id: ministore_cart
+theme: ministore
+region: header_right
+weight: 0
+provider: null
+plugin: commerce_cart
+settings:
+  id: commerce_cart
+  label: Cart
+  label_display: '0'
+  provider: commerce_cart
+  dropdown: true
+  show_if_empty: true
+visibility: {  }

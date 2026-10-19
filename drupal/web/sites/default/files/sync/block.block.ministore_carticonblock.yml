@@ -1,6 +1,6 @@
 uuid: 049f8e1b-b846-4b21-91a7-83a66198d1eb
 langcode: en
-status: true
+status: false
 dependencies:
   content:
     - 'block_content:cart_icon_block:04b1793f-1d2c-4697-9061-06b9f6a700f6'
