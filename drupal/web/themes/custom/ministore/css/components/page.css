@@ -169,3 +169,11 @@
 .node-help {
   padding: 20px 0;
 }
+
+.blog-article {
+  padding: 60px 0;
+}
+
+.article-img img{
+ width: 600px;
+}
