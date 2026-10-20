@@ -9,4 +9,23 @@
 .blog-articles {
     padding: 30px 0;
 }
+.views-view-responsive-grid__item-inner {
+    padding-bottom: 10px;
+    background-color: var(--color-light-blue);
+    position: relative;
+}
 
+.views-field-title a{
+    padding: 10px;
+    font-weight: 600;
+}
+.views-field-field-blog-tags {
+    position: absolute;
+    bottom: 46px;
+    padding: 8px 5px;
+    background-color: var(--color-primary);
+    color: #fff;
+}
+.views-field-field-blog-tags a {
+    color: #fff;
+}
