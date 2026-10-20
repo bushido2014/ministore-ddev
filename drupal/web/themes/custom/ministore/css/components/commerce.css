@@ -139,11 +139,15 @@ input#edit-submit:hover {
 }
 
 th {
-    background-color: var(--color-primary);
+    background-color: var(--color-light-blue);
     margin: 0;
     padding: 10px;
-    border: 1px solid var(--color-primary);
+    border: 1px solid transparent;
     text-align: left;
+}
+
+.shop-cart tbody tr td {
+  padding: 10px;
 }
 
 .cart-form .form-actions {
@@ -176,4 +180,9 @@ th {
 
 .delete-order-item:hover {
   background-color: #bb2d3b;
+}
+
+.cart-empty-page {
+  font-size: 18px;
+  font-weight: 600;
 }

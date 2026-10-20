@@ -1,0 +1,23 @@
+uuid: 2d0d0a6c-f3f9-4acf-9ee8-76ba9b0d1da2
+langcode: en
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.blog
+  module:
+    - taxonomy
+id: blog_tags
+label: 'Blog Tags'
+type: 'canonical_entities:taxonomy_term'
+pattern: '/blog/[term:name]'
+selection_criteria:
+  9ab6f533-ccb9-499e-8310-1ac54c686506:
+    id: 'entity_bundle:taxonomy_term'
+    negate: false
+    context_mapping:
+      taxonomy_term: taxonomy_term
+    bundles:
+      blog: blog
+selection_logic: and
+weight: -5
+relationships: {  }
