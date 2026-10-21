@@ -1,0 +1,46 @@
+uuid: 370f62c1-1745-434f-81bd-db4d7ff9a2b6
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.mobile_products.field_mobile_product_link
+    - field.field.paragraph.mobile_products.field_mobile_product_title
+    - field.field.paragraph.mobile_products.field_mobile_products
+    - paragraphs.paragraphs_type.mobile_products
+  module:
+    - link
+    - viewsreference
+id: paragraph.mobile_products.default
+targetEntityType: paragraph
+bundle: mobile_products
+mode: default
+content:
+  field_mobile_product_link:
+    type: link_default
+    weight: 1
+    region: content
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+  field_mobile_product_title:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_mobile_products:
+    type: viewsreference_autocomplete
+    weight: 2
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+hidden:
+  created: true
+  status: true

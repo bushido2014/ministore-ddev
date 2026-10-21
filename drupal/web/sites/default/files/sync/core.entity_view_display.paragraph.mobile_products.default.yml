@@ -1,0 +1,48 @@
+uuid: 8d324b41-1ada-4fbc-85bf-3dca10a6c807
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.mobile_products.field_mobile_product_link
+    - field.field.paragraph.mobile_products.field_mobile_product_title
+    - field.field.paragraph.mobile_products.field_mobile_products
+    - paragraphs.paragraphs_type.mobile_products
+  module:
+    - link
+    - viewsreference
+id: paragraph.mobile_products.default
+targetEntityType: paragraph
+bundle: mobile_products
+mode: default
+content:
+  field_mobile_product_link:
+    type: link
+    label: hidden
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    weight: 1
+    region: content
+  field_mobile_product_title:
+    type: string
+    label: hidden
+    settings:
+      link_to_entity: false
+      link_rel: canonical
+    third_party_settings: {  }
+    weight: 0
+    region: content
+  field_mobile_products:
+    type: viewsreference_formatter
+    label: hidden
+    settings:
+      plugin_types:
+        - block
+    third_party_settings: {  }
+    weight: 2
+    region: content
+hidden: {  }

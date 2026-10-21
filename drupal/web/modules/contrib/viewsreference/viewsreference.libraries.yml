@@ -1,0 +1,7 @@
+viewsreference:
+  js:
+    js/viewsreference.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/drupal.autocomplete

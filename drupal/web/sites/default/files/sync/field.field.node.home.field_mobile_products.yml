@@ -1,0 +1,67 @@
+uuid: 7c3ddb1d-c24c-4244-b992-a4d7f26be870
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_mobile_products
+    - node.type.home
+    - paragraphs.paragraphs_type.mobile_products
+  module:
+    - entity_reference_revisions
+id: node.home.field_mobile_products
+field_name: field_mobile_products
+entity_type: node
+bundle: home
+label: 'Mobile products'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:paragraph'
+  handler_settings:
+    target_bundles:
+      mobile_products: mobile_products
+    negate: 0
+    target_bundles_drag_drop:
+      about_us_content:
+        weight: 14
+        enabled: false
+      card_item:
+        weight: 15
+        enabled: false
+      cart_icon:
+        weight: 16
+        enabled: false
+      contact_list:
+        weight: 17
+        enabled: false
+      contact_stores:
+        weight: 18
+        enabled: false
+      delivery_cards:
+        weight: 19
+        enabled: false
+      from_library:
+        weight: 20
+        enabled: false
+      home_slide:
+        weight: 21
+        enabled: false
+      mobile_products:
+        weight: 22
+        enabled: true
+      section_contact:
+        weight: 23
+        enabled: false
+      section_sale:
+        weight: 24
+        enabled: false
+      section_subscribe:
+        weight: 25
+        enabled: false
+      testimonials_slider:
+        weight: 26
+        enabled: false
+field_type: entity_reference_revisions

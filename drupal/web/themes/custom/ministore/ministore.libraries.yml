@@ -33,3 +33,11 @@ testimonials-slider:
   dependencies:
     - core/drupal
     - core/once
+
+products-slider:
+  version: 1.x
+  js:
+    js/products-slider.js: {}
+  dependencies:
+    - core/drupal
+    - core/once    

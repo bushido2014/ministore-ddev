@@ -1,0 +1,26 @@
+{{ attach_library('ministore/products-slider') }}
+<section class="mobile-products">
+<div class="container">
+<div class="mobile-products__haeading d-flex j-between">
+  <div>
+  {% if paragraph.field_mobile_product_title.value %}
+      <h3 class="section-title">{{ paragraph.field_mobile_product_title.value }}</h3>
+    {% endif %}
+  </div>
+  <div>
+  {{content.field_mobile_product_link}}
+  </div>
+</div>
+
+
+ 
+
+ <div class="swiper products-slider">
+  {{ content.field_mobile_products }}
+  <div class="swiper-button-next"></div>
+  <div class="swiper-button-prev"></div>
+</div>
+
+
+</div>
+</section>

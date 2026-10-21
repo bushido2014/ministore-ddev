@@ -1,0 +1,10 @@
+uuid: 87ebca92-402f-41b3-8c12-0c219d7b790a
+langcode: en
+status: true
+dependencies: {  }
+id: mobile_products
+label: 'Mobile products'
+icon_uuid: null
+icon_default: null
+description: ''
+behavior_plugins: {  }

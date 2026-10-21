@@ -1,0 +1,19 @@
+uuid: e4f7bc27-7dd3-4cc5-8c5b-bf49cd6b820a
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_mobile_product_title
+    - paragraphs.paragraphs_type.mobile_products
+id: paragraph.mobile_products.field_mobile_product_title
+field_name: field_mobile_product_title
+entity_type: paragraph
+bundle: mobile_products
+label: 'Mobile product Title'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

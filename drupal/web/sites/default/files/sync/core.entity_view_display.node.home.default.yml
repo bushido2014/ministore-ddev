@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - field.field.node.home.field_home_slide
+    - field.field.node.home.field_mobile_products
     - field.field.node.home.field_section_delivery
     - field.field.node.home.field_section_sale
     - field.field.node.home.field_section_subscribe
@@ -24,7 +25,16 @@ content:
       view_mode: default
       link: ''
     third_party_settings: {  }
-    weight: 101
+    weight: 1
+    region: content
+  field_mobile_products:
+    type: entity_reference_revisions_entity_view
+    label: hidden
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    weight: 3
     region: content
   field_section_delivery:
     type: entity_reference_revisions_entity_view
@@ -33,7 +43,7 @@ content:
       view_mode: default
       link: ''
     third_party_settings: {  }
-    weight: 102
+    weight: 2
     region: content
   field_section_sale:
     type: entity_reference_revisions_entity_view
@@ -42,7 +52,7 @@ content:
       view_mode: default
       link: ''
     third_party_settings: {  }
-    weight: 103
+    weight: 4
     region: content
   field_section_subscribe:
     type: entity_reference_revisions_entity_view
@@ -51,7 +61,7 @@ content:
       view_mode: default
       link: ''
     third_party_settings: {  }
-    weight: 104
+    weight: 5
     region: content
   field_testimonials_slider:
     type: entity_reference_revisions_entity_view
@@ -60,11 +70,11 @@ content:
       view_mode: default
       link: ''
     third_party_settings: {  }
-    weight: 105
+    weight: 6
     region: content
   links:
     settings: {  }
     third_party_settings: {  }
-    weight: 100
+    weight: 0
     region: content
 hidden: {  }

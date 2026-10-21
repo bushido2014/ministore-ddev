@@ -538,6 +538,15 @@
                 0 => '*',
             ),
         ),
+        'drupal/viewsreference' => array(
+            'pretty_version' => '2.0.0-beta14',
+            'version' => '2.0.0.0-beta14',
+            'reference' => '8.x-2.0-beta14',
+            'type' => 'drupal-module',
+            'install_path' => __DIR__ . '/../../web/modules/contrib/viewsreference',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
         'drupal/webform' => array(
             'pretty_version' => '6.3.1',
             'version' => '6.3.1.0',

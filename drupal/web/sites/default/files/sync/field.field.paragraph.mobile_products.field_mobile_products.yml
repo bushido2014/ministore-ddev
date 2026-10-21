@@ -1,0 +1,30 @@
+uuid: 1a2747c6-99d4-47b6-b2e8-ffdef025f256
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_mobile_products
+    - paragraphs.paragraphs_type.mobile_products
+  module:
+    - viewsreference
+id: paragraph.mobile_products.field_mobile_products
+field_name: field_mobile_products
+entity_type: paragraph
+bundle: mobile_products
+label: 'Mobile products'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:view'
+  handler_settings:
+    target_bundles: null
+    auto_create: false
+  plugin_types:
+    block: block
+  preselect_views:
+    block_phones: block_phones
+  enabled_settings: {  }
+field_type: viewsreference

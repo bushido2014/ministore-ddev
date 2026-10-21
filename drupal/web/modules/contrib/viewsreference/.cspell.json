@@ -1,0 +1,23 @@
+{
+    "dictionaries": [
+      "autocompleteclose",
+      "dictionary",
+      "drupal",
+      "companies",
+      "fonts",
+      "html",
+      "php",
+      "softwareTerms",
+      "viewsreference",
+      "viewsrefere",
+      "autocompleteclose"
+    ],
+     "dictionaryDefinitions": [
+      { "name": "viewsreference", "path": "./dictionary.txt"}
+    ],
+    "ignorePaths": [
+      "README.md"
+    ]
+  }
+    
+  

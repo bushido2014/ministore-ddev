@@ -1,0 +1,29 @@
+uuid: 78cee8a4-2ae9-4dc1-a82d-9bf1d14eef4f
+langcode: en
+status: true
+dependencies:
+  config:
+    - views.view.latest_posts
+  module:
+    - system
+    - views
+  theme:
+    - ministore
+id: ministore_views_block__latest_posts_block_1
+theme: ministore
+region: content_bottom
+weight: -10
+provider: null
+plugin: 'views_block:latest_posts-block_1'
+settings:
+  id: 'views_block:latest_posts-block_1'
+  label: ''
+  label_display: visible
+  provider: views
+  views_label: ''
+  items_per_page: null
+visibility:
+  request_path:
+    id: request_path
+    negate: false
+    pages: '<front>'
