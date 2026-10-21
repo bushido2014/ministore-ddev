@@ -1,0 +1,45 @@
+uuid: 50706736-ff15-4aef-ac1e-bba0e349ed43
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.gadget_products.field_gadget_products
+    - field.field.paragraph.gadget_products.field_mobile_product_link
+    - field.field.paragraph.gadget_products.field_mobile_product_title
+    - paragraphs.paragraphs_type.gadget_products
+  module:
+    - link
+id: paragraph.gadget_products.default
+targetEntityType: paragraph
+bundle: gadget_products
+mode: default
+content:
+  field_gadget_products:
+    type: entity_reference_autocomplete
+    weight: 2
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_mobile_product_link:
+    type: link_default
+    weight: 1
+    region: content
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+  field_mobile_product_title:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+hidden:
+  created: true
+  status: true

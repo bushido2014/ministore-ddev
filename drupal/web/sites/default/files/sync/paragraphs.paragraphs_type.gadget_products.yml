@@ -1,0 +1,10 @@
+uuid: cb4b24b2-415b-43a6-8f3f-b1d02a5c7d4a
+langcode: en
+status: true
+dependencies: {  }
+id: gadget_products
+label: 'Gadget Products'
+icon_uuid: null
+icon_default: null
+description: ''
+behavior_plugins: {  }

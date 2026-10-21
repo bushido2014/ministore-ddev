@@ -1,0 +1,29 @@
+uuid: 36d452ad-c4fb-49da-ac7d-d2be63c8dba1
+langcode: en
+status: true
+dependencies:
+  config:
+    - commerce_product.commerce_product_type.tablet
+    - field.storage.paragraph.field_gadget_products
+    - paragraphs.paragraphs_type.gadget_products
+id: paragraph.gadget_products.field_gadget_products
+field_name: field_gadget_products
+entity_type: paragraph
+bundle: gadget_products
+label: 'Gadget Products'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:commerce_product'
+  handler_settings:
+    target_bundles:
+      tablet: tablet
+    sort:
+      field: _none
+      direction: ASC
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

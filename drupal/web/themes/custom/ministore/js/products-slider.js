@@ -17,10 +17,17 @@
           loop: slides.length >= 6,
           slidesPerView: 3,
           spaceBetween: 20,
-          navigation: {
-            nextEl: el.querySelector('.swiper-button-next'),
-            prevEl: el.querySelector('.swiper-button-prev'),
-          },
+          autoplay: {
+    delay: 3200,
+  },
+          // navigation: {
+          //   nextEl: el.querySelector('.swiper-button-next'),
+          //   prevEl: el.querySelector('.swiper-button-prev'),
+          // },
+  //         pagination: {
+  //   el: '.swiper-pagination',
+  //   type: 'bullets',
+  // },
           breakpoints: {
             0:    { slidesPerView: 1, loop: false },
             640:  { slidesPerView: 2, loop: false },

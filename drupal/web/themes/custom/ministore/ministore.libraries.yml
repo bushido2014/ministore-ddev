@@ -41,3 +41,11 @@ products-slider:
   dependencies:
     - core/drupal
     - core/once    
+
+gadget-slide:
+  version: 1.x
+  js:
+    js/gadget-slide.js: {}
+  dependencies:
+    - core/drupal
+    - core/once     

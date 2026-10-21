@@ -1,0 +1,70 @@
+uuid: 6884898b-3bbd-4965-898c-40f3f02eb0be
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_gadget_products
+    - node.type.home
+    - paragraphs.paragraphs_type.gadget_products
+  module:
+    - entity_reference_revisions
+id: node.home.field_gadget_products
+field_name: field_gadget_products
+entity_type: node
+bundle: home
+label: 'Gadget Products'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:paragraph'
+  handler_settings:
+    target_bundles:
+      gadget_products: gadget_products
+    negate: 0
+    target_bundles_drag_drop:
+      about_us_content:
+        weight: 15
+        enabled: false
+      card_item:
+        weight: 16
+        enabled: false
+      cart_icon:
+        weight: 17
+        enabled: false
+      contact_list:
+        weight: 18
+        enabled: false
+      contact_stores:
+        weight: 19
+        enabled: false
+      delivery_cards:
+        weight: 20
+        enabled: false
+      from_library:
+        weight: 21
+        enabled: false
+      gadget_products:
+        weight: 22
+        enabled: true
+      home_slide:
+        weight: 23
+        enabled: false
+      mobile_products:
+        weight: 24
+        enabled: false
+      section_contact:
+        weight: 25
+        enabled: false
+      section_sale:
+        weight: 26
+        enabled: false
+      section_subscribe:
+        weight: 27
+        enabled: false
+      testimonials_slider:
+        weight: 28
+        enabled: false
+field_type: entity_reference_revisions

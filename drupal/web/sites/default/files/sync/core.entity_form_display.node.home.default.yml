@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.node.home.field_gadget_products
     - field.field.node.home.field_home_slide
     - field.field.node.home.field_mobile_products
     - field.field.node.home.field_section_delivery
@@ -24,6 +25,24 @@ content:
     weight: 10
     region: content
     settings: {  }
+    third_party_settings: {  }
+  field_gadget_products:
+    type: paragraphs
+    weight: 127
+    region: content
+    settings:
+      title: Paragraph
+      title_plural: Paragraphs
+      edit_mode: open
+      closed_mode: summary
+      autocollapse: none
+      closed_mode_threshold: 0
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: ''
+      features:
+        collapse_edit_all: collapse_edit_all
+        duplicate: duplicate
     third_party_settings: {  }
   field_home_slide:
     type: entity_reference_revisions_autocomplete
