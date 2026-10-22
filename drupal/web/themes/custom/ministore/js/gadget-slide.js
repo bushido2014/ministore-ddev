@@ -5,7 +5,7 @@
         attach(context) {
             once('gadgetSlider', '.gadget-slide', context).forEach(function (el) {
                 new Swiper(el, {
-                    loop: true,  // ← dezactiveaza loop sau adauga mai multe produse
+                    loop: true,  
                     spaceBetween: 30,
                     slidesPerView: 3,
                     autoplay: {

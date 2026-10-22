@@ -1,4 +1,8 @@
-@media (max-width: 1024px) {}
+@media (max-width: 1024px) {
+ .blog-articles  .views-view-responsive-grid {
+    --views-responsive-grid--column-count: 2 !important;
+  }
+}
 
 @media (max-width: 980px) {
     .cols-2 {
@@ -10,12 +14,25 @@
     grid-template-columns: repeat(2, 1fr);
 }
 
+.blog-articles  .views-view-responsive-grid {
+    --views-responsive-grid--column-count: 1 !important;
+  }
+
+.site-footer__middle.cols-4 .region-footer {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+
 }
 
 @media (max-width: 768px) {
    .cols-4 {
-    grid-template-columns: repeat(1, 1fr);
+    grid-template-columns: repeat(1, 1fr) !important;
     place-items: center;
+}
+
+.site-footer__middle.cols-4 .region-footer {
+    grid-template-columns: repeat(1, 1fr);
 }
 
 }
