@@ -1,4 +1,9 @@
-<section class="contact-info">
+{%
+  set classes = [
+    'contact-info',
+  ]
+%}
+<section {{ create_attribute().addClass(classes) }}>
 <div class="container">
    <div class="d-grid cols-2 contact-info__wrapper">
       <div class="contact-info__item">
