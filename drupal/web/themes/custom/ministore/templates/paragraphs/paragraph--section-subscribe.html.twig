@@ -1,4 +1,9 @@
-<section class="subscribe">
+{%
+  set classes = [
+    'subscribe',
+  ]
+%}
+<section {{ create_attribute().addClass(classes) }}>
   <div class="container">
     <div class="subscribe-content d-grid cols-2">
       <div class="subscribe-item">
