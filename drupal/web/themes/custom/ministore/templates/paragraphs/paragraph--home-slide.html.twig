@@ -1,5 +1,13 @@
 {{ attach_library('ministore/home-slider') }}
-<section class="home-slide">
+
+{%
+  set classes = [
+    'home-slide',
+  ]
+%}
+
+
+<section {{ create_attribute().addClass(classes) }}>
   <div class="container">
 
     <div class="swiper home-slider">
