@@ -1,4 +1,9 @@
-<div class="contact-list__item">
+{%
+  set classes = [
+    'contact-list__item',
+  ]
+%}
+<div {{ create_attribute().addClass(classes) }}>
 
   {% if paragraph.field_contact_list_title.value %}
     <h4>{{ paragraph.field_contact_list_title.value }}</h4>
