@@ -1,4 +1,9 @@
-<section class="yearle-sale bg-light"
+{%
+  set classes = [
+    'yearle-sale bg-light',
+  ]
+%}
+<section {{ create_attribute().addClass(classes) }}
 {% if paragraph.field_sale_img.entity %}
     {% set media = paragraph.field_sale_img.entity %}
     {% set image = media.field_media_image.entity %}
