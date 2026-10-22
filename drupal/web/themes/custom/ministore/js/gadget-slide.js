@@ -5,10 +5,8 @@
         attach(context) {
             once('gadgetSlider', '.gadget-slide', context).forEach(function (el) {
                 new Swiper(el, {
-                    loop: false,
-    rewind: true,  // ← in loc de loop, foloseste rewind
-    spaceBetween: 30,
-                   
+                    loop: true,  // ← dezactiveaza loop sau adauga mai multe produse
+                    spaceBetween: 30,
                     slidesPerView: 3,
                     autoplay: {
                         delay: 3200,
