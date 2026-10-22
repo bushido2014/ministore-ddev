@@ -1,5 +1,12 @@
 {{ attach_library('ministore/gadget-slide') }}
-<section class="mobile-products">
+
+{%
+  set classes = [
+    'gadget-products',
+  ]
+%}
+
+<section {{ create_attribute().addClass(classes) }}>
 <div class="container">
 
 <div class="gadgets-products__haeading d-flex j-between">
