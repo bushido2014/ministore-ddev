@@ -21,3 +21,22 @@ header.header {
   width: 24px;
   height: auto;
 }
+
+.hamburger-btn {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+}
+
+
+/* Mobile */
+@media (max-width: 768px) {
+
+  .hamburger-btn {
+    display: flex;
+  }
+}
