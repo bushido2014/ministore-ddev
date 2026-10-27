@@ -49,3 +49,14 @@ gadget-slide:
   dependencies:
     - core/drupal
     - core/once     
+mmenu:
+  version: 1.x
+  css:
+    theme:
+      https://cdn.jsdelivr.net/npm/mmenu-light@3.2.2/dist/mmenu-light.min.css: { type: external }
+  js:
+    https://cdn.jsdelivr.net/npm/mmenu-light@3.2.2/dist/mmenu-light.min.js: { type: external }
+    js/mmenu.js: {}
+  dependencies:
+    - core/drupal
+    - core/once

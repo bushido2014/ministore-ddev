@@ -10,7 +10,7 @@ dependencies:
   - entity_reference_revisions:entity_reference_revisions
   - drupal:filter
 
-# Information added by Drupal.org packaging script on 2026-10-14
-version: '3.3.11'
+# Information added by Drupal.org packaging script on 2026-10-16
+version: '3.3.12'
 project: 'commerce'
-datestamp: 1791983969
+datestamp: 1792155594

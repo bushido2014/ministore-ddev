@@ -1,9 +1,10 @@
+{{ attach_library('ministore/mmenu') }}
 <header class="header" id="header">
  
     <nav class="main-nav">
       <div class="container d-flex j-between">
          {{ page.header_left }}
-         <div class="d-flex">
+          <div class="d-flex nav-desktop" id="mobile-menu">
          {% if page.primary_menu %}
         {{ page.primary_menu }}
         {% endif %}
@@ -11,7 +12,41 @@
 
          </div>
         
-       
+         {# Hamburger - doar mobile #}
+      <button class="hamburger-btn" aria-label="Open menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
       </div>
     </nav>
   </header>
+ 
+<style>
+
+
+.hamburger-btn {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.hamburger-btn span {
+  display: block;
+  width: 25px;
+  height: 2px;
+  background: var(--text-color);
+  transition: all 0.3s;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+
+
+  .hamburger-btn {
+    display: flex;
+  }
+}
+</style>

@@ -185,14 +185,14 @@ class PriceCalculatedFormatterTest extends OrderKernelTestBase {
     $variation_build = $this->viewBuilder->view($this->firstVariation);
     $this->render($variation_build);
     $this->assertEscaped('$1.80');
-    $this->assertEscaped('Discount: -$1.80');
-    $this->assertEscaped('Tax: $0.60');
+    $this->assertEscaped('Discount: -$1.50');
+    $this->assertEscaped('Tax: $0.30');
 
     $variation_build = $this->viewBuilder->view($this->secondVariation);
     $this->render($variation_build);
     $this->assertEscaped('$2.40');
-    $this->assertEscaped('Discount: -$2.40');
-    $this->assertEscaped('Tax: $0.80');
+    $this->assertEscaped('Discount: -$2.00');
+    $this->assertEscaped('Tax: $0.40');
   }
 
 }

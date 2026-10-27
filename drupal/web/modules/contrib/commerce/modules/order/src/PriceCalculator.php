@@ -47,9 +47,15 @@ class PriceCalculator implements PriceCalculatorInterface {
   protected $requestStack;
 
   /**
-   * The order processors.
+   * The order processors in priority order, with their adjustment type.
    *
-   * @var \Drupal\commerce_order\OrderProcessorInterface[]
+   * PriceCalculatorPass registers processors sorted by priority across all
+   * adjustment types. Keeping that order matters when one adjustment type
+   * has processors either side of another, e.g. the payment (400) and tax
+   * (50) processors around the promotion processor (100).
+   *
+   * @var array[]
+   *   Each item is a pair: the processor and its adjustment type.
    */
   protected $processors = [];
 
@@ -86,17 +92,20 @@ class PriceCalculator implements PriceCalculatorInterface {
    * {@inheritdoc}
    */
   public function addProcessor(OrderProcessorInterface $processor, $adjustment_type) {
-    $this->processors[$adjustment_type][] = $processor;
+    $this->processors[] = [$processor, $adjustment_type];
   }
 
   /**
    * {@inheritdoc}
    */
   public function getProcessors($adjustment_type) {
-    if (!isset($this->processors[$adjustment_type])) {
-      return [];
+    $processors = [];
+    foreach ($this->processors as [$processor, $type]) {
+      if ($type === $adjustment_type) {
+        $processors[] = $processor;
+      }
     }
-    return $this->processors[$adjustment_type];
+    return $processors;
   }
 
   /**
@@ -104,9 +113,13 @@ class PriceCalculator implements PriceCalculatorInterface {
    */
   public function calculate(PurchasableEntityInterface $purchasable_entity, $quantity, Context $context, array $adjustment_types = []) {
     $resolved_price = $this->chainPriceResolver->resolve($purchasable_entity, $quantity, $context);
+    // Run the selected processors in priority order, as OrderRefresh does,
+    // rather than grouped by adjustment type.
     $processors = [];
-    foreach ($adjustment_types as $adjustment_type) {
-      $processors = array_merge($processors, $this->getProcessors($adjustment_type));
+    foreach ($this->processors as [$processor, $adjustment_type]) {
+      if (in_array($adjustment_type, $adjustment_types, TRUE)) {
+        $processors[] = $processor;
+      }
     }
     if (empty($adjustment_types) || empty($processors)) {
       return new PriceCalculatorResult($resolved_price->multiply($quantity), $resolved_price);

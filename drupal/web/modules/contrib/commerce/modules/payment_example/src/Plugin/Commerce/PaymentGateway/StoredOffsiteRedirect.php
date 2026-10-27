@@ -105,13 +105,15 @@ class StoredOffsiteRedirect extends OffsiteRedirect implements SupportsStoredPay
   public function onReturn(OrderInterface $order, Request $request) {
     // This off-site payment gateway example creates a payment method as a
     // part of processing the payment data returned from the gateway.
+    // The billing profile is duplicated so that the payment method never
+    // shares the order's profile.
     $payment_method_storage = $this->entityTypeManager->getStorage('commerce_payment_method');
     assert($payment_method_storage instanceof PaymentMethodStorageInterface);
     $payment_method = $payment_method_storage->createForCustomer(
       'credit_card',
       $this->parentEntity->id(),
       $order->getCustomerId(),
-      $order->getBillingProfile()
+      $order->getBillingProfile()?->createDuplicate()
     );
     // The payment method is created first so that it can be attached to the
     // generated payment transaction.

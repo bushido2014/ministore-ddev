@@ -768,24 +768,35 @@ class PaymentCheckoutTest extends CommerceWebDriverTestBase {
     $this->assertEquals(TRUE, $payment_method->isReusable());
     $this->assertEquals('stored_offsite', $payment_method->getPaymentGatewayId());
     $this->assertEquals(3, $payment_method->id());
+    // Confirm that the payment method doesn't share the order's profile.
+    $this->assertNotEquals($order->getBillingProfile()->id(), $payment_method->getBillingProfile()->id());
 
     // Assert that the created payment method can be loaded.
     $this->drupalGet($this->product->toUrl()->toString());
-    $this->createScreenshot('../checkout_1.png');
     $this->submitForm([], 'Add to cart');
-    $this->createScreenshot('../checkout_2.png');
     $this->drupalGet('checkout/2');
-    $this->createScreenshot('../checkout_3.png');
     $radio_button = $this->getSession()->getPage()->findField('Visa ending in 1111');
     $radio_button->click();
+    $this->submitForm([], 'Continue to review');
+    $order = Order::load(2);
+    $billing_profile_id = $order->getBillingProfile()->id();
+    // Confirm that submitting the pane again reuses the order's profile.
+    $this->clickLink('Go back');
     $this->submitForm([], 'Continue to review');
     $this->submitForm([], 'Pay and complete purchase');
     $this->assertSession()->pageTextContains('Your order number is 2. You can view your order on your account page when logged in.');
 
-    $order = Order::load(2);
+    $order = $this->reloadEntity($order);
     $this->assertFalse($order->isLocked());
     $this->assertEquals('stored_offsite', $order->get('payment_gateway')->target_id);
     $this->assertEquals(3, $order->get('payment_method')->target_id);
+    // Confirm that the billing information was copied to the order, instead
+    // of the order referencing the payment method's billing profile.
+    $order_billing_profile = $order->getBillingProfile();
+    $payment_method_billing_profile = PaymentMethod::load(3)->getBillingProfile();
+    $this->assertEquals($billing_profile_id, $order_billing_profile->id());
+    $this->assertNotEquals($payment_method_billing_profile->id(), $order_billing_profile->id());
+    $this->assertEquals($payment_method_billing_profile->get('address')->first()->toArray(), $order_billing_profile->get('address')->first()->toArray());
     $payment = Payment::load(1);
     $this->assertNotNull($payment);
     $this->assertEquals($payment->getAmount(), $order->getTotalPrice());

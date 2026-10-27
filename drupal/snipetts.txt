@@ -6,6 +6,9 @@ ddev start
 
 ddev drush cr
 
+
+ ddev composer update "drupal/*" --with-all-dependencies
+
 ddev drush updatedb
 
 

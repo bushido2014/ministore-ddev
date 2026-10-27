@@ -9,7 +9,7 @@ use Symfony\Component\DependencyInjection\Exception\LogicException;
 use Symfony\Component\DependencyInjection\Reference;
 
 /**
- * Adds order processors to the PriceCalculator, grouped by adjustment type.
+ * Adds order processors to the PriceCalculator, sorted by priority.
  */
 class PriceCalculatorPass implements CompilerPassInterface {
 
