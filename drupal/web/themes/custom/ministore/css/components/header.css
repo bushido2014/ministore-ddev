@@ -22,21 +22,53 @@ header.header {
   height: auto;
 }
 
+
+
+/* Desktop */
+.nav-desktop {
+  display: flex;
+}
+
+.nav-mobile {
+  display: none;
+}
+
 .hamburger-btn {
   display: none;
-  flex-direction: column;
-  gap: 5px;
   background: none;
-  border: none;
+  border: 0;
   cursor: pointer;
   padding: 5px;
 }
 
+/* Cart */
+.header-cart {
+  position: relative;
+}
 
 /* Mobile */
 @media (max-width: 768px) {
+  .nav-desktop {
+    display: none !important;
+  }
 
   .hamburger-btn {
     display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .nav-mobile {
+    display: block;
+  }
+
+  .header-cart {
+    position: relative;
+    margin-left: auto;
+  }
+
+  #block-ministore-cart--2 {
+    position: static !important;
+    margin: 0 !important;
   }
 }

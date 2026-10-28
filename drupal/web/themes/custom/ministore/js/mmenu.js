@@ -5,18 +5,21 @@
     attach(context) {
       once('mmenu', '#mobile-menu', context).forEach(function (el) {
         const menu = new MmenuLight(el, "(max-width: 768px)");
-        const navigator = menu.navigation();
+        menu.navigation();
+
         const drawer = menu.offcanvas({
-          position: "right"  // 
+          position: "right"
         });
 
-        document.querySelector('.hamburger-btn')
-          .addEventListener('click', (e) => {
+        const hamburger = document.querySelector('.hamburger-btn');
+
+        if (hamburger) {
+          hamburger.addEventListener('click', function (e) {
             e.preventDefault();
             drawer.open();
           });
+        }
       });
     }
   };
-
 })(Drupal, once);

@@ -1,21 +1,39 @@
 {{ attach_library('ministore/mmenu') }}
-<header class="header" id="header">
- 
-    <nav class="main-nav">
-      <div class="container d-flex j-between">
-         {{ page.header_left }}
-          <div class="d-flex nav-desktop" id="mobile-menu">
-         {% if page.primary_menu %}
-        {{ page.primary_menu }}
-        {% endif %}
-         {{ page.header_right }}
 
-         </div>
-        
-         {# Hamburger - doar mobile #}
-      <button class="hamburger-btn" aria-label="Open menu">
+<header class="header" id="header">
+  <nav class="main-nav">
+    <div class="container d-flex j-between">
+
+      {{ page.header_left }}
+
+      {# Desktop menu #}
+      <div class="d-flex nav-desktop">
+        {% if page.primary_menu %}
+          {{ page.primary_menu }}
+        {% endif %}
+
+        {{ page.header_right }}
+      </div>
+
+
+      {# Mobile hamburger #}
+      <button
+        type="button"
+        class="hamburger-btn"
+        aria-label="Open menu"
+        aria-controls="mobile-menu"
+        aria-expanded="false">
         <i class="fa-solid fa-bars"></i>
       </button>
+
+      {# Mobile menu #}
+      <div class="d-column nav-mobile" id="mobile-menu">
+        {% if page.primary_menu %}
+          {{ page.primary_menu }}
+        {% endif %}
+     
       </div>
-    </nav>
-  </header>
+
+    </div>
+  </nav>
+</header>
