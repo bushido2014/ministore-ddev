@@ -10,8 +10,22 @@
     text-align: center;
 }
 
-  .cols-4 {
+  .cols-4,.shop-products.cols-3 {
     grid-template-columns: repeat(2, 1fr);
+}
+.shop-layout {
+  grid-template-columns: repeat(1, 1fr);
+}
+
+.page-sidebar {
+  padding: 25px;
+}
+
+
+.site-footer__bottom.j-between  {
+ justify-content: center;
+ flex-direction: column;
+ text-align: center;
 }
 
 .blog-articles  .views-view-responsive-grid {
@@ -42,7 +56,9 @@
   .nav-mobile {
     display: block;
   }
-
+  .cols-4,.shop-products.cols-3 {
+    grid-template-columns: repeat(1, 1fr);
+}
  
 }
 

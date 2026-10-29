@@ -76,3 +76,12 @@ max-width: 400px;
 .contact-list__links li {
     padding: 10px 0;
 }
+
+.btn-link {
+    text-transform: uppercase;
+    text-decoration: underline;
+}
+
+.btn-link:hover {
+    text-decoration: none;
+}
