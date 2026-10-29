@@ -165,6 +165,33 @@ class AddToCartFormTest extends CartBrowserTestBase {
   }
 
   /**
+   * Tests that customers can set the unit price on the add to cart form.
+   */
+  public function testCustomerUnitPrice() {
+    // E.g. for donations.
+    $order_item_form_display = EntityFormDisplay::load('commerce_order_item.default.add_to_cart');
+    $order_item_form_display->setComponent('unit_price', [
+      'type' => 'commerce_unit_price',
+      'settings' => [
+        'require_confirmation' => FALSE,
+      ],
+    ]);
+    $order_item_form_display->save();
+
+    $customer = $this->drupalCreateUser(['access content', 'view commerce_product']);
+    $this->drupalLogin($customer);
+    $this->postAddToCart($this->variation->getProduct(), [
+      'unit_price[0][amount][number]' => '25.00',
+    ]);
+
+    $cart = $this->container->get('commerce_cart.cart_provider')->getCart('default', $this->store, $customer);
+    $order_items = $cart->getItems();
+    $this->assertCount(1, $order_items);
+    $this->assertEquals('25.00', $order_items[0]->getUnitPrice()->getNumber());
+    $this->assertTrue($order_items[0]->isUnitPriceOverridden());
+  }
+
+  /**
    * Tests that the add to cart form renders an attribute entity.
    */
   public function testRenderedAttributeElement() {

@@ -64,6 +64,16 @@ class CommerceCheckoutHooks {
   }
 
   /**
+   * Implements hook_entity_type_build().
+   */
+  #[Hook('entity_type_build')]
+  public function entityTypeBuild(array &$entity_types): void {
+    // Checkout state is set by the checkout flow, not by customers.
+    $restricted_fields = $entity_types['commerce_order']->get('restricted_fields') ?? [];
+    $entity_types['commerce_order']->set('restricted_fields', array_merge($restricted_fields, ['checkout_flow', 'checkout_step']));
+  }
+
+  /**
    * Implements hook_form_alter().
    */
   #[Hook('form_alter')]

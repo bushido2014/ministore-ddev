@@ -201,24 +201,30 @@ class CartEntityAccessTest extends CartBrowserTestBase {
     assert($cart instanceof OrderInterface);
 
     $this->drupalLogin($customer);
-    foreach ($cart->getEntityType()->getLinkTemplates() as $rel => $link_template) {
-      if ($rel === 'state-transition-form') {
-        continue;
-      }
-      $this->drupalGet($cart->toUrl($rel));
-      $this->assertSession()->statusCodeEquals(403);
-    }
+    $this->assertNoLinkTemplateAccess($cart);
 
     // Anonymous active cart.
     $this->switchSession('anonymous');
     $this->drupalGet('product/' . $this->variation->getProductId());
     $this->submitForm([], 'Add to cart');
     $cart = Order::load(3);
-    foreach ($cart->getEntityType()->getLinkTemplates() as $rel => $link_template) {
+    $this->assertNoLinkTemplateAccess($cart);
+  }
+
+  /**
+   * Asserts that the current user can't access any of the order's links.
+   *
+   * @param \Drupal\commerce_order\Entity\OrderInterface $order
+   *   The order.
+   */
+  protected function assertNoLinkTemplateAccess(OrderInterface $order): void {
+    foreach (array_keys($order->getEntityType()->getLinkTemplates()) as $rel) {
+      $url = $order->toUrl($rel);
       if ($rel === 'state-transition-form') {
-        continue;
+        $url->setRouteParameter('field_name', 'state');
+        $url->setRouteParameter('transition_id', 'place');
       }
-      $this->drupalGet($cart->toUrl($rel));
+      $this->drupalGet($url);
       $this->assertSession()->statusCodeEquals(403);
     }
   }

@@ -11,6 +11,7 @@ use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
+use Drupal\jsonapi\CacheableResourceResponse;
 use Drupal\jsonapi\JsonApiSpec;
 use Drupal\Tests\jsonapi\Functional\ResourceTestBase;
 use Drupal\Tests\jsonapi\Traits\CommonCollectionFilterAccessTestPatternsTrait;
@@ -391,6 +392,46 @@ class ProductVariationResourceTest extends ResourceTestBase {
       }
       return $field_names;
     }, []);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getExpectedCollectionResponse(array $collection, $self_link, array $request_options, ?array $included_paths = NULL, $filtered = FALSE) {
+    // Variations the account can't view are excluded by the entity query,
+    // instead of being listed as omitted.
+    // @see \Drupal\commerce_product\Hook\CommerceProductHooks::queryCommerceProductVariationAccessAlter()
+    $collection = array_filter($collection, function (EntityInterface $entity) {
+      return static::entityAccess($entity, 'view', $this->account)->isAllowed();
+    });
+    if (!$collection) {
+      $document = [
+        'jsonapi' => static::$jsonApiMember,
+        'data' => [],
+        'links' => ['self' => ['href' => $self_link]],
+      ];
+      return (new CacheableResourceResponse($document))
+        ->addCacheableDependency(static::getExpectedCollectionCacheability($this->account, [], NULL, $filtered));
+    }
+    return parent::getExpectedCollectionResponse($collection, $self_link, $request_options, $included_paths, $filtered);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected static function getExpectedCollectionCacheability(AccountInterface $account, array $collection, ?array $sparse_fieldset = NULL, $filtered = FALSE) {
+    if ($collection) {
+      $cacheability = parent::getExpectedCollectionCacheability($account, $collection, $sparse_fieldset, $filtered);
+    }
+    else {
+      $cacheability = (new CacheableMetadata())
+        ->addCacheTags(['http_response', 'commerce_product_variation_list'])
+        ->addCacheContexts(['url.query_args', 'url.site']);
+    }
+    // The entity query depends on the permissions and on the products.
+    return $cacheability
+      ->addCacheTags(['commerce_product_list'])
+      ->addCacheContexts(['user.permissions']);
   }
 
   /**

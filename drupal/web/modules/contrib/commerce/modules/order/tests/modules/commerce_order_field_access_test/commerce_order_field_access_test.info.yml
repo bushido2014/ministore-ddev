@@ -1,0 +1,11 @@
+name: Commerce Order Field Access Test
+type: module
+description: Adds a restricted order field, as other modules do.
+package: Testing
+dependencies:
+  - commerce:commerce_order
+
+# Information added by Drupal.org packaging script on 2026-10-28
+version: '3.3.13'
+project: 'commerce'
+datestamp: 1793202183

@@ -52,6 +52,12 @@ class QueryAccessSubscriber implements EventSubscriberInterface {
     if ($account->isAnonymous()) {
       $completed_cart_ids = $this->cartSession->getCartIds(CartSessionInterface::COMPLETED);
       $cart_ids = array_merge($cart_ids, $completed_cart_ids);
+      // Anonymous customers are identified by the cart IDs in their session,
+      // and all of them share the same user ID.
+      $conditions->addCacheContexts(['session']);
+    }
+    else {
+      $conditions->addCacheContexts(['cart']);
     }
 
     if (!empty($cart_ids)) {

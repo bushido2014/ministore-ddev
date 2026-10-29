@@ -10,6 +10,7 @@ use Drupal\commerce_product\Hook\CommerceProductThemeHooks;
 use Drupal\commerce_product\Hook\CommerceProductTokensHooks;
 use Drupal\commerce_product\Hook\CommerceProductViewsHooks;
 use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Database\Query\AlterableInterface;
 use Drupal\Core\Entity\Display\EntityFormDisplayInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -257,6 +258,14 @@ function commerce_product_commerce_condition_info_alter(array &$definitions): vo
 #[LegacyHook]
 function commerce_product_jsonapi_commerce_product_variation_filter_access(EntityTypeInterface $entity_type, AccountInterface $account): array {
   return \Drupal::service(CommerceProductHooks::class)->jsonApiCommerceProductVariationFilterAccess($entity_type, $account);
+}
+
+/**
+ * Implements hook_query_TAG_alter().
+ */
+#[LegacyHook]
+function commerce_product_query_commerce_product_variation_access_alter(AlterableInterface $query): void {
+  \Drupal::service(CommerceProductHooks::class)->queryCommerceProductVariationAccessAlter($query);
 }
 
 /**

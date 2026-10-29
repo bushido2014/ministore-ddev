@@ -170,6 +170,10 @@ class CheckoutController implements ContainerInjectionInterface {
       $completed_cart = $this->cartSession->hasCartId($order->id(), CartSession::COMPLETED);
       $customer_check = $active_cart || $completed_cart;
     }
+    // Customers can only check out draft orders that are carts.
+    if ($order->getState()->getId() === 'draft') {
+      $customer_check = $customer_check && $order->get('cart')->value;
+    }
 
     $access = AccessResult::allowedIf($customer_check)
       ->andIf(AccessResult::allowedIf($order->getStore()->isPublished()))

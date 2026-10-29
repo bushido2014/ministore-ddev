@@ -1,0 +1,16 @@
+{{ include('@ministore/layout/header.html.twig') }}
+ {% if page.content_top %}
+    <section class="content-top-region">
+      <div class="container">
+      {{ page.content_top}}
+      </div>
+    </section>
+ {% endif %} 
+<section class="taxonomy">
+<div class="container">
+ {% if page.content %}
+      {{ page.content }}
+  {% endif %} 
+</div>
+</section>
+{{ include('@ministore/layout/footer.html.twig') }}

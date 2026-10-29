@@ -9,16 +9,26 @@ use Drupal\Component\Plugin\PluginBase;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Database\Connection;
+use Drupal\Core\Database\Query\AlterableInterface;
+use Drupal\Core\Database\Query\SelectInterface;
+use Drupal\Core\DependencyInjection\ClassResolverInterface;
 use Drupal\Core\Entity\Display\EntityFormDisplayInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Field\Entity\BaseFieldOverride;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Hook\Attribute\Hook;
+use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\entity\QueryAccess\EntityQueryAlter;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Hook implementations for Commerce Product.
@@ -34,10 +44,31 @@ class CommerceProductHooks {
    *   The module handler.
    * @param \Drupal\commerce_product\ProductAttributeFieldManagerInterface $productAttributeFieldManager
    *   The product attribute field manager.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
+   *   The entity type manager.
+   * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface $entityTypeBundleInfo
+   *   The entity type bundle info.
+   * @param \Drupal\Core\Database\Connection $database
+   *   The database connection.
+   * @param \Drupal\Core\DependencyInjection\ClassResolverInterface $classResolver
+   *   The class resolver.
+   * @param \Drupal\Core\Session\AccountProxyInterface $currentUser
+   *   The current user.
+   * @param \Drupal\Core\Render\RendererInterface $renderer
+   *   The renderer.
+   * @param \Symfony\Component\HttpFoundation\RequestStack $requestStack
+   *   The request stack.
    */
   public function __construct(
     protected readonly ModuleHandlerInterface $moduleHandler,
     protected readonly ProductAttributeFieldManagerInterface $productAttributeFieldManager,
+    protected readonly EntityTypeManagerInterface $entityTypeManager,
+    protected readonly EntityTypeBundleInfoInterface $entityTypeBundleInfo,
+    protected readonly Connection $database,
+    protected readonly ClassResolverInterface $classResolver,
+    protected readonly AccountProxyInterface $currentUser,
+    protected readonly RendererInterface $renderer,
+    protected readonly RequestStack $requestStack,
   ) {
   }
 
@@ -204,6 +235,71 @@ class CommerceProductHooks {
       JSONAPI_FILTER_AMONG_OWN => AccessResult::allowedIfHasPermission($account, 'view own unpublished commerce_product'),
       JSONAPI_FILTER_AMONG_PUBLISHED => AccessResult::allowedIfHasPermission($account, 'view commerce_product'),
     ];
+  }
+
+  /**
+   * Implements hook_query_TAG_alter().
+   *
+   * Product variations have no query access conditions, so entity queries
+   * (e.g. JSON:API collections) matched variations the user can't view, and
+   * JSON:API listed them as omitted, revealing that a filter matched them.
+   * Restricts the query to the variations the user can view, matching
+   * \Drupal\commerce_product\ProductVariationAccessControlHandler:
+   * unpublished variations require the "manage" permission of their bundle,
+   * published variations require access to view their product.
+   */
+  #[Hook('query_commerce_product_variation_access_alter')]
+  public function queryCommerceProductVariationAccessAlter(AlterableInterface $query): void {
+    // Only entity queries are supported, Views queries use other aliases.
+    if (!$query instanceof SelectInterface || $query->getMetaData('entity_type') !== 'commerce_product_variation' || !isset($query->getTables()['base_table'])) {
+      return;
+    }
+    // Validating references isn't restricted.
+    // @see \Drupal\commerce_product\Plugin\EntityReferenceSelection\ProductVariationSelection::validateReferenceableEntities()
+    if ($query->getMetaData('commerce_product_variation_validate')) {
+      return;
+    }
+    $variation_type = $this->entityTypeManager->getDefinition('commerce_product_variation');
+    $product_type = $this->entityTypeManager->getDefinition('commerce_product');
+    // The result depends on the permissions and on the products (e.g. their
+    // status), bubble that to the response (e.g. JSON:API collections).
+    // @see \Drupal\entity\QueryAccess\EntityQueryAlter::applyCacheability()
+    $request = $this->requestStack->getCurrentRequest();
+    if ($request && $request->isMethodCacheable() && $this->renderer->hasRenderContext()) {
+      $build = [];
+      (new CacheableMetadata())
+        ->addCacheContexts(['user.permissions'])
+        ->addCacheTags($product_type->getListCacheTags())
+        ->applyTo($build);
+      $this->renderer->render($build);
+    }
+    if ($this->currentUser->hasPermission($variation_type->getAdminPermission())) {
+      return;
+    }
+
+    // Subqueries avoid joins, which would duplicate rows for translations.
+    $product_ids = $this->database->select($product_type->getBaseTable(), 'base_table')
+      ->fields('base_table', ['product_id'])
+      ->addMetaData('entity_type', 'commerce_product')
+      ->addMetaData('op', 'view');
+    $this->classResolver->getInstanceFromDefinition(EntityQueryAlter::class)->alter($product_ids, $product_type);
+
+    $variation_ids = $this->database->select($variation_type->getDataTable(), 'variation')
+      ->fields('variation', ['variation_id']);
+    $access_conditions = $variation_ids->orConditionGroup()
+      ->condition($variation_ids->andConditionGroup()
+        ->condition('variation.status', 1)
+        ->condition('variation.product_id', $product_ids, 'IN'));
+    $bundles = array_filter(array_keys($this->entityTypeBundleInfo->getBundleInfo('commerce_product_variation')), function ($bundle) {
+      return $this->currentUser->hasPermission("manage $bundle commerce_product_variation");
+    });
+    if ($bundles) {
+      $access_conditions->condition($variation_ids->andConditionGroup()
+        ->condition('variation.status', 0)
+        ->condition('variation.type', $bundles, 'IN'));
+    }
+    $variation_ids->condition($access_conditions);
+    $query->condition('base_table.variation_id', $variation_ids, 'IN');
   }
 
   /**

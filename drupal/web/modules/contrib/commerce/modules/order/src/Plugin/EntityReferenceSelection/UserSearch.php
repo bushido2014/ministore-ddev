@@ -58,6 +58,11 @@ class UserSearch extends UserSelection {
    * {@inheritdoc}
    */
   public function getReferenceableEntities($match = NULL, $match_operator = 'CONTAINS', $limit = 0) {
+    // The entity autocomplete route is accessible to anyone with its URL, so
+    // only list customers to users who can assign them to orders.
+    if (!$this->canAssignCustomers()) {
+      return [];
+    }
     $target_type = $this->getConfiguration()['target_type'];
 
     $query = $this->buildEntityQuery($match, $match_operator);
@@ -80,6 +85,29 @@ class UserSearch extends UserSelection {
     }
 
     return $options;
+  }
+
+  /**
+   * Checks whether the current user can assign customers to orders.
+   *
+   * Matches the access to the forms using this selection handler: the order
+   * add form and the order reassign form.
+   *
+   * @return bool
+   *   TRUE if the current user can create or reassign orders, FALSE otherwise.
+   */
+  protected function canAssignCustomers(): bool {
+    if ($this->currentUser->hasPermission('administer commerce_order') ||
+      $this->currentUser->hasPermission('reassign commerce_order')) {
+      return TRUE;
+    }
+    $access_control_handler = $this->entityTypeManager->getAccessControlHandler('commerce_order');
+    foreach (array_keys($this->entityTypeBundleInfo->getBundleInfo('commerce_order')) as $bundle) {
+      if ($access_control_handler->createAccess($bundle, $this->currentUser)) {
+        return TRUE;
+      }
+    }
+    return FALSE;
   }
 
 }

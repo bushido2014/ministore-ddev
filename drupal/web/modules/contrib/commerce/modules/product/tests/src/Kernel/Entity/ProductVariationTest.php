@@ -333,7 +333,7 @@ class ProductVariationTest extends CommerceKernelTestBase {
     $this->assertNotNull($duplicate_variation->getCreatedTime());
     $this->assertTrue($variation->getCreatedTime() < $duplicate_variation->getCreatedTime());
     $this->assertNotNull($duplicate_variation->getChangedTime());
-    $this->assertTrue($variation->getChangedTime() < $duplicate_variation->getChangedTime());
+    $this->assertTrue($variation->getChangedTime() <= $duplicate_variation->getChangedTime());
     $product = $this->reloadEntity($product);
     $this->assertTrue($product->hasVariation($duplicate_variation));
   }

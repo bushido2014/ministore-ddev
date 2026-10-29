@@ -81,4 +81,22 @@ class ProductVariationSelection extends DefaultSelection {
     return $options;
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function validateReferenceableEntities(array $ids) {
+    $result = [];
+    if ($ids) {
+      // Validating references (e.g. when an order item is saved) isn't
+      // restricted to the variations the current user can view.
+      // @see \Drupal\commerce_product\Hook\CommerceProductHooks::queryCommerceProductVariationAccessAlter()
+      $result = $this->buildEntityQuery()
+        ->addMetaData('commerce_product_variation_validate', TRUE)
+        ->condition('variation_id', $ids, 'IN')
+        ->execute();
+    }
+
+    return $result;
+  }
+
 }

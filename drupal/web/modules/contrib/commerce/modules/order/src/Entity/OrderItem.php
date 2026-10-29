@@ -57,6 +57,11 @@ use Drupal\Core\Url;
  *   },
  *   bundle_entity_type = "commerce_order_item_type",
  *   field_ui_base_route = "entity.commerce_order_item_type.edit_form",
+ *   restricted_fields = {
+ *     "order_id", "purchased_entity", "title", "overridden_title", "unit_price",
+ *     "overridden_unit_price", "total_price", "adjustments",
+ *     "uses_legacy_adjustments", "data", "locked", "created", "changed"
+ *   },
  * )
  */
 class OrderItem extends CommerceContentEntityBase implements OrderItemInterface {

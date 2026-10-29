@@ -244,4 +244,66 @@ class ProductTest extends CommerceKernelTestBase {
     $this->assertEquals($product_url . '?v=' . $variation1->id(), $variation_url);
   }
 
+  /**
+   * Tests that products can't reference the variations of other products.
+   *
+   * @covers ::postDelete
+   */
+  public function testOtherProductVariations() {
+    $variation1 = ProductVariation::create([
+      'type' => 'default',
+      'sku' => strtolower($this->randomMachineName()),
+    ]);
+    $variation1->save();
+    $product1 = Product::create([
+      'type' => 'default',
+      'title' => 'Product 1',
+      'variations' => [$variation1],
+    ]);
+    $product1->save();
+    $variation2 = ProductVariation::create([
+      'type' => 'default',
+      'sku' => strtolower($this->randomMachineName()),
+    ]);
+    $variation2->save();
+    $product2 = Product::create([
+      'type' => 'default',
+      'title' => 'Product 2',
+      'variations' => [$variation2],
+    ]);
+    $product2->save();
+    $this->assertEquals($product1->id(), $this->reloadEntity($variation1)->getProductId());
+
+    // Referencing the variation of another product is a violation.
+    $product2->get('variations')->appendItem($variation1);
+    $violations = $product2->validate()->getByField('variations');
+    $this->assertCount(1, $violations);
+    $this->assertEquals('variations.1.target_id', $violations[0]->getPropertyPath());
+    // So is a new product referencing an existing product's variation.
+    $product3 = Product::create([
+      'type' => 'default',
+      'title' => 'Product 3',
+      'variations' => [$variation1],
+    ]);
+    $this->assertCount(1, $product3->validate()->getByField('variations'));
+    // New variations, without a product yet, can be referenced.
+    $new_variation = ProductVariation::create([
+      'type' => 'default',
+      'sku' => strtolower($this->randomMachineName()),
+    ]);
+    $product3->set('variations', [$new_variation]);
+    $this->assertCount(0, $product3->validate()->getByField('variations'));
+    $this->assertCount(0, $this->reloadEntity($product1)->validate()->getByField('variations'));
+
+    // Deleting a product only deletes its own variations, even if it
+    // references other ones (e.g. saved without validation).
+    $product2->save();
+    $product2->delete();
+    $this->assertNull(ProductVariation::load($variation2->id()));
+    $variation1 = ProductVariation::load($variation1->id());
+    $this->assertNotNull($variation1);
+    $this->assertEquals($product1->id(), $variation1->getProductId());
+    $this->assertTrue($this->reloadEntity($product1)->hasVariation($variation1));
+  }
+
 }

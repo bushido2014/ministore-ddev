@@ -5,6 +5,8 @@ namespace Drupal\commerce_product;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityAccessControlHandler as CoreEntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Session\AccountInterface;
 
 /**
@@ -65,6 +67,33 @@ class ProductVariationAccessControlHandler extends CoreEntityAccessControlHandle
     ], 'OR');
 
     return $result;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkFieldAccess($operation, FieldDefinitionInterface $field_definition, AccountInterface $account, ?FieldItemListInterface $items = NULL) {
+    // Only product administrators can edit the restricted fields of
+    // existing variations. The "manage" permission allows updating every
+    // variation of a type, which must not allow moving a variation to another
+    // product (e.g. through JSON:API or REST).
+    // Modules add their own fields to the "restricted_fields" entity
+    // type property, in hook_entity_type_build().
+    $restricted_fields = $this->entityType->get('restricted_fields') ?? [];
+    if ($operation == 'edit' && in_array($field_definition->getName(), $restricted_fields, TRUE)) {
+      $result = AccessResult::allowedIfHasPermission($account, $this->entityType->getAdminPermission());
+      /** @var \Drupal\commerce_product\Entity\ProductVariationInterface|null $variation */
+      $variation = $items?->getEntity();
+      if ($result->isAllowed() || !$variation?->isNew()) {
+        return $result;
+      }
+      // Users who can create variations can set these fields on new variations
+      // (e.g. through JSON:API or REST), as on the variation add form, which
+      // allows adding variations to any product.
+      return $result->orIf(AccessResult::allowedIfHasPermission($account, "manage {$variation->bundle()} commerce_product_variation"));
+    }
+
+    return parent::checkFieldAccess($operation, $field_definition, $account, $items);
   }
 
 }

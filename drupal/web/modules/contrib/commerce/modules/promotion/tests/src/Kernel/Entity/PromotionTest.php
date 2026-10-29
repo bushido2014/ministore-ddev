@@ -245,4 +245,55 @@ class PromotionTest extends OrderKernelTestBase {
     $this->assertFalse($promotion->isMultipleCouponsAllowed(), 'The default value for allow_multiple_coupons is FALSE.');
   }
 
+  /**
+   * Tests that deleting a promotion only deletes its own coupons.
+   *
+   * @covers ::postDelete
+   */
+  public function testDelete() {
+    $promotion1 = Promotion::create([
+      'name' => 'Promotion 1',
+      'order_types' => ['default'],
+      'stores' => [$this->store->id()],
+      'offer' => [
+        'target_plugin_id' => 'order_percentage_off',
+        'target_plugin_configuration' => [
+          'percentage' => '0.10',
+        ],
+      ],
+      'status' => TRUE,
+    ]);
+    $promotion1->save();
+    $coupon1 = Coupon::create([
+      'code' => $this->randomMachineName(),
+      'promotion_id' => $promotion1->id(),
+      'status' => TRUE,
+    ]);
+    $coupon1->save();
+    $promotion1->addCoupon($coupon1)->save();
+
+    $promotion2 = $promotion1->createDuplicate();
+    $promotion2->setName('Promotion 2');
+    $promotion2->save();
+    $coupon2 = Coupon::create([
+      'code' => $this->randomMachineName(),
+      'promotion_id' => $promotion2->id(),
+      'status' => TRUE,
+    ]);
+    $coupon2->save();
+    // Reference the coupon of the first promotion on the second one.
+    $promotion2->addCoupon($coupon2)->addCoupon($coupon1)->save();
+
+    $promotion2->delete();
+    $this->assertNull(Coupon::load($coupon2->id()));
+    $coupon1 = Coupon::load($coupon1->id());
+    $this->assertNotNull($coupon1);
+    $this->assertEquals($promotion1->id(), $coupon1->getPromotionId());
+    $promotion1 = $this->reloadEntity($promotion1);
+    $this->assertTrue($promotion1->hasCoupon($coupon1));
+
+    $promotion1->delete();
+    $this->assertNull(Coupon::load($coupon1->id()));
+  }
+
 }

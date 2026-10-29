@@ -111,6 +111,7 @@ class FailedPaymentTest extends OrderBrowserTestBase {
       'type' => 'default',
       'store_id' => $this->store->id(),
       'state' => 'draft',
+      'cart' => TRUE,
       'mail' => $user->getEmail(),
       'uid' => $user->id(),
       'ip_address' => '127.0.0.1',

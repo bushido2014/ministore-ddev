@@ -18,6 +18,7 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Hook\Attribute\Hook;
+use Drupal\Core\Routing\AdminContext;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Session\AnonymousUserSession;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
@@ -47,6 +48,8 @@ class CommerceCartHooks {
    *   The cart session.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
    *   The entity type manager.
+   * @param \Drupal\Core\Routing\AdminContext $adminContext
+   *   The admin context.
    */
   public function __construct(
     #[Autowire(service: 'commerce_cart.cron')]
@@ -57,6 +60,7 @@ class CommerceCartHooks {
     protected readonly OrderAssignmentInterface $orderAssignment,
     protected readonly CartSessionInterface $cartSession,
     protected readonly EntityTypeManagerInterface $entityTypeManager,
+    protected readonly AdminContext $adminContext,
   ) {}
 
   /**
@@ -111,7 +115,21 @@ class CommerceCartHooks {
   #[Hook('commerce_order_item_access')]
   public function commerceOrderItemAccess(OrderItemInterface $order_item, string $operation, AccountInterface $account): AccessResultInterface {
     $order = $order_item->getOrder();
-    return $order ? $this->orderAccess($order, $operation, $account) : AccessResult::neutral();
+    if (!$order) {
+      return AccessResult::neutral();
+    }
+    // The order is locked while the customer is on the payment step, and is
+    // no longer refreshed. Changing its items then (e.g. the quantity or the
+    // purchased entity) would leave the price, and the payment, out of date.
+    if ($operation === 'update' && $order->isLocked()) {
+      return AccessResult::neutral()->addCacheableDependency($order);
+    }
+    // Customers can't change locked order items (e.g. added by a promotion),
+    // matching the cart form.
+    if ($operation === 'update' && $order_item->isLocked()) {
+      return AccessResult::neutral()->addCacheableDependency($order_item);
+    }
+    return $this->orderAccess($order, $operation, $account);
   }
 
   /**
@@ -119,6 +137,10 @@ class CommerceCartHooks {
    */
   #[Hook('entity_type_build')]
   public function entityTypeBuild(array &$entity_types): void {
+    // Only administrators can change whether an order is a cart.
+    $restricted_fields = $entity_types['commerce_order']->get('restricted_fields') ?? [];
+    $entity_types['commerce_order']->set('restricted_fields', array_merge($restricted_fields, ['cart']));
+
     if ($this->moduleHandler->moduleExists('commerce_product')) {
       $entity_types['commerce_order_item']->setFormClass('add_to_cart', AddToCartForm::class);
     }
@@ -328,6 +350,12 @@ class CommerceCartHooks {
     if ($operation !== 'view' && $operation !== 'update') {
       return AccessResult::neutral();
     }
+    // Customers can update their carts while shopping, but this must never
+    // grant access to the admin pages (e.g. the order edit form), not even to
+    // a customer who has access to the admin pages for other reasons.
+    if ($operation === 'update' && $this->adminContext->isAdminRoute()) {
+      return AccessResult::neutral()->addCacheContexts(['route.name']);
+    }
 
     if ($account->isAuthenticated()) {
       $customer_check = $account->id() == $order->getCustomerId();
@@ -340,14 +368,28 @@ class CommerceCartHooks {
     }
 
     $access_result = AccessResult::allowedIf($customer_check);
+    if ($order->getState()->getId() === 'draft') {
+      // Customers can only access draft orders that are carts. Other draft
+      // orders (e.g. created by staff, or recurring orders) belong to the
+      // merchant until they are placed.
+      $access_result = $access_result->andIf(AccessResult::allowedIf((bool) $order->get('cart')->value));
+    }
     if ($operation === 'update') {
       $access_result = $access_result->andIf(
         AccessResult::allowedIf($order->getState()->getId() === 'draft'),
       );
+      // The update access depends on the route not being an admin route.
+      $access_result->addCacheContexts(['route.name']);
     }
-    return $access_result
+    $access_result
       ->addCacheableDependency($order)
       ->cachePerUser();
+    if ($account->isAnonymous()) {
+      // Anonymous customers are identified by the cart IDs in their session,
+      // and all of them share the same user ID.
+      $access_result->addCacheContexts(['session']);
+    }
+    return $access_result;
   }
 
   /**

@@ -35,6 +35,7 @@ produit
 Produits
 quickedit
 Sentier
+skus
 SLRL
 subelement
 templatecache

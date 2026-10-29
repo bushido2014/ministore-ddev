@@ -70,6 +70,7 @@ class StoredPaymentMethodWithoutBillingTest extends OrderBrowserTestBase {
       'type' => 'default',
       'store_id' => $this->store->id(),
       'state' => 'draft',
+      'cart' => TRUE,
       'mail' => $this->adminUser->getEmail(),
       'uid' => $this->adminUser->id(),
       'ip_address' => '127.0.0.1',

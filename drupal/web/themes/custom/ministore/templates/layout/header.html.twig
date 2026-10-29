@@ -7,16 +7,17 @@
       {{ page.header_left }}
 
       {# Desktop menu #}
-      <div class="d-flex nav-desktop">
+      <div class="d-flex">
+      
+     
         {% if page.primary_menu %}
+        <div class="nav-desktop">
           {{ page.primary_menu }}
+           </div>
         {% endif %}
-
+      
         {{ page.header_right }}
-      </div>
-
-
-      {# Mobile hamburger #}
+        {# Mobile hamburger #}
       <button
         type="button"
         class="hamburger-btn"
@@ -25,9 +26,13 @@
         aria-expanded="false">
         <i class="fa-solid fa-bars"></i>
       </button>
+      </div>
+
+
+      
 
       {# Mobile menu #}
-      <div class="d-column nav-mobile" id="mobile-menu">
+      <div class="nav-mobile" id="mobile-menu">
         {% if page.primary_menu %}
           {{ page.primary_menu }}
         {% endif %}

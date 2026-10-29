@@ -2,6 +2,7 @@
 
 namespace Drupal\commerce_product\Plugin\Field\FieldFormatter;
 
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\EntityDisplayRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Field\Attribute\FieldFormatter;
@@ -213,9 +214,19 @@ class ProductAttributesOverview extends FormatterBase implements ContainerFactor
       '#items' => [],
     ];
 
+    $cacheability = new CacheableMetadata();
     $view_builder = $this->entityTypeManager->getViewBuilder('commerce_product_attribute_value');
     /** @var \Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem $variation */
     foreach ($variation_items as $variation) {
+      if (!$variation->entity) {
+        continue;
+      }
+      // Skip variations the user can't view (e.g. unpublished variations).
+      $access = $variation->entity->access('view', NULL, TRUE);
+      $cacheability->addCacheableDependency($access);
+      if (!$access->isAllowed()) {
+        continue;
+      }
       /** @var \Drupal\commerce_product\Entity\ProductAttributeValueInterface $attribute_value */
       $attribute_value = $variation->entity->getAttributeValue('attribute_' . $attribute->id());
       // If this attribute value has already been added, skip.
@@ -228,6 +239,7 @@ class ProductAttributesOverview extends FormatterBase implements ContainerFactor
       $attribute_build = Link::fromTextAndUrl($attribute_build, $variation_items->getEntity()->toUrl())->toRenderable();
       $build['#items'][$attribute_value->id()] = $attribute_build;
     }
+    $cacheability->applyTo($build);
 
     return $build;
   }

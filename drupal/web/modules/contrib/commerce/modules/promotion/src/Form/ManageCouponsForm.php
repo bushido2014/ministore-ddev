@@ -3,6 +3,7 @@
 namespace Drupal\commerce_promotion\Form;
 
 use Drupal\commerce_order\Entity\OrderInterface;
+use Drupal\commerce_promotion\Plugin\EntityReferenceSelection\CouponSelection;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\MessageCommand;
 use Drupal\Core\Ajax\RedirectCommand;
@@ -170,6 +171,17 @@ class ManageCouponsForm extends FormBase {
         '::validateCouponCode',
       ],
     ];
+    // Users who can't list the coupon codes (e.g. order managers) can still
+    // apply a coupon by entering its code.
+    if (!CouponSelection::canListCoupons($this->currentUser())) {
+      $element['coupon'] = [
+        '#type' => 'textfield',
+        '#title' => $this->t('Coupon code'),
+        '#placeholder' => $this->t('Enter coupon code'),
+        '#size' => 30,
+        '#element_validate' => ['::validateCouponCode'],
+      ];
+    }
     $element['apply_coupon'] = [
       '#type' => 'submit',
       '#value' => $this->t('Apply coupon'),
@@ -198,8 +210,17 @@ class ManageCouponsForm extends FormBase {
     }
     /** @var \Drupal\commerce_promotion\CouponStorageInterface $coupon_storage */
     $coupon_storage = $this->entityTypeManager->getStorage('commerce_promotion_coupon');
-    /** @var \Drupal\commerce_promotion\Entity\CouponInterface|null $coupon */
-    $coupon = $coupon_storage->load($coupon_id);
+    if ($element['#type'] === 'textfield') {
+      // The coupon code was entered, convert it to the coupon ID.
+      $coupon = $coupon_storage->loadEnabledByCode($coupon_id) ?: NULL;
+      if ($coupon) {
+        $form_state->setValueForElement($element, $coupon->id());
+      }
+    }
+    else {
+      /** @var \Drupal\commerce_promotion\Entity\CouponInterface|null $coupon */
+      $coupon = $coupon_storage->load($coupon_id);
+    }
     if (!$coupon?->isEnabled()) {
       $form_state->setError($element, $this->t('The provided coupon code is invalid.'));
       return;

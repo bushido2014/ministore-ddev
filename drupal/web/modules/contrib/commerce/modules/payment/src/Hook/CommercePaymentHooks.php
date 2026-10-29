@@ -3,13 +3,18 @@
 namespace Drupal\commerce_payment\Hook;
 
 use Drupal\commerce_payment\Plugin\Field\FieldFormatter\BillingInformationFormatter;
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Hook\Attribute\Hook;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Url;
 
@@ -49,6 +54,31 @@ class CommercePaymentHooks {
     }
 
     return [];
+  }
+
+  /**
+   * Implements hook_entity_type_build().
+   */
+  #[Hook('entity_type_build')]
+  public function entityTypeBuild(array &$entity_types): void {
+    // The payment gateway and method are set through the payment checkout pane.
+    $restricted_fields = $entity_types['commerce_order']->get('restricted_fields') ?? [];
+    $entity_types['commerce_order']->set('restricted_fields', array_merge($restricted_fields, ['payment_gateway', 'payment_method']));
+  }
+
+  /**
+   * Implements hook_entity_field_access().
+   */
+  #[Hook('entity_field_access')]
+  public function entityFieldAccess(string $operation, FieldDefinitionInterface $field_definition, AccountInterface $account, ?FieldItemListInterface $items = NULL): AccessResultInterface {
+    // The remote IDs of the customer at the payment gateways are internal:
+    // the payment gateways set them in code, and the merchant uses them with
+    // the payment provider. Customers must not see or change them (e.g.
+    // through JSON:API or REST), not even on their own account.
+    if ($field_definition->getTargetEntityTypeId() === 'user' && $field_definition->getName() === 'commerce_remote_id') {
+      return AccessResult::forbiddenIf(!$account->hasPermission('administer users'))->cachePerPermissions();
+    }
+    return AccessResult::neutral();
   }
 
   /**

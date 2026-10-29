@@ -7,7 +7,7 @@
   </div>
   <div class="inbox-message--wrapper card">
   {% for id, message in messages %}
-    <div class="inbox-message {{ message.state|clean_class }}" data-message-id="{{ message.id }}">
+    <div class="inbox-message {{ message.state|clean_class }}" data-message-id="{{ message.id }}" data-read-url="{{ path('commerce.inbox_message.read', {'message_id': message.id}) }}">
       <div class="inbox-message__status">{{ message.time_ago }}<button type="button" class="close" aria-label="Close"></button></div>
       <h6 class="inbox-message__subject">{{ message.subject }}</h6>
       <div class="inbox-message__message">{{ message.message }}</div>

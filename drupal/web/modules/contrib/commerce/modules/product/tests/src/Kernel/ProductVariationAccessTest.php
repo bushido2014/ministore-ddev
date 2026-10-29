@@ -241,4 +241,124 @@ class ProductVariationAccessTest extends CommerceKernelTestBase {
     $this->assertFalse($variation->toUrl('delete-form')->access($account));
   }
 
+  /**
+   * @covers ::checkFieldAccess
+   */
+  public function testFieldAccess() {
+    $owner = $this->createUser();
+    $product = Product::create([
+      'type' => 'default',
+      'title' => 'Own product',
+      'uid' => $owner->id(),
+    ]);
+    $product->save();
+    $other_product = Product::create([
+      'type' => 'default',
+      'title' => 'Other product',
+    ]);
+    $other_product->save();
+    /** @var \Drupal\commerce_product\Entity\ProductVariationInterface $variation */
+    $variation = ProductVariation::create([
+      'type' => 'default',
+      'sku' => $this->randomMachineName(),
+      'product_id' => $product->id(),
+    ]);
+    $variation->save();
+
+    $variation_manager = $this->createUser([
+      'manage default commerce_product_variation',
+      'update own default commerce_product',
+    ]);
+    $product->setOwnerId($variation_manager->id())->save();
+    // Variation managers can update every variation of the type, but can't
+    // move a variation to another product.
+    $this->assertTrue($variation->access('update', $variation_manager));
+    $this->assertTrue($variation->get('sku')->access('edit', $variation_manager));
+    $this->assertFalse($variation->get('product_id')->access('edit', $variation_manager));
+    $this->assertTrue($variation->get('product_id')->access('view', $variation_manager));
+
+    // New variations can be added to any product, as on the variation add
+    // form.
+    $new_variation = ProductVariation::create([
+      'type' => 'default',
+      'sku' => $this->randomMachineName(),
+      'product_id' => $other_product->id(),
+    ]);
+    $this->assertTrue($new_variation->get('product_id')->access('edit', $variation_manager));
+    $this->assertFalse($new_variation->get('product_id')->access('edit', $this->createUser()));
+
+    $admin = $this->createUser(['administer commerce_product']);
+    $this->assertTrue($variation->get('product_id')->access('edit', $admin));
+    $this->assertTrue($new_variation->get('product_id')->access('edit', $admin));
+  }
+
+  /**
+   * Tests that entity queries only return the variations the user can view.
+   *
+   * @covers \Drupal\commerce_product\Hook\CommerceProductHooks::queryCommerceProductVariationAccessAlter
+   */
+  public function testQueryAccess() {
+    $variations = [];
+    foreach (['published', 'unpublished_product', 'unpublished'] as $key) {
+      $variations[$key] = ProductVariation::create([
+        'type' => 'default',
+        'sku' => $key,
+        'title' => $key,
+        'status' => $key !== 'unpublished',
+      ]);
+      $variations[$key]->save();
+    }
+    Product::create([
+      'type' => 'default',
+      'title' => 'Published',
+      'variations' => [$variations['published'], $variations['unpublished']],
+    ])->save();
+    Product::create([
+      'type' => 'default',
+      'title' => 'Unpublished',
+      'status' => 0,
+      'variations' => [$variations['unpublished_product']],
+    ])->save();
+    // A variation without a product.
+    ProductVariation::create([
+      'type' => 'default',
+      'sku' => 'orphan',
+      'title' => 'orphan',
+      'status' => 1,
+    ])->save();
+
+    $variation_storage = $this->container->get('entity_type.manager')->getStorage('commerce_product_variation');
+    $query_skus = function (array $permissions) use ($variation_storage) {
+      $this->container->get('current_user')->setAccount($this->createUser($permissions));
+      $query = $variation_storage->getQuery()->accessCheck(TRUE)->sort('variation_id');
+      $count = (clone $query)->count()->execute();
+      $skus = array_map(function ($variation) {
+        return $variation->getSku();
+      }, $variation_storage->loadMultiple($query->execute()));
+      $this->assertCount($count, $skus);
+      return array_values($skus);
+    };
+
+    $this->assertEquals([], $query_skus([]));
+    $this->assertEquals(['published'], $query_skus(['view commerce_product']));
+    $this->assertEquals(['unpublished'], $query_skus(['manage default commerce_product_variation']));
+    $this->assertEquals(['published', 'unpublished'], $query_skus([
+      'view commerce_product',
+      'manage default commerce_product_variation',
+    ]));
+    $this->assertEquals(['published', 'unpublished_product', 'unpublished', 'orphan'], $query_skus(['administer commerce_product']));
+    // Queries without access checks are unchanged.
+    $this->assertCount(4, $variation_storage->getQuery()->accessCheck(FALSE)->execute());
+
+    // Validating references isn't restricted, only listing them is.
+    $this->container->get('current_user')->setAccount($this->createUser());
+    $handler = $this->container->get('plugin.manager.entity_reference_selection')->getInstance([
+      'target_type' => 'commerce_product_variation',
+      'handler' => 'default',
+    ]);
+    $this->assertEquals([], $handler->getReferenceableEntities());
+    $variation_ids = array_keys($variation_storage->loadMultiple());
+    $this->assertEquals($variation_ids, array_values($handler->validateReferenceableEntities($variation_ids)));
+  }
+
 }

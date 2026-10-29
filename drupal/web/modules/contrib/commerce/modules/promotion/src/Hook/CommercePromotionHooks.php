@@ -143,6 +143,16 @@ class CommercePromotionHooks {
   }
 
   /**
+   * Implements hook_entity_type_build().
+   */
+  #[Hook('entity_type_build')]
+  public function entityTypeBuild(array &$entity_types): void {
+    // Customers apply coupons through the coupon redemption pane, which validates them.
+    $restricted_fields = $entity_types['commerce_order']->get('restricted_fields') ?? [];
+    $entity_types['commerce_order']->set('restricted_fields', array_merge($restricted_fields, ['coupons']));
+  }
+
+  /**
    * Implements hook_cron().
    */
   #[Hook('cron')]

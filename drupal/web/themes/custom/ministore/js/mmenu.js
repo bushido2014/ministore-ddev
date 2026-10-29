@@ -4,7 +4,7 @@
   Drupal.behaviors.mmenu = {
     attach(context) {
       once('mmenu', '#mobile-menu', context).forEach(function (el) {
-        const menu = new MmenuLight(el, "(max-width: 768px)");
+        const menu = new MmenuLight(el, "(max-width: 820px)");
         menu.navigation();
 
         const drawer = menu.offcanvas({

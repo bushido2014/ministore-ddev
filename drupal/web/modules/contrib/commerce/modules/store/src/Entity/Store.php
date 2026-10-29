@@ -33,7 +33,7 @@ use Drupal\commerce_price\Entity\CurrencyInterface;
  *   handlers = {
  *     "event" = "Drupal\commerce_store\Event\StoreEvent",
  *     "storage" = "Drupal\commerce_store\StoreStorage",
- *     "access" = "Drupal\entity\EntityAccessControlHandler",
+ *     "access" = "Drupal\commerce_store\StoreAccessControlHandler",
  *     "query_access" = "Drupal\entity\QueryAccess\QueryAccessHandler",
  *     "permission_provider" = "Drupal\entity\EntityPermissionProvider",
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
@@ -86,6 +86,9 @@ use Drupal\commerce_price\Entity\CurrencyInterface;
  *   },
  *   bundle_entity_type = "commerce_store_type",
  *   field_ui_base_route = "entity.commerce_store_type.edit_form",
+ *   restricted_fields = {
+ *     "is_default"
+ *   },
  * )
  */
 class Store extends ContentEntityBase implements StoreInterface {

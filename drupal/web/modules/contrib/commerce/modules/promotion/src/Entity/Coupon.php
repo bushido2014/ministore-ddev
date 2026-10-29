@@ -46,6 +46,9 @@ use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
  *   },
  *   base_table = "commerce_promotion_coupon",
  *   admin_permission = "administer commerce_promotion",
+ *   restricted_fields = {
+ *     "promotion_id"
+ *   },
  *   field_indexes = {
  *     "code"
  *   },

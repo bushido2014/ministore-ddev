@@ -41,34 +41,5 @@ header.header {
   padding: 5px;
 }
 
-/* Cart */
-.header-cart {
-  position: relative;
-}
 
-/* Mobile */
-@media (max-width: 768px) {
-  .nav-desktop {
-    display: none !important;
-  }
 
-  .hamburger-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .nav-mobile {
-    display: block;
-  }
-
-  .header-cart {
-    position: relative;
-    margin-left: auto;
-  }
-
-  #block-ministore-cart--2 {
-    position: static !important;
-    margin: 0 !important;
-  }
-}

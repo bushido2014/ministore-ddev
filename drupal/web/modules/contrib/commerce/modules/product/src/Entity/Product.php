@@ -300,15 +300,18 @@ class Product extends CommerceContentEntityBase implements ProductInterface {
   public static function postDelete(EntityStorageInterface $storage, array $entities) {
     parent::postDelete($storage, $entities);
 
-    // Delete the product variations of a deleted product.
+    // Delete the product variations of a deleted product. Variations belonging
+    // to other products might be referenced, those must not be deleted.
     $variations = [];
     foreach ($entities as $entity) {
       if (empty($entity->variations)) {
         continue;
       }
       foreach ($entity->variations as $item) {
-        if ($item->entity) {
-          $variations[$item->target_id] = $item->entity;
+        /** @var \Drupal\commerce_product\Entity\ProductVariationInterface $variation */
+        $variation = $item->entity;
+        if ($variation && in_array($variation->getProductId(), [NULL, $entity->id()])) {
+          $variations[$item->target_id] = $variation;
         }
       }
     }
@@ -376,6 +379,7 @@ class Product extends CommerceContentEntityBase implements ProductInterface {
       ->setCardinality(BaseFieldDefinition::CARDINALITY_UNLIMITED)
       ->setSetting('target_type', 'commerce_product_variation')
       ->setSetting('handler', 'default')
+      ->addConstraint('ProductVariations')
       ->setDisplayOptions('view', [
         'type' => 'commerce_add_to_cart',
         'weight' => 10,

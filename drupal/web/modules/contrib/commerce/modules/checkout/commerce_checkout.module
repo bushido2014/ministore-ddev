@@ -21,6 +21,14 @@ function commerce_checkout_entity_base_field_info(EntityTypeInterface $entity_ty
 }
 
 /**
+ * Implements hook_entity_type_build().
+ */
+#[LegacyHook]
+function commerce_checkout_entity_type_build(array &$entity_types): void {
+  \Drupal::service(CommerceCheckoutHooks::class)->entityTypeBuild($entity_types);
+}
+
+/**
  * Implements hook_form_alter().
  */
 #[LegacyHook]

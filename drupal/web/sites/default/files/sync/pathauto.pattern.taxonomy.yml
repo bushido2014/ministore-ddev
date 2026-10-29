@@ -1,0 +1,31 @@
+uuid: ad3a4b75-c8e4-4866-a4c1-4645c80bd53c
+langcode: en
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.blog
+    - taxonomy.vocabulary.product_brand
+    - taxonomy.vocabulary.product_category
+    - taxonomy.vocabulary.product_tags
+    - taxonomy.vocabulary.tags
+  module:
+    - taxonomy
+id: taxonomy
+label: Taxonomy
+type: 'canonical_entities:taxonomy_term'
+pattern: '/[term:vocabulary]/[term:name]'
+selection_criteria:
+  7b3a4ef8-dfea-41c4-997e-22bc4352dc0d:
+    id: 'entity_bundle:taxonomy_term'
+    negate: false
+    context_mapping:
+      taxonomy_term: taxonomy_term
+    bundles:
+      blog: blog
+      product_brand: product_brand
+      product_category: product_category
+      product_tags: product_tags
+      tags: tags
+selection_logic: and
+weight: -5
+relationships: {  }

@@ -57,14 +57,14 @@ class CartQueryAccessTest extends CartKernelTestBase {
     ];
     $this->assertEquals(1, $conditions->count());
     $this->assertEquals($expected_conditions, $conditions->getConditions());
-    $this->assertEquals(['user.permissions'], $conditions->getCacheContexts());
+    $this->assertEqualsCanonicalizing(['session', 'user.permissions'], $conditions->getCacheContexts());
     $this->assertFalse($conditions->isAlwaysFalse());
 
     // Confirm that finalized carts are also allowed.
     $this->cartProvider->finalizeCart($cart);
     $conditions = $this->handler->getConditions('view', $anon_user);
     $this->assertEquals(1, $conditions->count());
-    $this->assertEquals(['user.permissions'], $conditions->getCacheContexts());
+    $this->assertEqualsCanonicalizing(['session', 'user.permissions'], $conditions->getCacheContexts());
     $expected_conditions = [
       new Condition('order_id', [$cart->id()]),
     ];
@@ -78,8 +78,19 @@ class CartQueryAccessTest extends CartKernelTestBase {
     ];
     $this->assertEquals(1, $conditions->count());
     $this->assertEquals($expected_conditions, $conditions->getConditions());
-    $this->assertEquals(['user.permissions'], $conditions->getCacheContexts());
+    $this->assertEqualsCanonicalizing(['session', 'user.permissions'], $conditions->getCacheContexts());
     $this->assertFalse($conditions->isAlwaysFalse());
+
+    // Authenticated user with no access other than to their own carts.
+    $customer = $this->createUser();
+    $customer_cart = $this->cartProvider->createCart('default', $this->store, $customer);
+    $this->container->get('current_user')->setAccount($customer);
+    $conditions = $this->handler->getConditions('view', $customer);
+    $expected_conditions = [
+      new Condition('order_id', [$customer_cart->id()]),
+    ];
+    $this->assertEquals($expected_conditions, $conditions->getConditions());
+    $this->assertEqualsCanonicalizing(['cart', 'user.permissions'], $conditions->getCacheContexts());
   }
 
 }

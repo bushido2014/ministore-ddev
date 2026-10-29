@@ -7,12 +7,16 @@
 
 use Drupal\commerce_payment\Hook\CommercePaymentHooks;
 use Drupal\commerce_payment\Hook\CommercePaymentThemeHooks;
+use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Hook\Attribute\LegacyHook;
+use Drupal\Core\Session\AccountInterface;
 
 /**
  * Implements hook_commerce_checkout_pane_info_alter().
@@ -28,6 +32,22 @@ function commerce_payment_commerce_checkout_pane_info_alter(&$definitions): void
 #[LegacyHook]
 function commerce_payment_entity_base_field_info(EntityTypeInterface $entity_type): array {
   return \Drupal::service(CommercePaymentHooks::class)->entityBaseFieldInfo($entity_type);
+}
+
+/**
+ * Implements hook_entity_type_build().
+ */
+#[LegacyHook]
+function commerce_payment_entity_type_build(array &$entity_types): void {
+  \Drupal::service(CommercePaymentHooks::class)->entityTypeBuild($entity_types);
+}
+
+/**
+ * Implements hook_entity_field_access().
+ */
+#[LegacyHook]
+function commerce_payment_entity_field_access(string $operation, FieldDefinitionInterface $field_definition, AccountInterface $account, ?FieldItemListInterface $items = NULL): AccessResultInterface {
+  return \Drupal::service(CommercePaymentHooks::class)->entityFieldAccess($operation, $field_definition, $account, $items);
 }
 
 /**

@@ -21,6 +21,7 @@ entity.commerce_order.manage_coupons_form:
       commerce_order:
         type: 'entity:commerce_order'
   requirements:
+    _permission: 'access commerce administration pages'
     _entity_access: 'commerce_order.update'
     _order_state: 'draft'
 

@@ -94,6 +94,11 @@ use Drupal\user\UserInterface;
  *   field_ui_base_route = "entity.commerce_order_type.edit_form",
  *   allow_number_patterns = TRUE,
  *   log_version_mismatch = TRUE,
+ *   restricted_fields = {
+ *     "order_number", "version", "store_id", "uid", "ip_address",
+ *     "order_items", "adjustments", "total_price", "total_paid", "balance",
+ *     "state", "data", "locked", "created", "changed", "placed", "completed"
+ *   },
  *   constraints = {
  *     "OrderVersion" = {}
  *   }

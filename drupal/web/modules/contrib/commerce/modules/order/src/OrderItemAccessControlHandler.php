@@ -5,6 +5,8 @@ namespace Drupal\commerce_order;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityAccessControlHandler as CoreEntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Session\AccountInterface;
 
 /**
@@ -63,6 +65,36 @@ class OrderItemAccessControlHandler extends CoreEntityAccessControlHandler {
     ], 'OR');
 
     return $result;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkFieldAccess($operation, FieldDefinitionInterface $field_definition, AccountInterface $account, ?FieldItemListInterface $items = NULL) {
+    // Only users who can manage order items through their permissions can
+    // edit restricted fields. Customers can be granted "update" access to
+    // their own cart items (e.g. by commerce_cart), which must not allow
+    // changing the prices, adjustments, etc. (e.g. through JSON:API or REST).
+    // Modules add their own fields to the "restricted_fields" entity
+    // type property, in hook_entity_type_build().
+    $restricted_fields = $this->entityType->get('restricted_fields') ?? [];
+    $field_name = $field_definition->getName();
+    if ($operation == 'edit' && in_array($field_name, $restricted_fields, TRUE)) {
+      $order_item = $items?->getEntity();
+      // Allow setting the purchased entity and the unit price of new order
+      // items, which the "Add to cart" form exposes (the variation selector,
+      // and the unit price e.g. for donations).
+      if ($order_item?->isNew() && in_array($field_name, ['purchased_entity', 'unit_price', 'overridden_unit_price'], TRUE)) {
+        return parent::checkFieldAccess($operation, $field_definition, $account, $items);
+      }
+      $permissions = [$this->entityType->getAdminPermission()];
+      if ($order_item) {
+        $permissions[] = "manage {$order_item->bundle()} commerce_order_item";
+      }
+      return AccessResult::allowedIfHasPermissions($account, $permissions, 'OR');
+    }
+
+    return parent::checkFieldAccess($operation, $field_definition, $account, $items);
   }
 
 }

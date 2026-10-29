@@ -802,6 +802,7 @@ class OrderAdminTest extends OrderWebDriverTestBase {
     $this->getSession()->getPage()->fillField('mail[0][value]', $new_mail);
     $this->getSession()->getPage()->find('css', '.ui-dialog .ui-dialog-buttonpane')->findButton('Save');
     $this->getSession()->getPage()->find('css', '.ui-dialog .ui-dialog-buttonpane')->pressButton('Save');
+    $this->assertSession()->assertNoElementAfterWait('css', '.ui-dialog');
 
     // Confirm that the contact email is updated for the "draft" order.
     $this->drupalGet($order->toUrl()->toString());
@@ -820,6 +821,7 @@ class OrderAdminTest extends OrderWebDriverTestBase {
     $this->assertSession()->assertWaitOnAjaxRequest();
     $this->getSession()->getPage()->fillField('mail[0][value]', $new_mail);
     $this->getSession()->getPage()->find('css', '.ui-dialog .ui-dialog-buttonpane')->pressButton('Save');
+    $this->assertSession()->assertNoElementAfterWait('css', '.ui-dialog');
     $this->drupalGet($order->toUrl()->toString());
     $this->assertSession()->pageTextNotContains(sprintf('Contact email %s', $old_email));
     $this->assertSession()->pageTextContains(sprintf('Contact email %s', $new_mail));

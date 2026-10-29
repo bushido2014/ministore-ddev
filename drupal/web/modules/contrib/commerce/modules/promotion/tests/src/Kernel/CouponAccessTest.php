@@ -107,4 +107,42 @@ class CouponAccessTest extends OrderKernelTestBase {
     $this->assertTrue($access_control_handler->createAccess('test', $account));
   }
 
+  /**
+   * @covers ::checkFieldAccess
+   */
+  public function testFieldAccess() {
+    $owner = $this->createUser([
+      'view commerce_promotion',
+      'update own commerce_promotion',
+    ]);
+    $promotion = Promotion::create([
+      'order_types' => ['default'],
+      'stores' => [$this->store->id()],
+      'uid' => $owner->id(),
+      'status' => TRUE,
+    ]);
+    $promotion->save();
+    /** @var \Drupal\commerce_promotion\Entity\CouponInterface $coupon */
+    $coupon = Coupon::create([
+      'promotion_id' => $promotion->id(),
+      'code' => $this->randomMachineName(),
+      'status' => TRUE,
+    ]);
+    $coupon->save();
+
+    // Users who can update their own promotions can update their coupons,
+    // but can't move them to another promotion.
+    $this->assertTrue($coupon->access('update', $owner));
+    $this->assertTrue($coupon->get('code')->access('edit', $owner));
+    $this->assertTrue($coupon->get('status')->access('edit', $owner));
+    $this->assertFalse($coupon->get('promotion_id')->access('edit', $owner));
+    $this->assertTrue($coupon->get('promotion_id')->access('view', $owner));
+
+    $account = $this->createUser(['update any commerce_promotion']);
+    $this->assertTrue($coupon->get('promotion_id')->access('edit', $account));
+
+    $account = $this->createUser(['administer commerce_promotion']);
+    $this->assertTrue($coupon->get('promotion_id')->access('edit', $account));
+  }
+
 }

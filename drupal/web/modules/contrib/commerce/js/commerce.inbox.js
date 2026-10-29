@@ -10,9 +10,7 @@
             message.classList.add('opened');
             if (message.classList.contains('unread')) {
               Drupal.ajax({
-                url: Drupal.url(
-                  `admin/commerce/inbox-message/${message.dataset.messageId}/read`
-                ),
+                url: message.dataset.readUrl,
               }).execute();
             }
           });

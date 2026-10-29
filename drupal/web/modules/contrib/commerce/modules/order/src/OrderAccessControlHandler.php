@@ -4,6 +4,8 @@ namespace Drupal\commerce_order;
 
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\entity\EntityAccessControlHandler;
 
@@ -61,6 +63,34 @@ class OrderAccessControlHandler extends EntityAccessControlHandler {
     }
 
     return $result;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function checkFieldAccess($operation, FieldDefinitionInterface $field_definition, AccountInterface $account, ?FieldItemListInterface $items = NULL) {
+    // Only users who can update orders through their permissions can edit
+    // restricted fields. Customers can be granted "update" access to
+    // their own carts (e.g. by commerce_cart), which must not allow changing
+    // the order state, totals, etc. (e.g. through JSON:API or REST).
+    // Modules add their own fields to the "restricted_fields" entity
+    // type property, in hook_entity_type_build().
+    $restricted_fields = $this->entityType->get('restricted_fields') ?? [];
+    if ($operation == 'edit' && in_array($field_definition->getName(), $restricted_fields, TRUE)) {
+      $permissions = [$this->entityType->getAdminPermission()];
+      if ($items) {
+        $order = $items->getEntity();
+        $permissions[] = "update {$order->bundle()} commerce_order";
+        // Users who can create orders can set these fields on new orders
+        // (e.g. through JSON:API or REST).
+        if ($order->isNew()) {
+          $permissions[] = "create {$order->bundle()} commerce_order";
+        }
+      }
+      return AccessResult::allowedIfHasPermissions($account, $permissions, 'OR');
+    }
+
+    return parent::checkFieldAccess($operation, $field_definition, $account, $items);
   }
 
 }

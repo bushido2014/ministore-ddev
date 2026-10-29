@@ -1,0 +1,44 @@
+<?php
+
+/**
+ * @file
+ * Adds a restricted order field, as other modules do.
+ */
+
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\Session\AccountInterface;
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function commerce_order_field_access_test_entity_base_field_info(EntityTypeInterface $entity_type) {
+  $fields = [];
+  if ($entity_type->id() === 'commerce_order') {
+    $fields['test_admin_field'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Test restricted field'));
+  }
+  return $fields;
+}
+
+/**
+ * Implements hook_entity_type_build().
+ */
+function commerce_order_field_access_test_entity_type_build(array &$entity_types) {
+  $restricted_fields = $entity_types['commerce_order']->get('restricted_fields') ?? [];
+  $entity_types['commerce_order']->set('restricted_fields', array_merge($restricted_fields, ['test_admin_field']));
+}
+
+/**
+ * Implements hook_entity_field_access().
+ */
+function commerce_order_field_access_test_entity_field_access($operation, FieldDefinitionInterface $field_definition, AccountInterface $account, ?FieldItemListInterface $items = NULL) {
+  if ($operation === 'edit' && $field_definition->getName() === 'test_admin_field') {
+    // Modules can grant access to restricted fields.
+    return AccessResult::allowedIfHasPermission($account, 'edit test admin field');
+  }
+  return AccessResult::neutral();
+}

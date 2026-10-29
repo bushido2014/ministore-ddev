@@ -128,6 +128,8 @@ class ProductAttributesOverviewFormatterTest extends CommerceKernelTestBase {
       'variations' => [$variation1, $variation2, $variation3],
     ]);
     $this->product->save();
+
+    $this->setUpCurrentUser([], ['view commerce_product']);
   }
 
   /**
@@ -199,6 +201,46 @@ class ProductAttributesOverviewFormatterTest extends CommerceKernelTestBase {
     $this->assertFieldByXPath('//ul/li[1]/a/div/div/div[text()=\'Cyan\']');
     $this->assertFieldByXPath('//ul/li[2]/a/div/div/div[text()=\'Name\']');
     $this->assertFieldByXPath('//ul/li[2]/a/div/div/div[text()=\'Yellow\']');
+  }
+
+  /**
+   * Tests that unpublished variations are skipped.
+   */
+  public function testUnpublishedVariations() {
+    $this->productDefaultDisplay->setComponent('variations', [
+      'type' => 'commerce_product_attributes_overview',
+      'settings' => [
+        'attributes' => ['color' => 'color'],
+        'view_mode' => 'default',
+      ],
+    ]);
+    $this->productDefaultDisplay->save();
+
+    $access_control_handler = $this->container->get('entity_type.manager')->getAccessControlHandler('commerce_product_variation');
+    $variations = $this->product->getVariations();
+    $variations[0]->setUnpublished()->save();
+    $this->product = $this->reloadEntity($this->product);
+
+    $build = $this->productViewBuilder->view($this->product);
+    $this->render($build);
+    $this->assertEmpty($this->xpath('//ul/li/a//div[text()=\'Cyan\']'));
+    $this->assertFieldByXPath('//ul/li[1]/a/div/div/div[text()=\'Yellow\']');
+
+    // Yellow is still shown while one of its two variations is published.
+    $variations[1]->setUnpublished()->save();
+    $this->product = $this->reloadEntity($this->product);
+    $access_control_handler->resetCache();
+    $build = $this->productViewBuilder->view($this->product);
+    $this->render($build);
+    $this->assertEmpty($this->xpath('//ul/li/a//div[text()=\'Cyan\']'));
+    $this->assertFieldByXPath('//ul/li[1]/a/div/div/div[text()=\'Yellow\']');
+
+    $variations[2]->setUnpublished()->save();
+    $this->product = $this->reloadEntity($this->product);
+    $access_control_handler->resetCache();
+    $build = $this->productViewBuilder->view($this->product);
+    $this->render($build);
+    $this->assertEmpty($this->xpath('//ul/li'));
   }
 
 }

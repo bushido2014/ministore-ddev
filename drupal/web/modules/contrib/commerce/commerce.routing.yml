@@ -37,6 +37,7 @@ commerce.inbox_message.read:
     _controller: '\Drupal\commerce\Controller\DashboardController::readInboxMessage'
   requirements:
     _permission: 'access commerce administration pages'
+    _csrf_token: 'TRUE'
 
 commerce.inbox_message.dismiss:
   path: '/admin/commerce/inbox-message/{message_id}/dismiss'
@@ -44,3 +45,4 @@ commerce.inbox_message.dismiss:
     _controller: '\Drupal\commerce\Controller\DashboardController::dismissInboxMessage'
   requirements:
     _permission: 'access commerce administration pages'
+    _csrf_token: 'TRUE'

@@ -44,6 +44,11 @@ use Drupal\profile\Entity\ProfileInterface;
  *   },
  *   base_table = "commerce_payment_method",
  *   admin_permission = "administer commerce_payment_method",
+ *   restricted_fields = {
+ *     "payment_gateway", "payment_gateway_mode", "uid", "remote_id",
+ *     "reusable", "expires", "created", "changed", "card_type", "card_number",
+ *     "card_exp_month", "card_exp_year", "paypal_mail"
+ *   },
  *   field_indexes = {
  *     "remote_id"
  *   },

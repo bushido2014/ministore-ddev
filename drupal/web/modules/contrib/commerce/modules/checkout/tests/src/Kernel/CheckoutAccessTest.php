@@ -149,6 +149,22 @@ class CheckoutAccessTest extends CartKernelTestBase {
   }
 
   /**
+   * Tests that customers can only check out draft orders that are carts.
+   */
+  public function testNonCartDraftOrder() {
+    $user1 = $this->createUser(['access checkout']);
+    $order = $this->createOrder($user1);
+    $order->set('cart', FALSE);
+    $order->save();
+    $request = $this->createRequest($order);
+    $this->assertFalse($this->accessManager->checkRequest($request, $user1));
+
+    $order->set('cart', TRUE);
+    $order->save();
+    $this->assertTrue($this->accessManager->checkRequest($request, $user1));
+  }
+
+  /**
    * Creates a request for the order's checkout form.
    *
    * @param \Drupal\commerce_order\Entity\OrderInterface $order
@@ -198,6 +214,7 @@ class CheckoutAccessTest extends CartKernelTestBase {
       'ip_address' => '127.0.0.1',
       'order_number' => '6',
       'store_id' => $this->store->id(),
+      'cart' => TRUE,
     ]);
     /** @var \Drupal\commerce_order\OrderItemStorageInterface $order_item_storage */
     $order_item_storage = $this->entityTypeManager->getStorage('commerce_order_item');

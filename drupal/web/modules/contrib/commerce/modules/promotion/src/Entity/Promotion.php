@@ -35,7 +35,7 @@ use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
  *   handlers = {
  *     "event" = "Drupal\commerce_promotion\Event\PromotionEvent",
  *     "storage" = "Drupal\commerce_promotion\PromotionStorage",
- *     "access" = "Drupal\entity\EntityAccessControlHandler",
+ *     "access" = "Drupal\commerce_promotion\PromotionAccessControlHandler",
  *     "permission_provider" = "Drupal\entity\EntityPermissionProvider",
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "list_builder" = "Drupal\commerce_promotion\PromotionListBuilder",
@@ -61,6 +61,9 @@ use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
  *   base_table = "commerce_promotion",
  *   data_table = "commerce_promotion_field_data",
  *   admin_permission = "administer commerce_promotion",
+ *   restricted_fields = {
+ *     "coupons"
+ *   },
  *   translatable = TRUE,
  *   translation = {
  *     "content_translation" = {
@@ -687,10 +690,14 @@ class Promotion extends CommerceContentEntityBase implements PromotionInterface 
     parent::postDelete($storage, $entities);
 
     // Delete the linked coupons and usage records.
+    // Coupons belonging to other promotions might be referenced (e.g. through
+    // JSON:API), those must not be deleted.
     $coupons = [];
     foreach ($entities as $entity) {
       foreach ($entity->getCoupons() as $coupon) {
-        $coupons[] = $coupon;
+        if ($coupon->getPromotionId() == $entity->id()) {
+          $coupons[] = $coupon;
+        }
       }
     }
     /** @var \Drupal\commerce_promotion\CouponStorageInterface $coupon_storage */

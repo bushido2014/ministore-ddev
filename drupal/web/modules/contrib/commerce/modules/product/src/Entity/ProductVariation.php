@@ -54,6 +54,9 @@ use Symfony\Component\Routing\Exception\RouteNotFoundException;
  *     "translation" = "Drupal\commerce_product\ProductTranslationHandler"
  *   },
  *   admin_permission = "administer commerce_product",
+ *   restricted_fields = {
+ *     "product_id"
+ *   },
  *   fieldable = TRUE,
  *   field_indexes = {
  *     "sku"

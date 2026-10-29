@@ -88,6 +88,14 @@ function commerce_promotion_entity_base_field_info(EntityTypeInterface $entity_t
 }
 
 /**
+ * Implements hook_entity_type_build().
+ */
+#[LegacyHook]
+function commerce_promotion_entity_type_build(array &$entity_types): void {
+  \Drupal::service(CommercePromotionHooks::class)->entityTypeBuild($entity_types);
+}
+
+/**
  * Implements hook_cron().
  */
 #[LegacyHook]

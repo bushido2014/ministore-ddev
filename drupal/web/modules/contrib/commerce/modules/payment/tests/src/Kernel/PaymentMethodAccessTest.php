@@ -207,4 +207,75 @@ class PaymentMethodAccessTest extends OrderKernelTestBase {
     $this->assertTrue($access_control_handler->createAccess('credit_card', $account));
   }
 
+  /**
+   * @covers ::checkFieldAccess
+   */
+  public function testFieldAccess() {
+    $payment_gateway = PaymentGateway::create([
+      'id' => 'onsite',
+      'label' => 'On-site',
+      'plugin' => 'example_onsite',
+    ]);
+    $payment_gateway->save();
+
+    $customer = $this->createUser(['manage own commerce_payment_method']);
+    /** @var \Drupal\commerce_payment\Entity\PaymentMethodInterface $payment_method */
+    $payment_method = PaymentMethod::create([
+      'type' => 'credit_card',
+      'payment_gateway' => $payment_gateway->id(),
+      'uid' => $customer->id(),
+    ]);
+    $payment_method->save();
+    $new_payment_method = PaymentMethod::create([
+      'type' => 'credit_card',
+      'payment_gateway' => $payment_gateway->id(),
+      'uid' => $customer->id(),
+    ]);
+
+    $restricted_fields = [
+      'payment_gateway',
+      'payment_gateway_mode',
+      'uid',
+      'remote_id',
+      'reusable',
+      'expires',
+      'created',
+      'card_type',
+      'card_number',
+      'card_exp_month',
+      'card_exp_year',
+    ];
+    // Customers manage their own payment methods, but the payment gateways
+    // set these fields.
+    $this->assertTrue($payment_method->access('update', $customer));
+    foreach ($restricted_fields as $field_name) {
+      $this->assertFalse($payment_method->get($field_name)->access('edit', $customer), $field_name);
+      $this->assertFalse($new_payment_method->get($field_name)->access('edit', $customer), $field_name);
+      if ($field_name !== 'remote_id') {
+        $this->assertTrue($payment_method->get($field_name)->access('view', $customer), $field_name);
+      }
+    }
+    // The remote ID is internal to the merchant and the payment gateway.
+    $this->assertFalse($payment_method->get('remote_id')->access('view', $customer));
+    $this->assertTrue($payment_method->get('billing_profile')->access('edit', $customer));
+    $this->assertTrue($payment_method->get('is_default')->access('edit', $customer));
+
+    $accounts = [
+      $this->createUser(['administer commerce_payment_method']),
+      $this->createUser(['update any commerce_payment_method']),
+    ];
+    foreach ($accounts as $account) {
+      foreach ($restricted_fields as $field_name) {
+        $this->assertTrue($payment_method->get($field_name)->access('edit', $account), $field_name);
+        $this->assertTrue($new_payment_method->get($field_name)->access('edit', $account), $field_name);
+      }
+      $this->assertTrue($payment_method->get('remote_id')->access('view', $account));
+    }
+    // Staff who can view any payment method can see the remote ID, but not
+    // change it.
+    $staff = $this->createUser(['view any commerce_payment_method']);
+    $this->assertTrue($payment_method->get('remote_id')->access('view', $staff));
+    $this->assertFalse($payment_method->get('remote_id')->access('edit', $staff));
+  }
+
 }

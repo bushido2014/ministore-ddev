@@ -22,6 +22,9 @@ class OrderItemRouteProvider extends AdminHtmlRouteProvider {
     if ($duplicate_route = $this->getDuplicateRoute($entity_type)) {
       $collection->add("entity.{$entity_type_id}.duplicate", $duplicate_route);
     }
+    $collection->addRequirements([
+      '_permission' => 'access commerce administration pages',
+    ]);
 
     return $collection;
   }
