@@ -81,16 +81,12 @@ ddev export-db --file=db/site.sql.gz  # Export database
 
 ## Project Structure
 
-ministore-ddev/
-├── .ddev/              # DDEV configuration
-├── db/                 # Database exports
-├── themes/
-│   └── ministore/      # Custom Drupal theme
-│       ├── css/
-│       ├── js/
-│       └── templates/
-├── modules/            # Custom modules (if any)
-└── save.sh             # Git backup script
+- `.devcontainer/` — GitHub Codespaces / Dev Container configuration
+- `.ddev/` — DDEV configuration
+- `db/` — Database exports
+- `themes/ministore/` — Custom Drupal theme (css, js, templates)
+- `modules/` — Custom modules
+- `save.sh` — Git backup script
 
 ## Credits
 
