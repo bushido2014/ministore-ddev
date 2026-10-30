@@ -82,15 +82,15 @@ ddev export-db --file=db/site.sql.gz  # Export database
 ## Project Structure
 
 ministore-ddev/
-├── .ddev/ # DDEV configuration
-├── db/ # Database exports
+├── .ddev/              # DDEV configuration
+├── db/                 # Database exports
 ├── themes/
-│ └── ministore/ # Custom Drupal theme
-│ ├── css/
-│ ├── js/
-│ └── templates/
-├── modules/ # Custom modules (if any)
-└── save.sh # Git backup script
+│   └── ministore/      # Custom Drupal theme
+│       ├── css/
+│       ├── js/
+│       └── templates/
+├── modules/            # Custom modules (if any)
+└── save.sh             # Git backup script
 
 ## Credits
 
