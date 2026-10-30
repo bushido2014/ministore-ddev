@@ -12,6 +12,8 @@ A Drupal 11 e-commerce project with a custom theme inspired by the [MiniStore te
 - SEO-friendly URLs with Pathauto
 - Enhanced administration with Admin Toolbar
 - Breadcrumb navigation
+- Sliders:	SwiperJS
+- Mobile nav:	mmenu-light.js
 - Form building with Webform
 
 ## Tech Stack
@@ -44,11 +46,51 @@ cd drupal
 ddev start
 ```
 
-Install dependencies if needed:
+### Setup
 
 ```bash
+# Clone the repository
+git clone https://github.com/bushido2014/ministore-ddev.git
+cd ministore-ddev
+
+# Start DDEV
+ddev start
+
+# Import the database
+ddev import-db --file=db/site.sql.gz
+
+# Install Composer dependencies
 ddev composer install
+
+# Open the site
+ddev launch
 ```
+
+### Useful DDEV Commands
+
+```bash
+ddev start          # Start the environment
+ddev stop           # Stop the environment
+ddev ssh            # SSH into the container
+ddev drush cr       # Clear Drupal cache
+ddev launch         # Open site in browser
+ddev export-db --file=db/site.sql.gz  # Export database
+```
+
+---
+
+## Project Structure
+
+ministore-ddev/
+├── .ddev/ # DDEV configuration
+├── db/ # Database exports
+├── themes/
+│ └── ministore/ # Custom Drupal theme
+│ ├── css/
+│ ├── js/
+│ └── templates/
+├── modules/ # Custom modules (if any)
+└── save.sh # Git backup script
 
 ## Credits
 
